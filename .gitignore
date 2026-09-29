@@ -1,0 +1,7 @@
+/.lake/
+/lake-packages/
+/.lean-ci-evidence/
+*.olean
+*.olean.private
+*.ilean
+*.trace

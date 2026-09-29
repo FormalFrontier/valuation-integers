@@ -1,0 +1,68 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/mathlib-initiative/formalization.yaml/99c678e569c7c4c0772db297c5ddd5e4c9b6322e/schema/v0.4.schema.json
+version: "v0.4"
+project:
+  name: Valuation Integers
+  description: >-
+    Power divisibility and a native Krull-dimension bound for the integers
+    of a rank-at-most-one valuation, including the field case.
+  authors:
+    - Formal Frontier Agents
+  responsible_maintainers:
+    - Anchor
+  license: Apache-2.0
+sources:
+  - title: "Rank-at-most-one valuation integers: power divisibility and dimension bound"
+    type: original-proof
+    relationship: other
+    note: >-
+      Original Formal Frontier Lean arguments for standard valuation facts,
+      transferred from reviewed project code; no named source passage or
+      source-specific formalization coverage is asserted here.
+related_formalizations:
+  - id: https://github.com/leanprover-community/mathlib4
+    relationship: builds-on
+    note: >-
+      Uses native valuation rank, integers, value-group, local-ring,
+      ideal and Krull-dimension APIs.
+automation:
+  methods:
+    - method: agent
+      framework: Formal Frontier Hive Tasks and Lean 4
+      tool_setup: >-
+        Original project proof and ordinary-import clients, isolated
+        independent donor review, and static transfer into a standalone
+        pinned mathlib-only project.
+      prompting_notes: >-
+        The transfer preserves the donor statements and proof bodies;
+        only imports, private test namespaces and documentation change.
+status:
+  scope: >-
+    Two public declarations and separate ordinary-import private clients
+    were transferred as initial development. The original standalone
+    destination mathematical base passed native both-root and full
+    private/generated-inclusive standard-axiom verification, independent
+    destination agent review and maintainer content acceptance before
+    integration into development main. This does not assert a reviewed
+    release artifact, publication or source-specific coverage.
+review:
+  status: agent-reviewed
+  notes: >-
+    The original destination mathematical base received independent agent
+    review; no human review is claimed. A later documentation/metadata
+    revision or release artifact is not approved by that earlier verdict.
+alignment:
+  namespace: Valuation.Integers
+  note: >-
+    Public library API inventory, not a source-passage or coverage mapping.
+    Private client fixtures and imported mathlib declarations are excluded.
+  statements:
+    - lean: Valuation.Integers.exists_pos_pow_dvd_of_mem_maximalIdeal
+      module: ValuationIntegers/RankLeOnePower.lean
+    - lean: Valuation.Integers.krullDimLE_one
+      module: ValuationIntegers/RankLeOneDimension.lean
+acknowledgements: >-
+  Original Formal Frontier worker-b Hive Tasks authored the two proofs and
+  maintained clients; this initial worker-b transfer assembles the package.
+  Module guides retain their mathematical and original-project credit.
+  Mathlib supplies the native rank, valuation, local-ring and dimension
+  foundations and retains the contributing authors' own notices.
