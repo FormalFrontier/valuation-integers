@@ -51,22 +51,22 @@ lake --wfail build ValuationIntegers ValuationIntegersTest
 printf 'import ValuationIntegers.RankLeOneDimension\n#print axioms Valuation.Integers.krullDimLE_one\n' | lake env lean /dev/stdin
 ```
 
-The final command checks the public declaration only; destination verification
-for the original standalone mathematical base also covered both roots and every
-private/generated client declaration. That base passed native transitive
-standard-axiom verification and independent destination agent review before
-development-main integration; those results do not automatically approve later
-documentation, metadata or a particular release artifact.
+The final command checks the public declaration only. Original configured
+native checks for the published three-result release also built both roots
+and audited all eight modules, including private/generated declarations,
+against the standard-three-axiom policy. This evidence is bound to the exact
+checked inputs; it does not automatically approve later edits.
 
 ## Development credit
 
-The original Formal Frontier worker-b Task implemented this theorem and its
-ordinary-import clients, following a separately proposed and independently
-assessed mathematical plan. This transfer retains that code's theorem and
-proof. The dimension argument uses mathlib's `KrullDimension/Basic.lean` and
-follows the local-domain pattern in `KrullDimension/LocalRing.lean` (Jingting
-Wang); the supporting power theorem uses mathlib work by María Inés de
+An original Formal Frontier contributor implemented this theorem and its
+ordinary-import clients after a separately proposed and independently
+assessed mathematical plan. Destination adaptation retained the original
+project's theorem and proof expression. The dimension argument uses mathlib's
+`KrullDimension/Basic.lean` and follows the local-domain pattern in
+`KrullDimension/LocalRing.lean` (Jingting Wang); the supporting power theorem
+uses mathlib work by María Inés de
 Frutos-Fernández, Filippo A. E. Nuccio, Yakov Pechersky and Kenny Lau.
-The mathlib modules retain their own Apache-2.0 notices; no native proof
-is reproduced wholesale here. No source-specific rank/height equivalence or
-source-coverage result is claimed.
+The mathlib modules retain their own Apache-2.0 notices; no mathlib proof
+is reproduced wholesale here. This library makes no source-specific
+rank/height equivalence or source-coverage claim.

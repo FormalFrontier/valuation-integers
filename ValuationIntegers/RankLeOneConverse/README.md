@@ -21,7 +21,7 @@ let _ : Valuation.RankLeOne val := rankWitness
 have bound : Ring.KrullDimLE 1 O := hv.krullDimLE_one
 ```
 
-The last line uses the accepted forward theorem from the same library's
+The last line uses the forward theorem from the same library's
 `ValuationIntegers.RankLeOneDimension` import, available to the ordinary
 private client. The consumer can instead invoke the rank-dependent
 power-divisibility theorem after locally installing the witness.
@@ -59,33 +59,29 @@ LEAN_NUM_THREADS=2 lake --wfail build ValuationIntegers.RankLeOneConverse Valuat
 ```
 
 The configured strict native CI additionally uses `Lean.collectAxioms` with
-private imports and actual-module-origin enumeration. The accepted destination
-transfer passed both-root build and complete transitive axiom verification:
-four declarations in this producer (including its private/generated helpers)
-and all three private clients, within the complete eight-module library census.
-Only `propext`, `Classical.choice` and `Quot.sound` occur. This is destination
-evidence, not an inference from the isolated donor's focused computation.
+private imports and actual-module-origin enumeration. Original configured
+checks for the published three-result release built both roots and audited
+all eight modules, including four declarations in this producer (private/
+generated helpers included) and three private converse clients. Only
+`propext`, `Classical.choice` and `Quot.sound` occurred. This evidence is
+bound to that exact revision's checked inputs, not inferred from earlier
+isolated development or transferable unchanged to later edits.
 
-## Rights, credit and status
+## Rights and credit
 
-This proof and private clients were developed by Formal Frontier worker-b
-Hive Task `hive-request-377c91b883a60ca3ced7a4e9eb56d28be39e41cc`
-(UID `7f4ba090-c987-4d41-a23b-b63accc6aa8a`) under Anchor's maintenance,
-following the independent static mathematical/API plan by worker-b Task
-`hive-request-9c6583e194ef399442c9acd2bbd179d5fbfc21a2` and its review
-by worker-a Task `hive-request-0e22d89f25c855dcbbfdbbb9a0fd52dc3eca7c0e`.
+An original Formal Frontier contributor developed this proof expression and
+its private clients after an independently proposed and reviewed mathematical/
+API plan. A destination contributor preserved the proof expression and
+adapted client imports and namespace for this library; this is original
+project work, not copied mathematical source text or source-author endorsement.
 The proof adapts the local-domain radical pattern in mathlib's
 `KrullDimension/LocalRing.lean` (Jingting Wang) and uses native valuation/rank
 work (María Inés de Frutos-Fernández and Filippo A. E. Nuccio),
 `ValueGroup₀` surjectivity (Antoine Chambert-Loir and those contributors),
 valuation integers (Kenny Lau), and the multiplicative Archimedean definition
 and `arch` field (Mario Carneiro). Their original mathlib modules retain
-their Apache-2.0 notices. The existing forward power/dimension APIs are
-independently credited in this library's other guides; no copyrighted proof
-is reproduced wholesale here. This library is licensed under Apache-2.0.
-
-Both the isolated donor and the destination transfer have been independently
-reviewed and accepted; the latter is integrated into development main after
-its own native checks. Official release and publication are separate decisions;
-later affected inputs need their applicable review and checks. No source-specific
-rank/height correspondence, source coverage or deployment claim is made.
+their Apache-2.0 notices. The forward APIs have separate
+[power](../RankLeOnePower/README.md) and
+[dimension](../RankLeOneDimension/README.md) credit. This library is
+[Apache-2.0](../../LICENSE). No source-specific rank/height correspondence
+or coverage is claimed.

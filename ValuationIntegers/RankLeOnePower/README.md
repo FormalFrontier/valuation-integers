@@ -52,24 +52,23 @@ lake --wfail build ValuationIntegers ValuationIntegersTest
 printf 'import ValuationIntegers.RankLeOnePower\n#print axioms Valuation.Integers.exists_pos_pow_dvd_of_mem_maximalIdeal\n' | lake env lean /dev/stdin
 ```
 
-The last command checks the public theorem's transitive axioms; it alone does
-not audit the private/generated client declarations. The original standalone
-destination mathematical base passed native both-root and full private/generated-
-inclusive transitive standard-axiom verification and independent destination
-agent review before development-main integration. That evidence applies to the
-unchanged Lean and dependency inputs, not automatically to later documentation,
-metadata or a particular release artifact.
+The last command checks the public theorem's transitive axioms only; it does
+not audit private/generated client declarations. Original configured native
+checks for the published three-result release built both roots and audited
+all eight modules, including private/generated declarations. Their successful
+standard-axiom evidence is revision-specific, not a certificate for later
+edits to documentation, metadata or Lean inputs.
 
 ## Development credit
 
-The mathematical interface and argument were developed by a Formal Frontier
-worker-b Hive Task, independently assessed by worker-a, and implemented with
-private clients by another worker-b Task; this module transfers that original
-project code without changing its proof. The proof uses mathlib's
+The mathematical interface and argument were proposed by a Formal Frontier
+contributor and independently assessed by another; a further contributor
+implemented the Lean proof and ordinary-import clients. Destination adaptation
+preserved the original project's proof expression, rather than reproducing a
+source passage or mathlib proof. The proof uses mathlib's
 `MulArchimedean.comap` construction from `RankOne.lean` (María Inés de
 Frutos-Fernández and Filippo A. E. Nuccio), `exists_pow_lt₀` from
 `ArchimedeanDensely.lean` (Yakov Pechersky), and valuation integers from
 `Integers.lean` (Kenny Lau). The mathlib modules retain their authorship and
-Apache-2.0 notices; no substantial native proof was copied into this module.
-This transfer is not a source-specific rank/height correspondence or a source
-coverage claim.
+Apache-2.0 notices. This original project contribution does not establish a
+source-specific rank/height correspondence or source coverage.

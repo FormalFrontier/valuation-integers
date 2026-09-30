@@ -17,8 +17,9 @@ sources:
     relationship: other
     note: >-
       Original Formal Frontier Lean arguments for standard valuation facts,
-      transferred from reviewed project code and an accepted isolated donor;
-      no named source passage or source-specific coverage is asserted here.
+      with earlier project proofs and clients adapted into this library.
+      This is not copied source text or a claim of endorsement by any
+      external source author; no source-specific coverage is asserted.
 related_formalizations:
   - id: https://github.com/leanprover-community/mathlib4
     relationship: builds-on
@@ -30,33 +31,30 @@ automation:
     - method: agent
       framework: Formal Frontier Hive Tasks and Lean 4
       tool_setup: >-
-        Original project proofs and ordinary-import clients, independent
-        isolated donor review, and static transfer into a pinned standalone
-        mathlib-only project.
+        Agent-assisted Lean proof development and ordinary-import clients,
+        with independent review and a pinned standalone mathlib-only project.
       prompting_notes: >-
-        The converse producer preserves the donor bytes; its private client
-        retargets only the import and namespace, with new library root imports
-        and documentation. The old public statements and proofs remain fixed.
+        Original Formal Frontier proof expression and clients were adapted
+        into the standalone library; the three public statements and their
+        separate private clients are identified in the shipped modules.
 status:
   scope: >-
-    Three public declarations and separate ordinary-import private clients
-    are inventoried. The original two-result standalone
-    destination mathematical base passed native both-root and full
-    private/generated-inclusive standard-axiom verification, independent
-    destination agent review and maintainer content acceptance before
-    integration into development main and its official first release.
-    The converse destination transfer subsequently passed its own independent
-    semantic review, both-root build and complete transitive standard-axiom
-    audit of all eight modules and 24 declarations including 21 private/generated
-    declarations, then received maintainer acceptance and development integration.
-    Release/publication decisions remain separate; no source coverage is asserted.
+    Three public theorems and separate ordinary-import private clients are
+    present: power divisibility and a forward dimension bound under a
+    rank-at-most-one assumption, and a converse yielding rank data from a
+    dimension-at-most-one bound. Published mathematical inputs received
+    independent agent review and native both-root/complete transitive
+    standard-axiom checks, including private/generated declarations. These
+    checks are revision-specific, not certification of later edits. No
+    source-specific coverage is asserted.
 review:
   status: agent-reviewed
   notes: >-
-    The original destination mathematical base, isolated converse donor and
-    exact converse destination transfer received independent agent reviews;
-    no human review is claimed. Later affected documentation, metadata and
-    release artifacts require their own applicable assessment.
+    Independent agent reviews covered the mathematical inputs at the
+    published three-result release 09c63e5f9622f483393edc40c5bbc672308db0eb;
+    no human review is claimed. Review and build/axiom evidence apply only
+    to their exact revisions and inputs; later affected edits need their
+    own applicable assessment.
 alignment:
   namespace: Valuation.Integers
   note: >-
@@ -70,11 +68,11 @@ alignment:
     - lean: Valuation.Integers.nonempty_rankLeOne_of_krullDimLE_one
       module: ValuationIntegers/RankLeOneConverse.lean
 acknowledgements: >-
-  Original Formal Frontier worker-b Hive Tasks authored the two proofs and
-  maintained clients of the first release; another worker-b Task authored
-  the isolated converse proof and clients. Module guides retain their
-  mathematical and original-project credit, including Jingting Wang,
-  Mario Carneiro, María Inés de Frutos-Fernández, Filippo A. E. Nuccio,
-  Antoine Chambert-Loir and Kenny Lau. Mathlib supplies the native rank,
-  valuation, local-ring and dimension foundations and retains its authors'
-  Apache-2.0 notices.
+  Formal Frontier contributors developed the original proof expressions,
+  ordinary-import clients and independently assessed mathematical plans;
+  destination contributors adapted them into this library. The module
+  guides distinguish their roles and credit mathlib contributors, including
+  Jingting Wang, Mario Carneiro, María Inés de Frutos-Fernández,
+  Filippo A. E. Nuccio, Antoine Chambert-Loir, Yakov Pechersky and Kenny Lau.
+  Mathlib supplies native rank, valuation, local-ring and dimension foundations
+  and retains its contributors' Apache-2.0 notices.

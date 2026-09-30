@@ -60,15 +60,14 @@ have hpower : ∃ n : ℕ, 0 < n ∧ y ∣ x ^ n :=
 ```
 
 `ValuationIntegersTest` is a separate maintained, ordinary-import client
-target, *not* exported from `ValuationIntegers`: its power clients include
-valuation domains/subrings and maximal-ideal radical usage, while its
+target, *not* exported from `ValuationIntegers`. Its private power clients
+include valuation domains/subrings and maximal-ideal radical usage; its
 dimension clients include the native dimension-zero trivial valuation on
-`ℚ`. Three new private converse clients exercise abstract invocation,
-local installation and the trivial valuation on `ℚ`. The three module
-guides explain mathematics, limitations, specializations and proof
-dependencies without needing source-repository research records.
+`ℚ`. Its converse clients exercise abstract invocation, local installation
+and the trivial valuation on `ℚ`. The linked guides give proof outlines,
+specializations and limitations without requiring project research records.
 
-## Reproduce and status
+## Reproduce and verification
 
 The committed Lean toolchain is `leanprover/lean4:v4.34.0-rc2`. The only
 direct Lake dependency is GitHub mathlib at
@@ -82,47 +81,35 @@ lake exe cache get
 lake --wfail build ValuationIntegers ValuationIntegersTest
 ```
 
-The two original implementation proofs and client fixtures were transferred from
-previously reviewed project code. Their original standalone destination
-revision passed a native both-root build and a complete transitive standard-
-axiom audit, including private/generated declarations; all audited axioms
-are among `propext`, `Classical.choice` and `Quot.sound`. That mathematical
-base also received independent destination agent review and maintainer
-content acceptance before integration into development main. Later affected
-documentation and metadata, as well as any release artifact, require their
-own applicable review and checks. The converse's destination transfer also
-passed independent mathematical/API/provenance review and native both-root
-build and complete transitive axiom verification before maintainer acceptance
-and integration. That destination audit covered all eight modules and 24
-declarations, including 21 private/generated declarations, with only the
-three standard axioms above; it was not inferred from isolated donor checks.
-The initial two-result release is already published and reviewed; this added
-theorem is not in that release. No source-specific correspondence or coverage
-is claimed. Original project contributors and relevant mathlib authors are
-credited in the module guides; mathlib remains a separately licensed
-dependency with its own notices. This repository includes the complete
-[Apache-2.0 license](LICENSE).
+The three-result official release `09c63e5f9622f483393edc40c5bbc672308db0eb`
+includes all three public theorems. Its original configured native checks built
+both roots and audited transitive axioms for all eight modules and 24 declarations,
+including 21 private/generated declarations: only `propext`, `Classical.choice`
+and `Quot.sound` occurred. This is evidence for the exact checked inputs, not a
+certificate for changed documentation, metadata or future releases; affected
+inputs need applicable checks and independent review. Original Formal Frontier
+proof-expression contributors, destination adaptation and relevant mathlib
+contributors are distinguished in the module guides. No source-specific
+correspondence or coverage is claimed. This project is [Apache-2.0](LICENSE);
+mathlib retains its own contributor notices and license.
 
 ## Additive compatibility and measured build costs
 
-The reviewed official first release is `0bc044c229b50bfbc760b6b07c2824da57b51265`.
-Relative to that release, the three-result implementation preserves the old API's
-imports, names and assumptions and keeps the same Lean/mathlib pins; it adds
-one public module/theorem and a maintained private client. This is additive
-compatibility guidance, not publication evidence or a promise about later releases.
-Consumers should pin the exact reviewed and published release commit they use,
-not development main. A future breaking release should identify affected imports, names,
-assumptions and toolchain pins and provide migration guidance.
+Compared with the preceding two-result official release
+`0bc044c229b50bfbc760b6b07c2824da57b51265`, the three-result release
+preserves the old imports, names, hypotheses and Lean/mathlib pins, and adds
+the converse module/theorem and a separate private client. Consumers should
+pin the exact published release they use rather than development main; this
+comparison does not promise compatibility for later releases.
 
-In the original *two-result* standalone destination's native CI environment, with the
-pinned toolchain and a precompiled mathlib cache, cache fetch took 41.312 s,
-cache verification 5.985 s, and the both-root build 8.347 s; the complete
-run, including other verification, took about 130 s. These are measurements
-from that old environment and revision, not measurements of the converse.
+In the original *two-result* standalone destination's native CI environment,
+cache fetch took 41.312 s, cache verification 5.985 s, and the both-root
+build 8.347 s; the whole run took about 130 s. These measurements do not
+cover the converse.
 
-In the three-result destination's native CI environment on the same pins,
+In the *three-result* destination's native CI environment on the same pins,
 cache fetch took 40.361 s, cache verification 5.589 s and the both-root build
-8.847 s; the complete run, including other verification, took about 138 s.
-These are existing measurements of the accepted mathematical inputs, not
-benchmarks or guarantees for downstream machines. Plan for a mathlib cache
-download and local build storage; memory and disk requirements were not measured.
+8.847 s; the whole run took about 138 s. Both runs used a precompiled mathlib
+cache. These historical timings are neither new benchmarks nor guarantees for
+downstream machines. Plan for a cache download and local build storage; RAM
+and disk requirements were not measured.
