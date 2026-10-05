@@ -133,6 +133,44 @@ theorem exists_inequivalent_discrete_adic_pair :
   · simpa [places] using
       adic_linear_other (by decide : (0 : Coeff) ≠ 1)
 
+/-- An inverse of `X + 1` is integral at `X` but not at `X + 1`; its expression
+as a localized fraction needs a denominator outside the selected contracted prime. -/
+private theorem cross_integral_localized_fraction :
+    ∃ b : (places true).valuationSubring,
+      (b : RatField) ∉ Valuation.intersectionSubring places ∧
+        ∃ (a s : Valuation.intersectionSubring places)
+          (hs : s ∉ Valuation.contractedIdeal places true),
+          ((IsLocalization.mk' (places true).valuationSubring a
+              (⟨s, Ideal.mem_primeCompl_iff.mpr hs⟩ :
+                (Valuation.contractedIdeal places true).primeCompl) :
+            (places true).valuationSubring) : RatField) = (b : RatField) := by
+  have htrue : places true (linearElement 1) = 1 := by
+    simpa [places] using adic_linear_other (by decide : (1 : Coeff) ≠ 0)
+  have hfalse : places false (linearElement 1) < 1 := by
+    change adic 1 (linearElement 1) < 1
+    rw [Valuation.IsUniformizer.iff.mp (adic_linear_self 1)]
+    exact Valuation.IsRankOneDiscrete.generator_lt_one (adic 1)
+  have hpositive : 0 < places false (linearElement 1) := by
+    change 0 < adic 1 (linearElement 1)
+    exact (adic_linear_self 1).val_pos
+  let b : (places true).valuationSubring :=
+    ⟨(linearElement 1)⁻¹, (Valuation.mem_valuationSubring_iff _ _).mpr (by
+      rw [(places true).map_inv, htrue, inv_one])⟩
+  have hb : (b : RatField) ∉ Valuation.intersectionSubring places := by
+    intro hmem
+    have hle := (Valuation.mem_intersectionSubring_iff places _).mp hmem false
+    have hgt : 1 < places false ((linearElement 1)⁻¹) := by
+      rw [(places false).map_inv]
+      exact (one_lt_inv₀ hpositive).mpr hfalse
+    exact (not_le_of_gt hgt) (by simpa only [b] using hle)
+  obtain ⟨a, s, hs, heq⟩ := Valuation.exists_fraction_at_contractedIdeal places true b
+  refine ⟨b, hb, a, s, hs, ?_⟩
+  rw [Valuation.intersectionLocalization_fraction_coe]
+  have hs0 : (s : RatField) ≠ 0 := by
+    intro hzero
+    exact hs ((Valuation.mem_contractedIdeal_iff places true s).mpr (by simp [hzero]))
+  exact (div_eq_iff hs0).mpr (by simpa only [mul_comm] using heq)
+
 private example : (places true).IsUniformizer (linearElement 0) ∧
     places false (linearElement 0) = 1 ∧
     (places false).IsUniformizer (linearElement 1) ∧
@@ -169,6 +207,8 @@ private theorem approximation_separates_places :
       simpa only [Valuation.map_one] using h
     simpa only [Valuation.map_one] using (places false).map_eq_of_sub_lt h'
 
+-- Exercise the explicit-independence maximality wrapper on a contracted prime.
+set_option linter.deprecated false in
 private theorem contractedIdeal_true_prime
     (x y : Valuation.intersectionSubring places)
     (hxy : x * y ∈ Valuation.contractedIdeal places true) :
@@ -189,6 +229,8 @@ private theorem contractedIdeals_bezout :
     (Valuation.contractedIdeal_pairwise_isCoprime places places_inequivalent
       (by decide : true ≠ false))
 
+-- Exercise the explicit-independence residue and individual quotient wrappers.
+set_option linter.deprecated false in
 private theorem residueClass_has_integral_quotient_lift (z :
     IsLocalRing.ResidueField (places true).valuationSubring) :
     ∃ x : Valuation.intersectionSubring places,
@@ -214,6 +256,8 @@ private theorem diagonalUniformizer_separates_kernels :
         (by decide : false ≠ true)]
     exact not_lt_of_ge le_rfl
 
+-- Check the old quotient evaluation rule against the independent product quotient.
+set_option linter.deprecated false in
 private theorem diagonalUniformizer_quotient_coordinates :
     Valuation.quotientContractedIdealEquiv places places_inequivalent true
       (Ideal.Quotient.mk _ (Valuation.diagonalUniformizer places places_inequivalent true)) = 0 ∧

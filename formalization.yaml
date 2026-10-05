@@ -47,17 +47,29 @@ status:
     inclusions, full residue maps and contracted kernels have independent
     empty-, singleton- and duplicate-family clients. For finite pairwise
     inequivalent rank-one families, weak approximation is proved at positive
-    dependent radii in each valuation's restricted value group. It yields
-    surjectivity onto the full residue fields and their product, maximal and
-    pairwise coprime contracted ideals, and quotient equivalences. When these
-    valuations are also discrete, chosen diagonal uniformizers exist. The
-    rational-function example independently establishes discreteness,
+    dependent radii in each valuation's restricted value group and yields
+    surjectivity onto the full residue product and its quotient equivalence.
+    The arbitrary-family unit, canonical algebra/tower, prime-contraction and
+    equivalent-place contraction results are proved. Finite rank-at-most-one
+    denominator, canonical localization, fraction-field and selected nontrivial
+    residue surjectivity statements are proved by reducing to distinct nontrivial
+    equivalence classes. Their instances, individual quotient/maximality results
+    and original explicit-independent individual residue wrappers follow
+    from these proofs.
+    Pairwise coprimality retains the finite, pairwise-inequivalent, rank-one
+    hypotheses and uses distinctness of the contracted maximal ideals.
+    For finite families of pairwise inequivalent rank-one
+    discrete valuations, chosen diagonal uniformizers have independent
+    proofs. Empty, all-trivial, duplicate and mixed trivial/2-adic
+    families provide boundary clients, including a failure of surjectivity and
+    maximality at the trivial selected place. The rational-function example
+    independently establishes discreteness,
     inequivalence, explicit generators and the failure of arbitrary positive
-    ambient radii; its applications instantiate these proved results.
+    ambient radii; its cross-place inverse exercises canonical localization.
     The three earlier mathematical inputs received
     independent agent review and native both-root/complete transitive
     standard-axiom checks, including private/generated declarations. These
-    checks are revision-specific, not certification of later edits. No
+    checks are revision-specific, not certification of these changed proofs. No
     source-specific coverage is asserted.
 review:
   status: Review evidence is revision-specific
@@ -88,6 +100,16 @@ alignment:
     - lean: Valuation.intersectionResidueProduct_surjective
       module: ValuationIntegers/FiniteIntersections.lean
     - lean: Valuation.diagonalUniformizer
+      module: ValuationIntegers/FiniteIntersections.lean
+    - lean: Valuation.isUnit_intersectionSubring_iff
+      module: ValuationIntegers/FiniteIntersections.lean
+    - lean: Valuation.exists_fraction_at_contractedIdeal
+      module: ValuationIntegers/FiniteIntersections.lean
+    - lean: Valuation.intersection_isLocalization_at_contractedIdeal
+      module: ValuationIntegers/FiniteIntersections.lean
+    - lean: Valuation.exists_fraction_intersectionSubring
+      module: ValuationIntegers/FiniteIntersections.lean
+    - lean: Valuation.intersectionResidueMap_surjective_of_rankLeOne
       module: ValuationIntegers/FiniteIntersections.lean
 acknowledgements: >-
   Formal Frontier contributors developed the original proof expressions,

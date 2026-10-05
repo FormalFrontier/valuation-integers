@@ -26,8 +26,11 @@ dependency.
   together with inclusions, full residue maps and contracted kernels. For a
   finite family of pairwise inequivalent rank-one valuations, the module proves
   weak approximation at positive radii in each valuation's restricted value
-  group, and full-residue and product surjectivity; discreteness
-  enters only the diagonal-uniformizer statements. See the
+  group and full-residue-product surjectivity. For arbitrary finite rank-at-most-one
+  families it proves denominator, canonical localization and fraction-field
+  results without independence, and individual residue surjectivity at a
+  selected nontrivial place. Diagonal-uniformizer statements require a finite
+  family of pairwise inequivalent rank-one discrete valuations. See the
   [intersection guide](ValuationIntegers/FiniteIntersections/README.md).
 
 The three rank/dimension statements assume a field `K`, an arbitrary
@@ -79,7 +82,9 @@ and the trivial valuation on `ℚ`. The linked guides give proof outlines,
 specializations and limitations without requiring project research records.
 The intersection clients exercise empty and singleton families, duplicated
 nontrivial valuations, and valuations at distinct linear polynomials over
-`ZMod 2` in a rational-function field.
+`ZMod 2` in a rational-function field. They also distinguish trivial-place
+localization from the false claim of trivial-place residue surjectivity in a
+mixed rational valuation family.
 
 ## Reproduce and verification
 
@@ -130,6 +135,9 @@ and disk requirements were not measured.
 
 ## References
 
+- Fujiwara--Kato, *Foundations of Rigid Geometry I*, Remark 2.2.4(2).
+  Motivation for finite valuation intersections, not an exact source for the
+  generalized rank-at-most-one and trivial-place statements.
 - Stefan Schröer, *A simple proof for Hochster's Theorem*, arXiv:2606.20016v1,
   §2. The antecedent credit to Y. Ershov follows Schröer's presentation;
   Ershov's original text was not consulted.

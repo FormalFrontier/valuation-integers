@@ -8,6 +8,8 @@ public import Mathlib.RingTheory.Valuation.Discrete.RankOne
 public import Mathlib.RingTheory.Ideal.Quotient.ChineseRemainder
 public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 public import Mathlib.Analysis.AbsoluteValue.Equivalence
+public import Mathlib.RingTheory.Localization.AtPrime.Basic
+public import Mathlib.RingTheory.Localization.FractionRing
 
 /-!
 # Intersections of valuation subrings and their full residue fields
@@ -17,6 +19,10 @@ Finite weak approximation is stated at positive radii in each valuation's restri
 group, with full-residue consequences for pairwise inequivalent rank-one valuations.
 Discreteness is needed only for the diagonal-uniformizer statements.
 
+For finite rank-at-most-one families, denominators, canonical localization, fractions and
+individual residue surjectivity at a nontrivial selected place follow by approximating at the
+distinct nontrivial equivalence classes. Trivial places impose no integrality condition.
+
 The valuation-ring and residue-field constructions use Mathlib's valuation-subring and local-ring
 interfaces. The finite-space motivation follows Stefan Schröer's presentation, which credits
 Y. Ershov for an antecedent specialization-valuation strategy; Ershov's original text is not used.
@@ -25,6 +31,9 @@ Y. Ershov for an antecedent specialization-valuation strategy; Ershov's original
 
 * Mathlib contributors, valuation subrings, residue fields, discrete value groups,
   real absolute-value weak approximation and CRT.
+* Fujiwara--Kato, *Foundations of Rigid Geometry I*, Remark 2.2.4(2), for the
+  finite-space motivation; the rank-at-most-one and trivial-place extension is
+  not a source-correspondence claim.
 * Stefan Schröer, *A simple proof for Hochster's Theorem*, arXiv:2606.20016v1, §2,
   with indirect attribution to Y. Ershov, *Spectra of rings and lattices*.
 -/
@@ -91,6 +100,34 @@ theorem intersectionInclusion_injective (i : ι) :
   simpa only [intersectionInclusion_coe] using congrArg
     (fun a : (val i).valuationSubring => (a : K)) h
 
+/-- The inclusion of the intersection into a valuation ring defines its canonical algebra. -/
+instance (i : ι) : Algebra (intersectionSubring val) (val i).valuationSubring :=
+  (intersectionInclusion val i).toAlgebra
+
+@[simp]
+theorem algebraMap_intersectionSubring_apply (i : ι) (x : intersectionSubring val) :
+    algebraMap (intersectionSubring val) (val i).valuationSubring x =
+      intersectionInclusion val i x := rfl
+
+instance (i : ι) : IsScalarTower (intersectionSubring val) (val i).valuationSubring K :=
+  IsScalarTower.of_algebraMap_eq (fun _ => rfl)
+
+/-- A unit of the intersection has value one at every place and is nonzero in the field.
+The nonzero condition remains essential for an empty family. -/
+theorem isUnit_intersectionSubring_iff (x : intersectionSubring val) :
+    IsUnit x ↔ (x : K) ≠ 0 ∧ ∀ i, val i (x : K) = 1 := by
+  rw [Submonoid.isUnit_iff_and]
+  constructor
+  · rintro ⟨hx, hinv⟩
+    refine ⟨hx, fun i => le_antisymm ((mem_intersectionSubring_iff val _).mp x.property i) ?_⟩
+    have hpos : 0 < val i (x : K) := pos_iff_ne_zero.mpr ((val i).ne_zero_iff.mpr hx)
+    have hle := ((mem_intersectionSubring_iff val _).mp hinv i)
+    rw [map_inv] at hle
+    exact (inv_le_one₀ hpos).mp hle
+  · rintro ⟨hx, hval⟩
+    refine ⟨hx, (mem_intersectionSubring_iff val _).mpr (fun i => ?_)⟩
+    rw [map_inv, hval i, inv_one]
+
 /-- Reduction from the common valuation integers to the entire residue field at one index. -/
 noncomputable def intersectionResidueMap (i : ι) :
     intersectionSubring val →+* IsLocalRing.ResidueField (val i).valuationSubring :=
@@ -125,6 +162,9 @@ theorem intersectionResidueProduct_ext {x y : intersectionSubring val}
 noncomputable def contractedIdeal (i : ι) : Ideal (intersectionSubring val) :=
   RingHom.ker (intersectionResidueMap val i)
 
+instance (i : ι) : (contractedIdeal val i).IsPrime :=
+  RingHom.ker_isPrime (intersectionResidueMap val i)
+
 theorem mem_contractedIdeal_iff_residueMap_eq_zero (i : ι) (x : intersectionSubring val) :
     x ∈ contractedIdeal val i ↔ intersectionResidueMap val i x = 0 :=
   RingHom.mem_ker
@@ -135,6 +175,13 @@ theorem mem_contractedIdeal_iff (i : ι) (x : intersectionSubring val) :
   rw [contractedIdeal, RingHom.mem_ker, intersectionResidueMap_apply,
     IsLocalRing.residue_eq_zero_iff, Valuation.mem_maximalIdeal_iff]
   simp
+
+/-- Equivalent valuations contract to the same ideal in their common intersection. -/
+theorem contractedIdeal_eq_of_isEquiv (i j : ι) (h : (val i).IsEquiv (val j)) :
+    contractedIdeal val i = contractedIdeal val j := by
+  ext x
+  exact (mem_contractedIdeal_iff val i x).trans
+    (h.lt_one_iff_lt_one.trans (mem_contractedIdeal_iff val j x).symm)
 
 theorem ker_intersectionResidueProduct :
     RingHom.ker (intersectionResidueProduct val) = ⨅ i, contractedIdeal val i :=
@@ -260,36 +307,397 @@ private theorem exists_integral_approximation (a : ι → K)
     _ ≤ max (val i (x - a i)) (val i (a i)) := (val i).map_add _ _
     _ ≤ 1 := max_le (hdiff i).le (ha i)
 
-/-- Every full residue class at one index has a representative integral at every index. -/
-theorem intersectionResidueMap_surjective (i : ι) :
-    Function.Surjective (intersectionResidueMap val i) := by
+end Finite
+
+private def nontrivialIndices : Type v := {i : ι // (val i).IsNontrivial}
+
+private instance : Setoid (nontrivialIndices val) where
+  r i j := (val i.1).IsEquiv (val j.1)
+  iseqv := by
+    constructor
+    · intro i
+      exact Valuation.IsEquiv.refl
+    · intro i j hij
+      exact Valuation.IsEquiv.symm hij
+    · intro i j k hij hjk
+      exact Valuation.IsEquiv.trans hij hjk
+
+private def nontrivialClasses : Type v := Quotient (inferInstance : Setoid (nontrivialIndices val))
+
+private noncomputable def representative (q : nontrivialClasses val) : ι :=
+  (Quotient.out q : nontrivialIndices val).val
+
+private theorem representative_isEquiv (q : nontrivialClasses val)
+    (j : nontrivialIndices val) (hj : Quotient.mk' j = q) :
+    (val (representative val q)).IsEquiv (val j.val) :=
+  Quotient.exact ((Quotient.out_eq q).trans hj.symm)
+
+private theorem exists_approximation_nontrivial [Finite ι] [∀ j, (val j).RankLeOne]
+    (center bound : nontrivialClasses val → K) (hbound : ∀ q, bound q ≠ 0) :
+    ∃ x : K, ∀ j : nontrivialIndices val,
+      val j.val (x - center (Quotient.mk' j)) <
+        val j.val (bound (Quotient.mk' j)) := by
   classical
+  have : ∀ q : nontrivialClasses val, (val (representative val q)).RankOne := fun q =>
+    RankLeOne.rankOne_of_exists (val (representative val q)) (by
+      have : (val (representative val q)).IsNontrivial := (Quotient.out q).property
+      obtain ⟨x, hx, hlt⟩ := IsNontrivial.exists_lt_one (v := val (representative val q))
+      exact ⟨x, hx, hlt.ne⟩)
+  have : Finite (nontrivialIndices val) :=
+    Finite.of_injective (fun j : nontrivialIndices val => j.val) Subtype.val_injective
+  have : Finite (nontrivialClasses val) := Finite.of_surjective
+    (Quotient.mk' : nontrivialIndices val → nontrivialClasses val) Quotient.mk'_surjective
+  have hdist : Pairwise fun p q : nontrivialClasses val =>
+      ¬(val (representative val p)).IsEquiv (val (representative val q)) := by
+    intro p q hp heq
+    have h : (Quotient.mk' (Quotient.out p) : nontrivialClasses val) =
+        Quotient.mk' (Quotient.out q) := Quotient.sound heq
+    exact hp ((Quotient.out_eq p).symm.trans (h.trans (Quotient.out_eq q)))
+  obtain ⟨x, hx⟩ := exists_approximation (fun q => val (representative val q))
+    hdist center (fun q => (val (representative val q)).restrict (bound q))
+    (fun q => (Valuation.restrict_pos_iff _ _).mpr
+      (pos_iff_ne_zero.mpr ((val (representative val q)).ne_zero_iff.mpr (hbound q))))
+  refine ⟨x, fun j => ?_⟩
+  exact ((representative_isEquiv val (Quotient.mk' j) j rfl).lt_iff_lt).mp
+    ((val (representative val (Quotient.mk' j))).restrict_lt_iff.mp (hx (Quotient.mk' j)))
+
+private def denominatorBound (v : Valuation K Γ₀) (b : K) : K :=
+  if v b ≤ 1 then 1 else b⁻¹
+
+private theorem denominatorBound_spec (v : Valuation K Γ₀) (b : K) :
+    denominatorBound v b ≠ 0 ∧ v (denominatorBound v b) ≤ 1 ∧
+      v (denominatorBound v b * b) ≤ 1 := by
+  by_cases hb : v b ≤ 1
+  · refine ⟨by simp [denominatorBound, hb], by simp [denominatorBound, hb], ?_⟩
+    simpa only [denominatorBound, ite_eq_left hb, one_mul] using hb
+  · have hb0 : b ≠ 0 := by
+      intro hzero
+      exact hb (by simp [hzero])
+    have hpos : 0 < v b := pos_iff_ne_zero.mpr ((v.ne_zero_iff).mpr hb0)
+    simp only [denominatorBound, ite_eq_right hb]
+    refine ⟨inv_ne_zero hb0, ?_, ?_⟩
+    · rw [map_inv]
+      exact (inv_le_one₀ hpos).mpr (le_of_lt (lt_of_not_ge hb))
+    · rw [inv_mul_cancel₀ hb0, map_one]
+
+private theorem mem_intersectionSubring_iff_nontrivialClasses
+    (x : K) : x ∈ intersectionSubring val ↔
+      ∀ q : nontrivialClasses val, val (representative val q) x ≤ 1 := by
+  constructor
+  · intro hx q
+    exact (mem_intersectionSubring_iff val x).mp hx (representative val q)
+  · intro hx
+    apply (mem_intersectionSubring_iff val x).mpr
+    intro i
+    by_cases hi : (val i).IsNontrivial
+    · let j : nontrivialIndices val := ⟨i, hi⟩
+      exact ((representative_isEquiv val (Quotient.mk' j) j rfl).le_one_iff_le_one).mp
+        (hx (Quotient.mk' j))
+    · by_contra hle
+      exact hi (Valuation.IsNontrivial_iff_exists_one_lt.mpr
+        ⟨x, lt_of_not_ge hle⟩)
+
+private theorem exists_denominator_intersection [Finite ι] [∀ j, (val j).RankLeOne]
+    (z : K) : ∃ s : intersectionSubring val, (s : K) ≠ 0 ∧
+      (s : K) * z ∈ intersectionSubring val := by
+  classical
+  by_cases hclasses : Nonempty (nontrivialClasses val)
+  · let chosen := Classical.choice hclasses
+    let bound (q : nontrivialClasses val) : K :=
+      denominatorBound (val (representative val q)) z
+    let center (q : nontrivialClasses val) : K := if q = chosen then bound q else 0
+    obtain ⟨s, hs⟩ := exists_approximation_nontrivial val center bound
+      (fun q => (denominatorBound_spec (val (representative val q)) z).1)
+    have hrep (q : nontrivialClasses val) :
+        val (representative val q) (s - center q) <
+          val (representative val q) (bound q) := by
+      have h := hs (Quotient.out q)
+      have hmk : (Quotient.mk' (Quotient.out q) : nontrivialClasses val) = q :=
+        Quotient.out_eq q
+      rw [hmk] at h
+      exact h
+    have hsbound (q : nontrivialClasses val) :
+        val (representative val q) s ≤ val (representative val q) (bound q) := by
+      by_cases hq : q = chosen
+      · have heq : val (representative val q) s =
+            val (representative val q) (bound q) := by
+          apply (val (representative val q)).map_eq_of_sub_lt
+          simpa only [center, ite_eq_left hq] using hrep q
+        exact heq.le
+      · simpa only [center, ite_eq_right hq, sub_zero] using (hrep q).le
+    have hs0 : s ≠ 0 := by
+      have heq : val (representative val chosen) s =
+          val (representative val chosen) (bound chosen) := by
+        apply (val (representative val chosen)).map_eq_of_sub_lt
+        simpa only [center, ite_eq_left rfl] using hrep chosen
+      intro hzero
+      have hbval : val (representative val chosen) (bound chosen) ≠ 0 :=
+        (val (representative val chosen)).ne_zero_iff.mpr
+          (denominatorBound_spec (val (representative val chosen)) z).1
+      rw [← heq, hzero, map_zero] at hbval
+      exact hbval rfl
+    have hsint : s ∈ intersectionSubring val :=
+      (mem_intersectionSubring_iff_nontrivialClasses val s).mpr
+        (fun q => (hsbound q).trans (denominatorBound_spec _ z).2.1)
+    have hszint : s * z ∈ intersectionSubring val :=
+      (mem_intersectionSubring_iff_nontrivialClasses val (s * z)).mpr (fun q => by
+        calc
+          val (representative val q) (s * z) =
+              val (representative val q) s * val (representative val q) z :=
+                (val (representative val q)).map_mul s z
+          _ ≤ val (representative val q) (bound q) *
+              val (representative val q) z :=
+                mul_le_mul_of_nonneg_right (hsbound q)
+                  (zero_le (a := val (representative val q) z))
+          _ = val (representative val q) (bound q * z) :=
+                ((val (representative val q)).map_mul (bound q) z).symm
+          _ ≤ 1 := (denominatorBound_spec _ z).2.2)
+    exact ⟨⟨s, hsint⟩, hs0, hszint⟩
+  · have hint (x : K) : x ∈ intersectionSubring val :=
+      (mem_intersectionSubring_iff_nontrivialClasses val x).mpr
+        (fun q => (hclasses ⟨q⟩).elim)
+    exact ⟨⟨1, hint 1⟩, by simp, by simpa only [one_mul] using hint z⟩
+
+private theorem exists_denominator_at_nontrivial [Finite ι] [∀ j, (val j).RankLeOne]
+    (i : ι) [(val i).IsNontrivial] (b : (val i).valuationSubring) :
+    ∃ s : K, s ∈ intersectionSubring val ∧ s * (b : K) ∈ intersectionSubring val ∧
+      val i (s - 1) < 1 := by
+  classical
+  let selected : nontrivialIndices val := ⟨i, inferInstance⟩
+  let chosen : nontrivialClasses val := Quotient.mk' selected
+  let bound (q : nontrivialClasses val) : K :=
+    if q = chosen then 1 else denominatorBound (val (representative val q)) (b : K)
+  let center (q : nontrivialClasses val) : K := if q = chosen then 1 else 0
+  have hbound (q : nontrivialClasses val) : bound q ≠ 0 := by
+    by_cases hq : q = chosen
+    · simp [bound, hq]
+    · simpa only [bound, ite_eq_right hq] using
+        (denominatorBound_spec (val (representative val q)) (b : K)).1
+  obtain ⟨s, hs⟩ := exists_approximation_nontrivial val center bound hbound
+  have hrep (q : nontrivialClasses val) :
+      val (representative val q) (s - center q) <
+        val (representative val q) (bound q) := by
+    have h := hs (Quotient.out q)
+    have hmk : (Quotient.mk' (Quotient.out q) : nontrivialClasses val) = q :=
+      Quotient.out_eq q
+    rw [hmk] at h
+    exact h
+  have hb : val i (b : K) ≤ 1 := by
+    simpa only [Valuation.mem_valuationSubring_iff] using b.property
+  have hselected (q : nontrivialClasses val) (hq : q = chosen) :
+      val (representative val q) (b : K) ≤ 1 := by
+    subst q
+    exact ((representative_isEquiv val chosen selected rfl).le_one_iff_le_one).mpr hb
+  have hval (q : nontrivialClasses val) :
+      val (representative val q) s ≤ 1 ∧
+        val (representative val q) (s * (b : K)) ≤ 1 := by
+    by_cases hq : q = chosen
+    · have hclose : val (representative val q) (s - 1) < 1 := by
+        simpa [center, bound, hq] using hrep q
+      have heq : val (representative val q) s = 1 := by
+        simpa only [map_one] using (val (representative val q)).map_eq_of_sub_lt
+          (x := (1 : K)) (y := s) (by simpa only [map_one] using hclose)
+      refine ⟨heq.le, ?_⟩
+      rw [map_mul, heq, one_mul]
+      exact hselected q hq
+    · have ht := denominatorBound_spec (val (representative val q)) (b : K)
+      have hsmall : val (representative val q) s <
+          val (representative val q) (denominatorBound
+            (val (representative val q)) (b : K)) := by
+        simpa [center, bound, hq] using hrep q
+      refine ⟨hsmall.le.trans ht.2.1, ?_⟩
+      calc
+        val (representative val q) (s * (b : K)) =
+            val (representative val q) s * val (representative val q) (b : K) :=
+              (val (representative val q)).map_mul s (b : K)
+        _ ≤ val (representative val q)
+            (denominatorBound (val (representative val q)) (b : K)) *
+              val (representative val q) (b : K) :=
+                mul_le_mul_of_nonneg_right hsmall.le
+                  (zero_le (a := val (representative val q) (b : K)))
+        _ = val (representative val q)
+            (denominatorBound (val (representative val q)) (b : K) * (b : K)) :=
+              ((val (representative val q)).map_mul _ _).symm
+        _ ≤ 1 := ht.2.2
+  refine ⟨s, (mem_intersectionSubring_iff_nontrivialClasses val s).mpr
+    (fun q => (hval q).1),
+    (mem_intersectionSubring_iff_nontrivialClasses val (s * (b : K))).mpr
+    (fun q => (hval q).2), ?_⟩
+  have h := hs selected
+  change val i (s - center chosen) < val i (bound chosen) at h
+  simpa only [center, bound, ite_eq_left rfl, map_one] using h
+
+section FiniteRankLeOne
+
+variable [Finite ι] [∀ j, (val j).RankLeOne]
+
+/-- Clearing denominators away from the selected contracted prime in a finite intersection.
+The other places may be trivial, equivalent or inequivalent. -/
+theorem exists_fraction_at_contractedIdeal (i : ι) (b : (val i).valuationSubring) :
+    ∃ (a s : intersectionSubring val), s ∉ contractedIdeal val i ∧
+      (a : K) = (s : K) * (b : K) := by
+  classical
+  by_cases hi : (val i).IsNontrivial
+  · have : (val i).IsNontrivial := hi
+    obtain ⟨s, hs, hsb, hclose⟩ := exists_denominator_at_nontrivial val i b
+    have hsval : val i s = 1 := by
+      simpa only [map_one] using (val i).map_eq_of_sub_lt
+        (x := (1 : K)) (y := s) (by simpa only [map_one] using hclose)
+    refine ⟨⟨s * (b : K), hsb⟩, ⟨s, hs⟩, ?_, rfl⟩
+    rw [mem_contractedIdeal_iff]
+    exact not_lt.mpr hsval.ge
+  · obtain ⟨s, hs0, hsb⟩ := exists_denominator_intersection val (b : K)
+    have hsval : val i (s : K) = 1 := by
+      by_contra h
+      exact hi ⟨(s : K), (val i).ne_zero_iff.mpr hs0, h⟩
+    refine ⟨⟨(s : K) * (b : K), hsb⟩, s, ?_, rfl⟩
+    rw [mem_contractedIdeal_iff]
+    exact not_lt.mpr hsval.ge
+
+/-- The denominator equation in the valuation ring, expressed through the canonical map. -/
+theorem exists_fraction_at_contractedIdeal_algebra (i : ι)
+    (b : (val i).valuationSubring) :
+    ∃ (a s : intersectionSubring val), s ∉ contractedIdeal val i ∧
+      b * algebraMap (intersectionSubring val) (val i).valuationSubring s =
+        algebraMap (intersectionSubring val) (val i).valuationSubring a := by
+  obtain ⟨a, s, hs, heq⟩ := exists_fraction_at_contractedIdeal val i b
+  refine ⟨a, s, hs, ?_⟩
+  apply Subtype.ext
+  change (b : K) * (s : K) = (a : K)
+  simpa only [mul_comm] using heq.symm
+
+/-- The canonical inclusion realizes each valuation ring as the localization at its
+contracted prime, including a trivial selected valuation. -/
+theorem intersection_isLocalization_at_contractedIdeal (i : ι) :
+    IsLocalization.AtPrime (val i).valuationSubring (contractedIdeal val i) := by
+  change IsLocalization (contractedIdeal val i).primeCompl (val i).valuationSubring
+  apply (isLocalization_iff _ _).mpr
+  refine ⟨?_, ?_, ?_⟩
+  · intro s
+    apply ((val i).valuationSubring.valuation_eq_one_iff _).mpr
+    apply (isEquiv_valuation_valuationSubring (val i)).eq_one_iff_eq_one.mp
+    have hle : val i (s : K) ≤ 1 :=
+      (mem_intersectionSubring_iff val _).mp s.val.property i
+    have hnot : ¬val i (s : K) < 1 := by
+      simpa only [Ideal.mem_primeCompl_iff, mem_contractedIdeal_iff] using s.property
+    exact le_antisymm hle (le_of_not_gt hnot)
+  · intro b
+    obtain ⟨a, s, hs, heq⟩ := exists_fraction_at_contractedIdeal_algebra val i b
+    exact ⟨⟨a, ⟨s, hs⟩⟩, heq⟩
+  · intro a b hab
+    refine ⟨1, ?_⟩
+    have h : a = b := (intersectionInclusion_injective val i) hab
+    simp [h]
+
+instance (i : ι) : IsLocalization.AtPrime (val i).valuationSubring
+    (contractedIdeal val i) :=
+  intersection_isLocalization_at_contractedIdeal val i
+
+@[simp]
+theorem intersectionLocalization_fraction_coe (i : ι) (a : intersectionSubring val)
+    (s : (contractedIdeal val i).primeCompl) :
+    ((IsLocalization.mk' (val i).valuationSubring a s :
+      (val i).valuationSubring) : K) = (a : K) / (s : K) := by
+  have hs : (s : K) ≠ 0 := by
+    intro hzero
+    exact s.property ((mem_contractedIdeal_iff val i s).mpr (by simp [hzero]))
+  have hspec := IsLocalization.mk'_spec (val i).valuationSubring a s
+  have hmul : ((IsLocalization.mk' (val i).valuationSubring a s :
+      (val i).valuationSubring) : K) * (s : K) = (a : K) := by
+    have h := congrArg (fun b : (val i).valuationSubring => (b : K)) hspec
+    change ((IsLocalization.mk' (val i).valuationSubring a s :
+      (val i).valuationSubring) : K) * (s : K) = (a : K) at h
+    exact h
+  exact (eq_div_iff hs).mpr hmul
+
+/-- Every element of the ambient field is a fraction of common valuation integers. -/
+theorem exists_fraction_intersectionSubring (z : K) :
+    ∃ (a s : intersectionSubring val), (s : K) ≠ 0 ∧
+      z = (a : K) / (s : K) := by
+  obtain ⟨s, hs0, hsz⟩ := exists_denominator_intersection val z
+  refine ⟨⟨(s : K) * z, hsz⟩, s, hs0, ?_⟩
+  exact (eq_div_iff hs0).mpr (mul_comm z (s : K))
+
+instance : IsFractionRing (intersectionSubring val) K := by
+  apply IsFractionRing.of_field
+  intro z
+  obtain ⟨a, s, _, hz⟩ := exists_fraction_intersectionSubring val z
+  exact ⟨a, s, hz⟩
+
+variable (i : ι) [(val i).IsNontrivial]
+
+/-- A nontrivial selected valuation's entire residue field is reached without independence
+or nontriviality assumptions on the other places. -/
+theorem intersectionResidueMap_surjective_of_rankLeOne :
+    Function.Surjective (intersectionResidueMap val i) := by
   intro y
   obtain ⟨b, rfl⟩ := IsLocalRing.residue_surjective y
-  let center (j : ι) : K := if j = i then (b : K) else 0
-  have hcenter (j : ι) : val j (center j) ≤ 1 := by
-    by_cases h : j = i
-    · subst j
-      simpa only [center, ↓reduceIte] using
-        (Valuation.mem_valuationSubring_iff (val i) (b : K)).mp b.property
-    · simp [center, h]
-  obtain ⟨x, hx⟩ := exists_integral_approximation val hindep center hcenter
-  refine ⟨x, ?_⟩
-  have hdiff : val i ((x : K) - b) < 1 := by simpa only [center, ↓reduceIte] using hx i
-  have hker : (intersectionInclusion val i x - b) ∈
+  obtain ⟨s, hs, hsb, hclose⟩ := exists_denominator_at_nontrivial val i b
+  let a : intersectionSubring val := ⟨s * (b : K), hsb⟩
+  refine ⟨a, ?_⟩
+  have hb : val i (b : K) ≤ 1 := by
+    simpa only [Valuation.mem_valuationSubring_iff] using b.property
+  have hdiff : val i ((a : K) - (b : K)) < 1 := by
+    have heq : ((a : K) - (b : K)) = (s - 1) * (b : K) := by
+      change s * (b : K) - (b : K) = (s - 1) * (b : K)
+      ring
+    rw [heq, map_mul]
+    calc
+      val i (s - 1) * val i (b : K) ≤ val i (s - 1) * 1 :=
+        mul_le_mul_of_nonneg_left hb (zero_le (a := val i (s - 1)))
+      _ = val i (s - 1) := mul_one _
+      _ < 1 := hclose
+  have hker : (intersectionInclusion val i a - b) ∈
       IsLocalRing.maximalIdeal (val i).valuationSubring := by
     rw [Valuation.mem_maximalIdeal_iff]
     exact hdiff
-  have heq : IsLocalRing.residue _ (intersectionInclusion val i x) =
+  have heq : IsLocalRing.residue _ (intersectionInclusion val i a) =
       IsLocalRing.residue _ b := by
     rw [IsLocalRing.residue_def, IsLocalRing.residue_def]
     exact Ideal.Quotient.eq.mpr hker
-  simpa only [intersectionResidueMap_apply] using heq
+  exact heq
 
+/-- The contracted ideal at a nontrivial place is maximal. -/
+theorem contractedIdeal_isMaximal_of_rankLeOne :
+    (contractedIdeal val i).IsMaximal :=
+  RingHom.ker_isMaximal_of_surjective _
+    (intersectionResidueMap_surjective_of_rankLeOne val i)
+
+/-- Quotient by the contracted ideal at a nontrivial place gives its full residue field. -/
+noncomputable def quotientContractedIdealEquivOfRankLeOne :
+    intersectionSubring val ⧸ contractedIdeal val i ≃+*
+      IsLocalRing.ResidueField (val i).valuationSubring :=
+  RingHom.quotientKerEquivOfSurjective (intersectionResidueMap_surjective_of_rankLeOne val i)
+
+@[simp]
+theorem quotientContractedIdealEquivOfRankLeOne_mk (x : intersectionSubring val) :
+    quotientContractedIdealEquivOfRankLeOne val i (Ideal.Quotient.mk _ x) =
+      intersectionResidueMap val i x := rfl
+
+end FiniteRankLeOne
+
+section Finite
+
+variable [Finite ι] [∀ i, (val i).RankOne]
+  (hindep : Pairwise fun i j => ¬(val i).IsEquiv (val j))
+
+include hindep
+
+omit hindep in
+/-- Every full residue class at one index has a representative integral at every index. -/
+@[deprecated intersectionResidueMap_surjective_of_rankLeOne (since := "2026-10-05")]
+theorem intersectionResidueMap_surjective (_hindep : Pairwise fun i j =>
+    ¬(val i).IsEquiv (val j)) (i : ι) :
+    Function.Surjective (intersectionResidueMap val i) :=
+  intersectionResidueMap_surjective_of_rankLeOne val i
+
+omit hindep in
 /-- Each contracted residue kernel is maximal. -/
-theorem contractedIdeal_isMaximal (i : ι) :
-    (contractedIdeal val i).IsMaximal := by
-  exact RingHom.ker_isMaximal_of_surjective _ (intersectionResidueMap_surjective val hindep i)
+@[deprecated contractedIdeal_isMaximal_of_rankLeOne (since := "2026-10-05")]
+theorem contractedIdeal_isMaximal (_hindep : Pairwise fun i j =>
+    ¬(val i).IsEquiv (val j)) (i : ι) :
+    (contractedIdeal val i).IsMaximal :=
+  contractedIdeal_isMaximal_of_rankLeOne val i
 
 /-- Inequivalent rank-one valuations give distinct contracted maximal ideals. -/
 theorem contractedIdeal_injective : Function.Injective (contractedIdeal val) := by
@@ -316,8 +724,8 @@ theorem contractedIdeal_pairwise_isCoprime :
     Pairwise (fun i j => IsCoprime (contractedIdeal val i) (contractedIdeal val j)) := by
   intro i j hij
   rw [Ideal.isCoprime_iff_codisjoint, codisjoint_iff]
-  exact (contractedIdeal_isMaximal val hindep i).coprime_of_ne
-    (contractedIdeal_isMaximal val hindep j)
+  exact (contractedIdeal_isMaximal_of_rankLeOne val i).coprime_of_ne
+    (contractedIdeal_isMaximal_of_rankLeOne val j)
     (fun heq => hij ((contractedIdeal_injective val hindep) heq))
 
 /-- The map to the product of entire residue fields is onto. -/
@@ -342,17 +750,26 @@ theorem intersectionResidueProduct_surjective :
   simpa only [intersectionResidueProduct_apply, intersectionResidueMap_apply,
     hb i] using heq
 
+omit hindep in
 /-- Quotient by an individual contracted kernel identifies with its entire residue field. -/
-noncomputable def quotientContractedIdealEquiv (i : ι) :
+noncomputable def quotientContractedIdealEquiv (_hindep : Pairwise fun i j =>
+    ¬(val i).IsEquiv (val j)) (i : ι) :
     intersectionSubring val ⧸ contractedIdeal val i ≃+*
       IsLocalRing.ResidueField (val i).valuationSubring :=
-  RingHom.quotientKerEquivOfSurjective (intersectionResidueMap_surjective val hindep i)
+  quotientContractedIdealEquivOfRankLeOne val i
 
+omit hindep in
 @[simp]
-theorem quotientContractedIdealEquiv_mk (i : ι) (x : intersectionSubring val) :
+theorem quotientContractedIdealEquiv_mk (hindep : Pairwise fun i j =>
+    ¬(val i).IsEquiv (val j)) (i : ι) (x : intersectionSubring val) :
     quotientContractedIdealEquiv val hindep i (Ideal.Quotient.mk _ x) =
       intersectionResidueMap val i x := by
-  rfl
+  exact quotientContractedIdealEquivOfRankLeOne_mk val i x
+
+attribute [deprecated quotientContractedIdealEquivOfRankLeOne (since := "2026-10-05")]
+  quotientContractedIdealEquiv
+attribute [deprecated quotientContractedIdealEquivOfRankLeOne_mk (since := "2026-10-05")]
+  quotientContractedIdealEquiv_mk
 
 /-- Quotient by the joint residue kernel identifies with the full residue product. -/
 noncomputable def quotientIntersectionResidueProductEquiv :
