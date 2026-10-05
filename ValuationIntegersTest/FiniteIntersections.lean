@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 module
 
 public import ValuationIntegers.FiniteIntersections
+public import ValuationIntegers.FiniteIntersections.PrimeIdeals
 public import Mathlib.NumberTheory.Padics.PadicNumbers
 
 /-!
@@ -28,6 +29,22 @@ private instance : Fact (Nat.Prime 2) := ⟨by decide⟩
 private def emptyValuations : Empty → Valuation ℚ ℤᵐ⁰ := Empty.elim
 
 private instance (i : Empty) : (emptyValuations i).RankLeOne := i.elim
+
+private theorem empty_field : IsField (Valuation.intersectionSubring emptyValuations) := by
+  rw [Valuation.intersectionSubring_eq_top]
+  exact (Subring.topEquiv (R := ℚ)).toMulEquiv.isField (Field.toIsField ℚ)
+
+private theorem empty_zero_maximal :
+    (⊥ : Ideal (Valuation.intersectionSubring emptyValuations)).IsMaximal :=
+  Ring.isField_iff_maximal_bot.mp empty_field
+
+private theorem empty_prime_iff (P : Ideal (Valuation.intersectionSubring emptyValuations)) :
+    P.IsPrime ↔ P = ⊥ := by
+  simpa using (Valuation.isPrime_iff_eq_bot_or_contractedIdeal emptyValuations P)
+
+private theorem empty_maximal_iff (M : Ideal (Valuation.intersectionSubring emptyValuations)) :
+    M.IsMaximal ↔ M = ⊥ := by
+  simpa using (Valuation.isMaximal_iff_eq_bot_or_contractedIdeal emptyValuations M)
 
 private example : Valuation.intersectionSubring emptyValuations = ⊤ :=
   Valuation.intersectionSubring_eq_top _
@@ -114,6 +131,11 @@ private theorem duplicated_individual_quotient_lift (y :
 private example : Valuation.contractedIdeal duplicatedValuations true =
     Valuation.contractedIdeal duplicatedValuations false := rfl
 
+private theorem duplicated_contracted_not_injective :
+    ¬Function.Injective (Valuation.contractedIdeal duplicatedValuations) := by
+  intro hinj
+  exact (by decide : true ≠ false) (hinj rfl)
+
 /-- Duplicating the 2-adic valuation yields a proper diagonal residue image. -/
 theorem duplicatedPadic_residueProduct_not_surjective : ¬Function.Surjective
     (Valuation.intersectionResidueProduct (fun _ : Bool => Rat.padicValuation 2)) := by
@@ -154,6 +176,33 @@ private theorem allTrivial_intersection_eq_top :
   ext x
   simp [Valuation.mem_intersectionSubring_iff, trivialValuations,
     Valuation.one_apply_le_one]
+
+private theorem allTrivial_field : IsField (Valuation.intersectionSubring trivialValuations) := by
+  rw [allTrivial_intersection_eq_top]
+  exact (Subring.topEquiv (R := ℚ)).toMulEquiv.isField (Field.toIsField ℚ)
+
+private theorem allTrivial_zero_maximal :
+    (⊥ : Ideal (Valuation.intersectionSubring trivialValuations)).IsMaximal :=
+  Ring.isField_iff_maximal_bot.mp allTrivial_field
+
+private theorem allTrivial_zero_contracts :
+    ∃ b, (⊥ : Ideal (Valuation.intersectionSubring trivialValuations)) =
+      Valuation.contractedIdeal trivialValuations b :=
+  Valuation.exists_contractedIdeal_of_isMaximal trivialValuations allTrivial_zero_maximal
+
+private theorem allTrivial_trivial (b : Bool) : ¬(trivialValuations b).IsNontrivial := by
+  classical
+  exact Valuation.not_isNontrivial_one
+
+private theorem allTrivial_field_criterion :
+    ∀ b, ¬(trivialValuations b).IsNontrivial :=
+  (Valuation.isField_intersectionSubring_iff trivialValuations).mp allTrivial_field
+
+private theorem allTrivial_contractedIdeal_eq_bot (b : Bool) :
+    Valuation.contractedIdeal trivialValuations b = ⊥ := by
+  ext x
+  simp [Valuation.mem_contractedIdeal_iff, trivialValuations,
+    Valuation.one_apply_lt_one_iff]
 
 private theorem allTrivial_zero_not_unit :
     ¬ IsUnit (0 : Valuation.intersectionSubring trivialValuations) := by
@@ -254,6 +303,11 @@ private theorem mixed_trivial_ideal_eq_bot :
   simp [Valuation.mem_contractedIdeal_iff, mixedValuations,
     Valuation.one_apply_lt_one_iff]
 
+private theorem mixed_trivial_criterion :
+    Valuation.contractedIdeal mixedValuations true = ⊥ ↔
+      ¬(mixedValuations true).IsNontrivial :=
+  Valuation.contractedIdeal_eq_bot_iff mixedValuations true
+
 private theorem mixed_padic_ideal_ne_bot :
     Valuation.contractedIdeal mixedValuations false ≠ ⊥ := by
   let a : Valuation.intersectionSubring mixedValuations :=
@@ -287,6 +341,12 @@ private theorem mixedPadic_trivialIdeal_not_maximal :
   have heq : Valuation.contractedIdeal mixedValuations true =
       Valuation.contractedIdeal mixedValuations false := hmax.eq_of_le hproper hle
   exact mixed_padic_ideal_ne_bot (heq.symm.trans mixed_trivial_ideal_eq_bot)
+
+private theorem mixed_nonzero_prime_maximal
+    {P : Ideal (Valuation.intersectionSubring mixedValuations)}
+    (hP : P.IsPrime) (hP0 : P ≠ ⊥) : P.IsMaximal :=
+  (Ring.krullDimLE_one_iff_of_noZeroDivisors.mp
+    (Valuation.krullDimLE_one mixedValuations)) P hP0 hP
 
 /-- Adding a trivial place to the 2-adic place does not make its full residue map onto:
 the element `1/2` is integral at the trivial place but not in the intersection. -/

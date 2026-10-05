@@ -56,6 +56,14 @@ status:
     equivalence classes. Their instances, individual quotient/maximality results
     and original explicit-independent individual residue wrappers follow
     from these proofs.
+    For nonempty finite families every maximal ideal is contracted without a
+    rank restriction; the converse can fail at higher rank. For finite
+    pointwise rank-at-most-one families, every prime is zero or contracted,
+    and the intersection has Krull dimension at most one, including empty
+    families. Zero is maximal exactly when all places are trivial; nontrivial
+    selected places yield maximal contracted ideals, while a trivial place in
+    a mixed family contracts to nonmaximal zero. Repeated valuations may yield
+    equal contractions.
     Pairwise coprimality retains the finite, pairwise-inequivalent, rank-one
     hypotheses and uses distinctness of the contracted maximal ideals.
     For finite families of pairwise inequivalent rank-one

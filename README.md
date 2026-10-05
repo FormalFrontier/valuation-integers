@@ -33,6 +33,15 @@ dependency.
   family of pairwise inequivalent rank-one discrete valuations. See the
   [intersection guide](ValuationIntegers/FiniteIntersections/README.md).
 
+The results in
+[`ValuationIntegers.FiniteIntersections.PrimeIdeals`](ValuationIntegers/FiniteIntersections/PrimeIdeals.lean)
+prove that every maximal ideal of a nonempty finite valuation intersection is
+contracted, regardless of rank. For finite pointwise rank-at-most-one families
+they classify all prime and maximal ideals, characterize the all-trivial field
+case and prove a dimension-at-most-one bound, including the empty family and
+repeated or trivial places. The preceding intersection, localization and
+individual valuation-integer dimension results retain their independent proofs.
+
 The three rank/dimension statements assume a field `K`, an arbitrary
 `[LinearOrderedCommGroupWithZero Γ₀]`, a valuation
 `val : Valuation K Γ₀`, and a commutative local ring `O` with `[Algebra O K]`
@@ -50,7 +59,8 @@ membership and nonzero `y`.
 ## Use and navigation
 
 `import ValuationIntegers` exports the rank/dimension results and the intersection
-API; alternatively import
+API, including the finite-intersection classification results;
+alternatively import
 `ValuationIntegers.RankLeOnePower` or
 `ValuationIntegers.RankLeOneDimension` or
 `ValuationIntegers.RankLeOneConverse` individually. The forward dimension

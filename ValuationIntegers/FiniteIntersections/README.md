@@ -20,6 +20,17 @@ for the empty family. Canonical algebra and scalar-tower instances realize
 `intersectionInclusion` as the algebra map. Each contracted ideal is prime,
 and equivalent valuations contract to the same ideal, without rank assumptions.
 
+The additional [prime-ideal declarations](PrimeIdeals.lean) describe finite
+families without imposing independence: with a nonempty index type, any maximal
+ideal is contracted from a place, regardless of its rank. For finite pointwise
+rank-at-most-one families, the classification allows zero and the
+contracted ideals as primes; the maximal ideals are zero in the all-trivial
+case (including an empty family), or contracted ideals at nontrivial places.
+The classification and dimension-at-most-one bound are proved using the
+arbitrary-family unit criterion, canonical localization and the dimension
+bound for rank-at-most-one valuation integers. The existing approximation,
+localization and residue results described here retain their independent proofs.
+
 With `[Finite ι]`, pointwise rank-one valuations, and pairwise inequivalence
 in Mathlib's `Valuation.IsEquiv` sense, `Valuation.exists_approximation`
 takes dependent radii `radius : ∀ i, MonoidWithZeroHom.ValueGroup₀ (.ofClass (val i))`, positive
@@ -86,8 +97,11 @@ Mathlib supplies the valuation subrings, full residue fields, discrete value
 groups and finite CRT. Fujiwara--Kato, *Foundations of Rigid Geometry I*,
 Remark 2.2.4(2), motivates finite valuation intersections but does not supply
 the exact generalized rank-at-most-one statement claimed here. The finite-space
-strategy also follows Stefan Schröer's
-presentation, which itself attributes the antecedent specialization-valuation
-strategy to Y. Ershov; Ershov's original text is not used here. These results
-concern the field and its valuation rings alone, not a neighborhood topology,
-a coefficient-field reduction or a classification of all prime ideals.
+strategy also follows Stefan Schröer, *A simple proof for Hochster's Theorem*,
+§2, which attributes the antecedent specialization-valuation strategy to
+Y. Ershov; Ershov's original text is not used here. The earlier proved
+localization, approximation and residue results concern the field and its
+valuation rings alone, not a neighborhood topology or a coefficient-field
+reduction; by themselves they do not classify all prime ideals. The
+prime-ideal module proves such a classification for finite pointwise
+rank-at-most-one families, including the empty and trivial-place cases.

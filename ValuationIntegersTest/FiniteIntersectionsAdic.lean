@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 module
 
 public import ValuationIntegers.FiniteIntersections
+public import ValuationIntegers.FiniteIntersections.PrimeIdeals
 public import Mathlib.Logic.Pairwise
 public import Mathlib.FieldTheory.RatFunc.Basic
 public import Mathlib.FieldTheory.RatFunc.Valuation
@@ -119,6 +120,66 @@ private theorem adic_linear_other {a b : Coeff} (hab : a ≠ b) :
     exact hab hba.symm
   exact (atLinear b).valuation_eq_one_iff_notMem.mpr hnot
 
+private theorem linear_integral (a : Coeff) (b : Bool) :
+    places b (linearElement a) ≤ 1 := by
+  change adic (if b then 0 else 1) (linearElement a) ≤ 1
+  by_cases hab : a = if b then 0 else 1
+  · rw [← hab]
+    exact (adic_linear_self a).val_lt_one.le
+  · exact le_of_eq (adic_linear_other hab)
+
+private noncomputable def linearInteger (a : Coeff) :
+    Valuation.intersectionSubring places :=
+  ⟨linearElement a, (Valuation.mem_intersectionSubring_iff places _).mpr
+    (linear_integral a)⟩
+
+private theorem linearZero_mem_first :
+    linearInteger 0 ∈ Valuation.contractedIdeal places true := by
+  rw [Valuation.mem_contractedIdeal_iff]
+  change adic 0 (linearElement 0) < 1
+  exact (adic_linear_self 0).val_lt_one
+
+private theorem linearZero_not_second :
+    linearInteger 0 ∉ Valuation.contractedIdeal places false := by
+  rw [Valuation.mem_contractedIdeal_iff]
+  change ¬adic 1 (linearElement 0) < 1
+  rw [adic_linear_other (by decide : (0 : Coeff) ≠ 1)]
+  exact not_lt_of_ge le_rfl
+
+private theorem linearOne_mem_second :
+    linearInteger 1 ∈ Valuation.contractedIdeal places false := by
+  rw [Valuation.mem_contractedIdeal_iff]
+  change adic 1 (linearElement 1) < 1
+  exact (adic_linear_self 1).val_lt_one
+
+private theorem linearOne_not_first :
+    linearInteger 1 ∉ Valuation.contractedIdeal places true := by
+  rw [Valuation.mem_contractedIdeal_iff]
+  change ¬adic 0 (linearElement 1) < 1
+  rw [adic_linear_other (by decide : (1 : Coeff) ≠ 0)]
+  exact not_lt_of_ge le_rfl
+
+private theorem linearInteger_ne_zero (a : Coeff) : linearInteger a ≠ 0 := by
+  intro h
+  have hfield := congrArg
+    (fun x : Valuation.intersectionSubring places => (x : RatField)) h
+  change linearElement a = 0 at hfield
+  exact (adic_linear_self a).ne_zero hfield
+
+private theorem contractedIdeal_true_ne_bot :
+    Valuation.contractedIdeal places true ≠ ⊥ := by
+  intro h
+  have hz : linearInteger 0 = 0 := by
+    simpa [h] using linearZero_mem_first
+  exact linearInteger_ne_zero 0 hz
+
+private theorem contractedIdeal_false_ne_bot :
+    Valuation.contractedIdeal places false ≠ ⊥ := by
+  intro h
+  have hz : linearInteger 1 = 0 := by
+    simpa [h] using linearOne_mem_second
+  exact linearInteger_ne_zero 1 hz
+
 /-- The two rational-function places are discrete, inequivalent, and have an explicit
 element uniformizing the first but not the second. -/
 theorem exists_inequivalent_discrete_adic_pair :
@@ -219,8 +280,52 @@ private theorem contractedIdeal_true_prime
 private theorem contractedIdeals_distinct :
     Valuation.contractedIdeal places true ≠ Valuation.contractedIdeal places false := by
   intro h
-  exact (by decide : (true : Bool) ≠ false)
-    ((Valuation.contractedIdeal_injective places places_inequivalent) h)
+  exact linearZero_not_second (h ▸ linearZero_mem_first)
+
+private theorem contractedIdeals_distinct_reverse :
+    Valuation.contractedIdeal places false ≠ Valuation.contractedIdeal places true := by
+  intro h
+  exact linearOne_not_first (h ▸ linearOne_mem_second)
+
+private theorem all_primes (P : Ideal (Valuation.intersectionSubring places)) :
+    P.IsPrime ↔ P = ⊥ ∨ P = Valuation.contractedIdeal places true ∨
+      P = Valuation.contractedIdeal places false := by
+  constructor
+  · intro hP
+    rcases (Valuation.isPrime_iff_eq_bot_or_contractedIdeal places P).mp hP with
+      hzero | ⟨b, hb⟩
+    · exact Or.inl hzero
+    · cases b
+      · exact Or.inr (Or.inr hb)
+      · exact Or.inr (Or.inl hb)
+  · rintro (hzero | htrue | hfalse)
+    · exact (Valuation.isPrime_iff_eq_bot_or_contractedIdeal places P).mpr (Or.inl hzero)
+    · exact (Valuation.isPrime_iff_eq_bot_or_contractedIdeal places P).mpr
+        (Or.inr ⟨true, htrue⟩)
+    · exact (Valuation.isPrime_iff_eq_bot_or_contractedIdeal places P).mpr
+        (Or.inr ⟨false, hfalse⟩)
+
+private theorem all_maximal (M : Ideal (Valuation.intersectionSubring places)) :
+    M.IsMaximal ↔ M = Valuation.contractedIdeal places true ∨
+      M = Valuation.contractedIdeal places false := by
+  constructor
+  · intro hM
+    rcases (Valuation.isMaximal_iff_eq_bot_or_contractedIdeal places M).mp hM with
+      ⟨_, htrivial⟩ | ⟨b, _, hb⟩
+    · exact ((htrivial true) (inferInstance : (places true).IsNontrivial)).elim
+    · cases b
+      · exact Or.inr hb
+      · exact Or.inl hb
+  · rintro (htrue | hfalse)
+    · exact (Valuation.isMaximal_iff_eq_bot_or_contractedIdeal places M).mpr
+        (Or.inr ⟨true, inferInstance, htrue⟩)
+    · exact (Valuation.isMaximal_iff_eq_bot_or_contractedIdeal places M).mpr
+        (Or.inr ⟨false, inferInstance, hfalse⟩)
+
+private theorem nonzero_prime_maximal
+    {P : Ideal (Valuation.intersectionSubring places)}
+    (hP : P.IsPrime) (hP0 : P ≠ ⊥) : P.IsMaximal :=
+  hP.isMaximal_of_ne_bot hP0
 
 private theorem contractedIdeals_bezout :
     ∃ x ∈ Valuation.contractedIdeal places true,
