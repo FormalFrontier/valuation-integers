@@ -3,7 +3,9 @@
 Authors: Formal Frontier Agents. This Apache-2.0 Lean library supplies
 reusable power-divisibility and Krull-dimension bounds for rank-at-most-one
 valuation rings of integers, and a converse constructing rank-at-most-one data
-from a dimension bound, using mathlib and no other direct dependency.
+from a dimension bound. It also develops intersections of valuation subrings
+and maps to their full residue fields, using mathlib and no other direct
+dependency.
 
 ## Headline results
 
@@ -19,8 +21,16 @@ from a dimension bound, using mathlib and no other direct dependency.
   from `hv : val.Integers O` and `Ring.KrullDimLE 1 O`, constructs
   `Nonempty (Valuation.RankLeOne val)` without assuming rank beforehand.
   See the [converse guide](ValuationIntegers/RankLeOneConverse/README.md).
+- [`Valuation.intersectionSubring`](ValuationIntegers/FiniteIntersections.lean):
+  common valuation integers for an arbitrary family of valuations of a field,
+  together with inclusions, full residue maps and contracted kernels. For a
+  finite family of pairwise inequivalent rank-one valuations, the module proves
+  weak approximation at positive radii in each valuation's restricted value
+  group, and full-residue and product surjectivity; discreteness
+  enters only the diagonal-uniformizer statements. See the
+  [intersection guide](ValuationIntegers/FiniteIntersections/README.md).
 
-All three statements assume a field `K`, an arbitrary
+The three rank/dimension statements assume a field `K`, an arbitrary
 `[LinearOrderedCommGroupWithZero Γ₀]`, a valuation
 `val : Valuation K Γ₀`, and a commutative local ring `O` with `[Algebra O K]`
 and `hv : val.Integers O`. The **power and forward dimension theorems**
@@ -36,7 +46,8 @@ membership and nonzero `y`.
 
 ## Use and navigation
 
-`import ValuationIntegers` exports all three theorems; alternatively import
+`import ValuationIntegers` exports the rank/dimension results and the intersection
+API; alternatively import
 `ValuationIntegers.RankLeOnePower` or
 `ValuationIntegers.RankLeOneDimension` or
 `ValuationIntegers.RankLeOneConverse` individually. The forward dimension
@@ -66,6 +77,9 @@ dimension clients include the native dimension-zero trivial valuation on
 `ℚ`. Its converse clients exercise abstract invocation, local installation
 and the trivial valuation on `ℚ`. The linked guides give proof outlines,
 specializations and limitations without requiring project research records.
+The intersection clients exercise empty and singleton families, duplicated
+nontrivial valuations, and valuations at distinct linear polynomials over
+`ZMod 2` in a rational-function field.
 
 ## Reproduce and verification
 
@@ -113,3 +127,12 @@ cache fetch took 40.361 s, cache verification 5.589 s and the both-root build
 cache. These historical timings are neither new benchmarks nor guarantees for
 downstream machines. Plan for a cache download and local build storage; RAM
 and disk requirements were not measured.
+
+## References
+
+- Stefan Schröer, *A simple proof for Hochster's Theorem*, arXiv:2606.20016v1,
+  §2. The antecedent credit to Y. Ershov follows Schröer's presentation;
+  Ershov's original text was not consulted.
+- [Mathlib contributors](https://github.com/leanprover-community/mathlib4):
+  valuation subrings, full residue fields, discrete value groups and real
+  absolute-value weak approximation.

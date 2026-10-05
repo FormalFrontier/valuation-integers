@@ -4,8 +4,9 @@ project:
   name: Valuation Integers
   description: >-
     Power divisibility and a Krull-dimension bound for the integers of a
-    rank-at-most-one valuation, and a converse producing rank data from a
-    dimension bound, including field and trivial-valuation cases.
+    rank-at-most-one valuation, a converse producing rank data from a
+    dimension bound, and intersections of valuation subrings with full
+    residue-field maps, including empty-family and finite-field cases.
   authors:
     - Formal Frontier Agents
   responsible_maintainers:
@@ -25,7 +26,7 @@ related_formalizations:
     relationship: builds-on
     note: >-
       Uses native valuation rank, integers, value-group, local-ring,
-      ideal and Krull-dimension APIs.
+      ideal, Krull-dimension, discrete adic valuation and quotient APIs.
 automation:
   methods:
     - method: agent
@@ -35,20 +36,31 @@ automation:
         with independent review and a pinned standalone mathlib-only project.
       prompting_notes: >-
         Original Formal Frontier proof expression and clients were adapted
-        into the standalone library; the three public statements and their
-        separate private clients are identified in the shipped modules.
+        into the standalone library; the three earlier rank/dimension
+        statements and their separate private clients, as well as the added
+        finite-intersection results, are identified in the shipped modules.
 status:
   scope: >-
-    Three public theorems and separate ordinary-import private clients are
-    present: power divisibility and a forward dimension bound under a
-    rank-at-most-one assumption, and a converse yielding rank data from a
-    dimension-at-most-one bound. Published mathematical inputs received
+    Power divisibility and a forward dimension bound under a rank-at-most-one
+    assumption, and a converse yielding rank data from a dimension-at-most-one
+    bound, have separate ordinary-import clients. The intersection subring,
+    inclusions, full residue maps and contracted kernels have independent
+    empty-, singleton- and duplicate-family clients. For finite pairwise
+    inequivalent rank-one families, weak approximation is proved at positive
+    dependent radii in each valuation's restricted value group. It yields
+    surjectivity onto the full residue fields and their product, maximal and
+    pairwise coprime contracted ideals, and quotient equivalences. When these
+    valuations are also discrete, chosen diagonal uniformizers exist. The
+    rational-function example independently establishes discreteness,
+    inequivalence, explicit generators and the failure of arbitrary positive
+    ambient radii; its applications instantiate these proved results.
+    The three earlier mathematical inputs received
     independent agent review and native both-root/complete transitive
     standard-axiom checks, including private/generated declarations. These
     checks are revision-specific, not certification of later edits. No
     source-specific coverage is asserted.
 review:
-  status: agent-reviewed
+  status: Review evidence is revision-specific
   notes: >-
     Independent agent reviews covered the mathematical inputs at the
     published three-result release 09c63e5f9622f483393edc40c5bbc672308db0eb;
@@ -56,7 +68,7 @@ review:
     to their exact revisions and inputs; later affected edits need their
     own applicable assessment.
 alignment:
-  namespace: Valuation.Integers
+  namespace: Valuation
   note: >-
     Public library API inventory, not a source-passage or coverage mapping.
     Private client fixtures and imported mathlib declarations are excluded.
@@ -67,6 +79,16 @@ alignment:
       module: ValuationIntegers/RankLeOneDimension.lean
     - lean: Valuation.Integers.nonempty_rankLeOne_of_krullDimLE_one
       module: ValuationIntegers/RankLeOneConverse.lean
+    - lean: Valuation.intersectionSubring
+      module: ValuationIntegers/FiniteIntersections.lean
+    - lean: Valuation.intersectionResidueProduct
+      module: ValuationIntegers/FiniteIntersections.lean
+    - lean: Valuation.exists_approximation
+      module: ValuationIntegers/FiniteIntersections.lean
+    - lean: Valuation.intersectionResidueProduct_surjective
+      module: ValuationIntegers/FiniteIntersections.lean
+    - lean: Valuation.diagonalUniformizer
+      module: ValuationIntegers/FiniteIntersections.lean
 acknowledgements: >-
   Formal Frontier contributors developed the original proof expressions,
   ordinary-import clients and independently assessed mathematical plans;
@@ -75,4 +97,6 @@ acknowledgements: >-
   Jingting Wang, Mario Carneiro, María Inés de Frutos-Fernández,
   Filippo A. E. Nuccio, Antoine Chambert-Loir, Yakov Pechersky and Kenny Lau.
   Mathlib supplies native rank, valuation, local-ring and dimension foundations
-  and retains its contributors' Apache-2.0 notices.
+  and retains its contributors' Apache-2.0 notices. The finite-intersection
+  motivation follows Stefan Schröer's presentation, with antecedent credit
+  to Y. Ershov conveyed through Schröer rather than direct consultation.

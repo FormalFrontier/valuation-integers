@@ -8,6 +8,12 @@ public import ValuationIntegers.RankLeOneConverse
 public import ValuationIntegers.RankLeOneDimension
 public import Mathlib.RingTheory.KrullDimension.Field
 
+/-!
+# Rank from a dimension bound
+
+The trivial valuation of the rational field illustrates that the converse includes dimension zero.
+-/
+
 set_option warningAsError true
 
 @[expose] public section
@@ -33,7 +39,9 @@ private theorem local_rank_power_client (hv : val.Integers O)
   let _ : Valuation.RankLeOne val := rank
   exact hv.exists_pos_pow_dvd_of_mem_maximalIdeal x hx y hy
 
-private theorem trivial_valuation_field_client :
+/-- The trivial valuation of the rationals has rank at most one even though its ring has
+Krull dimension zero. -/
+theorem trivialValuation_rankLeOne_and_dimension_zero :
     Nonempty (Valuation.RankLeOne (1 : Valuation ℚ ℝ≥0)) ∧ ringKrullDim ℚ = 0 := by
   have hv : (1 : Valuation ℚ ℝ≥0).Integers ℚ := {
     hom_inj := fun _ _ h => by simpa using h

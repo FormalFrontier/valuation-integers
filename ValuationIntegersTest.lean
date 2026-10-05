@@ -7,3 +7,5 @@ module
 import ValuationIntegersTest.RankLeOnePower
 import ValuationIntegersTest.RankLeOneDimension
 import ValuationIntegersTest.RankLeOneConverse
+import ValuationIntegersTest.FiniteIntersections
+import ValuationIntegersTest.FiniteIntersectionsAdic

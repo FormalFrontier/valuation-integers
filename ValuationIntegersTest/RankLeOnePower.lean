@@ -8,6 +8,12 @@ public import ValuationIntegers.RankLeOnePower
 public import Mathlib.RingTheory.Ideal.Operations
 public import Mathlib.RingTheory.Valuation.ValuationSubring
 
+/-!
+# Power divisibility in rank-at-most-one valuation rings
+
+The radical of a nonzero principal ideal inside the maximal ideal is maximal.
+-/
+
 set_option warningAsError true
 
 @[expose] public section
@@ -34,7 +40,8 @@ private theorem unit_client (hv : val.Integers O) (x : O)
     ∃ n : ℕ, 0 < n ∧ y ∣ x ^ n :=
   hv.exists_pos_pow_dvd_of_mem_maximalIdeal x hx y hy.ne_zero
 
-private theorem radical_client (hv : val.Integers O) (a : O) (ha : a ≠ 0)
+/-- The radical of a nonzero principal ideal in the maximal ideal is maximal. -/
+theorem radical_span_eq_maximalIdeal (hv : val.Integers O) (a : O) (ha : a ≠ 0)
     (ham : a ∈ IsLocalRing.maximalIdeal O) :
     (Ideal.span {a}).radical = IsLocalRing.maximalIdeal O := by
   apply le_antisymm

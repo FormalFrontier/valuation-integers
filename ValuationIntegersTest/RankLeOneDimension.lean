@@ -8,6 +8,12 @@ public import ValuationIntegers.RankLeOneDimension
 public import Mathlib.RingTheory.KrullDimension.Field
 public import Mathlib.RingTheory.Valuation.ValuationSubring
 
+/-!
+# Dimension of rank-at-most-one valuation subrings
+
+The Krull-dimension bound applies to valuation subrings without Noetherian hypotheses.
+-/
+
 set_option warningAsError true
 
 @[expose] public section
@@ -34,7 +40,8 @@ section ValuationSubring
 variable {F : Type u} [Field F] (A : ValuationSubring F)
   [Valuation.RankLeOne A.valuation]
 
-private theorem valuation_subring_client : Ring.KrullDimLE 1 A := by
+/-- Rank-one valuation subrings have Krull dimension at most one. -/
+theorem valuationSubring_krullDimLE_one : Ring.KrullDimLE 1 A := by
   let _ : Valuation.RankLeOne (ValuationRing.valuation A F) :=
     inferInstanceAs (Valuation.RankLeOne A.valuation)
   exact (ValuationRing.integers A F).krullDimLE_one
