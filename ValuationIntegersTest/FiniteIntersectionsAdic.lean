@@ -6,6 +6,7 @@ module
 
 public import ValuationIntegers.FiniteIntersections
 public import ValuationIntegers.FiniteIntersections.PrimeIdeals
+public import ValuationIntegers.FiniteIntersections.Spectrum
 public import Mathlib.Logic.Pairwise
 public import Mathlib.FieldTheory.RatFunc.Basic
 public import Mathlib.FieldTheory.RatFunc.Valuation
@@ -84,6 +85,36 @@ private theorem places_inequivalent :
       (K := RatField) (by simpa [places, adic] using hequiv)
   have hac := atLinear_injective hp
   cases b <;> cases c <;> simp_all
+
+private noncomputable example : Topology.GenericFork Bool ≃ₜ
+    PrimeSpectrum (Valuation.intersectionSubring places) :=
+  Valuation.forkHomeomorph places places_inequivalent
+
+private example : ∃ p q r : PrimeSpectrum (Valuation.intersectionSubring places),
+    p ≠ q ∧ p ≠ r ∧ q ≠ r := by
+  let homeo := Valuation.forkHomeomorph places places_inequivalent
+  refine ⟨homeo .generic, homeo (.closed true), homeo (.closed false), ?_, ?_, ?_⟩
+  · exact fun h => by have := homeo.injective h; cases this
+  · exact fun h => by have := homeo.injective h; cases this
+  · exact fun h => by have := homeo.injective h; cases this
+
+private example : (Valuation.forkHomeomorph places places_inequivalent).symm
+    (⟨Valuation.contractedIdeal places false,
+      inferInstance⟩ : PrimeSpectrum (Valuation.intersectionSubring places)) =
+      Topology.GenericFork.closed false := by
+  simp
+
+private example : IsOpen
+    ({(⊥ : PrimeSpectrum (Valuation.intersectionSubring places)),
+      (⟨Valuation.contractedIdeal places true, inferInstance⟩ :
+        PrimeSpectrum (Valuation.intersectionSubring places))} :
+      Set (PrimeSpectrum (Valuation.intersectionSubring places))) := by
+  apply (Valuation.isOpen_iff_eq_empty_or_bot_mem places _).mpr
+  exact Or.inr (by simp)
+
+private example : ¬ IsOpen
+    ({Topology.GenericFork.closed true} : Set (Topology.GenericFork Bool)) := by
+  simp [Topology.GenericFork.isOpen_iff]
 
 private noncomputable def linearElement (a : Coeff) : RatField :=
   algebraMap Coeff[X] RatField (Polynomial.X - Polynomial.C a)

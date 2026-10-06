@@ -6,6 +6,7 @@ module
 
 public import ValuationIntegers.FiniteIntersections
 public import ValuationIntegers.FiniteIntersections.PrimeIdeals
+public import ValuationIntegers.FiniteIntersections.Spectrum
 public import Mathlib.NumberTheory.Padics.PadicNumbers
 
 /-!
@@ -45,6 +46,20 @@ private theorem empty_prime_iff (P : Ideal (Valuation.intersectionSubring emptyV
 private theorem empty_maximal_iff (M : Ideal (Valuation.intersectionSubring emptyValuations)) :
     M.IsMaximal ↔ M = ⊥ := by
   simpa using (Valuation.isMaximal_iff_eq_bot_or_contractedIdeal emptyValuations M)
+
+private example (p : PrimeSpectrum (Valuation.intersectionSubring emptyValuations)) :
+    p = ⊥ := by
+  apply PrimeSpectrum.ext
+  exact (empty_prime_iff p.asIdeal).mp p.isPrime
+
+private example (s : Set (PrimeSpectrum (Valuation.intersectionSubring emptyValuations))) :
+    IsOpen s := by
+  apply (Valuation.isOpen_iff_eq_empty_or_bot_mem emptyValuations s).mpr
+  by_cases h : s = ∅
+  · exact Or.inl h
+  · obtain ⟨p, hp⟩ := Set.nonempty_iff_ne_empty.mpr h
+    exact Or.inr (by simpa only [show p = (⊥ : PrimeSpectrum _) from
+      PrimeSpectrum.ext ((empty_prime_iff p.asIdeal).mp p.isPrime)] using hp)
 
 private example : Valuation.intersectionSubring emptyValuations = ⊤ :=
   Valuation.intersectionSubring_eq_top _
@@ -117,6 +132,37 @@ private instance (b : Bool) : (duplicatedValuations b).IsNontrivial := by
 
 private noncomputable instance : ∀ b, (duplicatedValuations b).RankLeOne :=
   fun _ => inferInstanceAs (Rat.padicValuation 2).RankLeOne
+
+private noncomputable instance : ∀ i, (singletonValuations i).RankOne :=
+  fun _ => inferInstanceAs (Rat.padicValuation 2).RankOne
+
+private theorem singleton_closed_not_open :
+    ¬ IsOpen ({(⟨Valuation.contractedIdeal singletonValuations PUnit.unit,
+      inferInstance⟩ : PrimeSpectrum (Valuation.intersectionSubring singletonValuations))} :
+        Set (PrimeSpectrum (Valuation.intersectionSubring singletonValuations))) := by
+  intro hopen
+  have hzero : (⊥ : PrimeSpectrum (Valuation.intersectionSubring singletonValuations)) ∈
+      ({(⟨Valuation.contractedIdeal singletonValuations PUnit.unit,
+        inferInstance⟩ : PrimeSpectrum _)} : Set _) :=
+    ((Valuation.isOpen_iff_eq_empty_or_bot_mem singletonValuations _).mp hopen).resolve_left
+      (by simp)
+  have hbot : Valuation.contractedIdeal singletonValuations PUnit.unit = ⊥ := by
+    have heq : (⊥ : PrimeSpectrum (Valuation.intersectionSubring singletonValuations)) =
+        (⟨Valuation.contractedIdeal singletonValuations PUnit.unit,
+          inferInstance⟩ : PrimeSpectrum _) := by simpa using hzero
+    simpa only [PrimeSpectrum.asIdeal_bot] using (congrArg PrimeSpectrum.asIdeal heq).symm
+  exact ((Valuation.contractedIdeal_eq_bot_iff singletonValuations PUnit.unit).mp hbot)
+    duplicated_nontrivial
+
+private example : ¬ DiscreteTopology
+    (PrimeSpectrum (Valuation.intersectionSubring singletonValuations)) := by
+  intro hdiscrete
+  exact singleton_closed_not_open (isOpen_discrete _)
+
+private noncomputable example : Topology.GenericFork PUnit ≃ₜ
+    PrimeSpectrum (Valuation.intersectionSubring singletonValuations) :=
+  Valuation.forkHomeomorph singletonValuations
+    (by intro i j hij; cases i; cases j; exact False.elim (hij rfl))
 
 private theorem duplicated_individual_quotient_lift (y :
     IsLocalRing.ResidueField (duplicatedValuations true).valuationSubring) :
@@ -403,5 +449,23 @@ theorem exists_mixedPadic_trivial_residue_obstruction :
   refine ⟨mixedValuations, (fun b => ⟨inferInstance⟩), rfl, rfl, ?_, ?_⟩
   · exact mixedPadic_trivialResidue_not_surjective
   · exact mixedPadic_trivialIdeal_not_maximal
+
+private example :
+    (⟨Valuation.contractedIdeal trivialValuations true,
+      inferInstance⟩ : PrimeSpectrum (Valuation.intersectionSubring trivialValuations)) =
+      (⊥ : PrimeSpectrum _) :=
+  PrimeSpectrum.ext (allTrivial_contractedIdeal_eq_bot true)
+
+private example :
+    (⟨Valuation.contractedIdeal duplicatedValuations true,
+      inferInstance⟩ : PrimeSpectrum (Valuation.intersectionSubring duplicatedValuations)) =
+    (⟨Valuation.contractedIdeal duplicatedValuations false,
+      inferInstance⟩ : PrimeSpectrum _) := rfl
+
+private example :
+    (⟨Valuation.contractedIdeal mixedValuations true,
+      inferInstance⟩ : PrimeSpectrum (Valuation.intersectionSubring mixedValuations)) =
+      (⊥ : PrimeSpectrum _) :=
+  PrimeSpectrum.ext mixed_trivial_ideal_eq_bot
 
 end ValuationIntegersTest.FiniteIntersections

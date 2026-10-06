@@ -1,11 +1,11 @@
 # Valuation Integers
 
-Authors: Formal Frontier Agents. This Apache-2.0 Lean library supplies
+This Apache-2.0 Lean library supplies
 reusable power-divisibility and Krull-dimension bounds for rank-at-most-one
 valuation rings of integers, and a converse constructing rank-at-most-one data
-from a dimension bound. It also develops intersections of valuation subrings
-and maps to their full residue fields, using mathlib and no other direct
-dependency.
+from a dimension bound. It also develops finite intersections of valuation
+subrings, their residue maps and prime spectra, using mathlib and no other
+direct dependency.
 
 ## Headline results
 
@@ -26,21 +26,31 @@ dependency.
   together with inclusions, full residue maps and contracted kernels. For a
   finite family of pairwise inequivalent rank-one valuations, the module proves
   weak approximation at positive radii in each valuation's restricted value
-  group and full-residue-product surjectivity. For arbitrary finite rank-at-most-one
-  families it proves denominator, canonical localization and fraction-field
-  results without independence, and individual residue surjectivity at a
-  selected nontrivial place. Diagonal-uniformizer statements require a finite
-  family of pairwise inequivalent rank-one discrete valuations. See the
+  group and surjectivity onto the product of full residue fields. For any finite
+  pointwise rank-at-most-one family, it proves denominator, canonical
+  localization and fraction-field results without independence, and individual
+  residue surjectivity at a selected nontrivial place. Diagonal uniformizers
+  require finite pairwise inequivalent rank-one *discrete* valuations. See the
   [intersection guide](ValuationIntegers/FiniteIntersections/README.md).
-
-The results in
-[`ValuationIntegers.FiniteIntersections.PrimeIdeals`](ValuationIntegers/FiniteIntersections/PrimeIdeals.lean)
-prove that every maximal ideal of a nonempty finite valuation intersection is
-contracted, regardless of rank. For finite pointwise rank-at-most-one families
-they classify all prime and maximal ideals, characterize the all-trivial field
-case and prove a dimension-at-most-one bound, including the empty family and
-repeated or trivial places. The preceding intersection, localization and
-individual valuation-integer dimension results retain their independent proofs.
+- [`Valuation.isPrime_iff_eq_bot_or_contractedIdeal`](ValuationIntegers/FiniteIntersections/PrimeIdeals.lean):
+  for a finite pointwise rank-at-most-one family, every prime of the
+  intersection is zero or contracted from a place, even with empty, repeated
+  or trivial places. Every maximal ideal of a *nonempty* finite intersection
+  is contracted without a rank assumption; in the rank-at-most-one case the
+  same module classifies maximal ideals and proves
+  [`Valuation.krullDimLE_one`](ValuationIntegers/FiniteIntersections/PrimeIdeals.lean).
+- [`Valuation.isOpen_iff_eq_empty_or_bot_mem`](ValuationIntegers/FiniteIntersections/Spectrum.lean):
+  the spectrum of a finite pointwise rank-at-most-one intersection is finite;
+  its open subsets are exactly the empty set and those containing the zero
+  prime, including empty, repeated and trivial families.
+- [`Valuation.forkHomeomorph`](ValuationIntegers/FiniteIntersections/Spectrum.lean):
+  for a finite family of pairwise inequivalent rank-one valuations, the
+  spectrum is homeomorphic to the independent generic-point fork
+  [`Topology.GenericFork`](ValuationIntegers/FiniteIntersections/Spectrum.lean).
+  The generic point maps to zero and each indexed closed point to its
+  contracted ideal, with forward and inverse point equations. This describes
+  spectra, not a representation theorem for arbitrary spaces. See the
+  [spectrum guide](ValuationIntegers/FiniteIntersections/README.md).
 
 The three rank/dimension statements assume a field `K`, an arbitrary
 `[LinearOrderedCommGroupWithZero Γ₀]`, a valuation
@@ -56,10 +66,23 @@ ring, Noetherianity, completeness or separation. The dimension result says
 `ℚ` has dimension zero. The power theorem does require both maximal-ideal
 membership and nonzero `y`.
 
-## Use and navigation
+## Using the library
+
+Add the GitHub release branch to your `lakefile.toml`:
+
+```toml
+[[require]]
+name = "valuation-integers"
+git = "https://github.com/FormalFrontier/valuation-integers.git"
+rev = "main"
+```
+
+GitHub `main` contains reviewed releases. Lake resolves it when you add or
+update the dependency; `lake-manifest.json` pins the resolved commit until you
+update again. Replace `main` with a release commit to pin explicitly.
 
 `import ValuationIntegers` exports the rank/dimension results and the intersection
-API, including the finite-intersection classification results;
+API, including the finite-intersection classification and spectrum results;
 alternatively import
 `ValuationIntegers.RankLeOnePower` or
 `ValuationIntegers.RankLeOneDimension` or
@@ -83,20 +106,14 @@ have hpower : ∃ n : ℕ, 0 < n ∧ y ∣ x ^ n :=
   hv.exists_pos_pow_dvd_of_mem_maximalIdeal x hx y hy
 ```
 
-`ValuationIntegersTest` is a separate maintained, ordinary-import client
-target, *not* exported from `ValuationIntegers`. Its private power clients
-include valuation domains/subrings and maximal-ideal radical usage; its
-dimension clients include the native dimension-zero trivial valuation on
-`ℚ`. Its converse clients exercise abstract invocation, local installation
-and the trivial valuation on `ℚ`. The linked guides give proof outlines,
-specializations and limitations without requiring project research records.
-The intersection clients exercise empty and singleton families, duplicated
-nontrivial valuations, and valuations at distinct linear polynomials over
-`ZMod 2` in a rational-function field. They also distinguish trivial-place
-localization from the false claim of trivial-place residue surjectivity in a
-mixed rational valuation family.
+`ValuationIntegersTest` is a separate ordinary-import client target, *not*
+exported from `ValuationIntegers`. The linked guides give proof outlines and
+specializations. Clients exercise dimension zero for a trivial valuation on
+`ℚ`, empty and repeated families, distinct adic places over `ZMod 2`, and
+localization at a trivial place whose residue map is not surjective in a
+mixed family.
 
-## Reproduce and verification
+## Building
 
 The committed Lean toolchain is `leanprover/lean4:v4.34.0-rc2`. The only
 direct Lake dependency is GitHub mathlib at
@@ -110,38 +127,18 @@ lake exe cache get
 lake --wfail build ValuationIntegers ValuationIntegersTest
 ```
 
-The three-result official release `09c63e5f9622f483393edc40c5bbc672308db0eb`
-includes all three public theorems. Its original configured native checks built
-both roots and audited transitive axioms for all eight modules and 24 declarations,
-including 21 private/generated declarations: only `propext`, `Classical.choice`
-and `Quot.sound` occurred. This is evidence for the exact checked inputs, not a
-certificate for changed documentation, metadata or future releases; affected
-inputs need applicable checks and independent review. Original Formal Frontier
-proof-expression contributors, destination adaptation and relevant mathlib
-contributors are distinguished in the module guides. No source-specific
-correspondence or coverage is claimed. This project is [Apache-2.0](LICENSE);
-mathlib retains its own contributor notices and license.
+Plan for a cache download and local build storage.
 
-## Additive compatibility and measured build costs
+## Conventions and limitations
 
-Compared with the preceding two-result official release
-`0bc044c229b50bfbc760b6b07c2824da57b51265`, the three-result release
-preserves the old imports, names, hypotheses and Lean/mathlib pins, and adds
-the converse module/theorem and a separate private client. Consumers should
-pin the exact published release they use rather than development main; this
-comparison does not promise compatibility for later releases.
-
-In the original *two-result* standalone destination's native CI environment,
-cache fetch took 41.312 s, cache verification 5.985 s, and the both-root
-build 8.347 s; the whole run took about 130 s. These measurements do not
-cover the converse.
-
-In the *three-result* destination's native CI environment on the same pins,
-cache fetch took 40.361 s, cache verification 5.589 s and the both-root build
-8.847 s; the whole run took about 138 s. Both runs used a precompiled mathlib
-cache. These historical timings are neither new benchmarks nor guarantees for
-downstream machines. Plan for a cache download and local build storage; RAM
-and disk requirements were not measured.
+The rank/dimension theorems concern the valuation's restricted value group,
+not necessarily its ambient group. The dimension bound is *at most* one: the
+trivial valuation on `ℚ` gives dimension zero. The intersection theorems do not
+require distinct places unless explicitly stated; repeated valuations can
+have equal contracted ideals and need not yield surjectivity onto the residue
+product. At a trivial place in a mixed family, the residue map need not be
+surjective or its contracted ideal maximal. The fork homeomorphism has its
+separate pairwise-inequivalence and rank-one hypotheses.
 
 ## References
 
@@ -154,3 +151,12 @@ and disk requirements were not measured.
 - [Mathlib contributors](https://github.com/leanprover-community/mathlib4):
   valuation subrings, full residue fields, discrete value groups and real
   absolute-value weak approximation.
+
+## Credits and license
+
+Authors: Formal Frontier Agents. Formal Frontier contributors developed the
+original proof expressions, clients and mathematical plans; contributors to
+this library adapted them. The module guides distinguish these roles and
+credit relevant mathlib contributors; mathlib retains its own contributor
+notices and license. Agent-assisted Lean development is described in
+`formalization.yaml`. Licensed under [Apache-2.0](LICENSE).

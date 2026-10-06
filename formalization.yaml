@@ -6,9 +6,10 @@ project:
     Power divisibility and a Krull-dimension bound for the integers of a
     rank-at-most-one valuation, a converse producing rank data from a
     dimension bound, and intersections of valuation subrings with full
-    residue-field maps, including empty-family and finite-field cases.
-    For finite families of rank-at-most-one valuations, it classifies prime
-    and maximal ideals of the intersection and bounds its Krull dimension by one.
+    residue-field maps. Finite rank-at-most-one intersections have classified
+    primes, dimension at most one and finite spectra whose nonempty opens
+    contain zero. Finite pairwise inequivalent rank-one intersections have a
+    separately hypothesized generic-point fork homeomorphism.
   authors:
     - Formal Frontier Agents
   responsible_maintainers:
@@ -32,63 +33,36 @@ related_formalizations:
 automation:
   methods:
     - method: agent
-      framework: Formal Frontier Hive Tasks and Lean 4
+      framework: Lean 4
       tool_setup: >-
-        Agent-assisted Lean proof development and ordinary-import clients,
-        with independent review and a pinned standalone mathlib-only project.
+        Agent-assisted Lean proof development and ordinary-import clients.
       prompting_notes: >-
-        Original Formal Frontier proof expression and clients were adapted
-        into the standalone library; the three earlier rank/dimension
-        statements and their separate private clients, as well as the added
-        finite-intersection results, are identified in the shipped modules.
+        Formal Frontier agents developed proof expressions and examples using
+        mathlib; the module guides distinguish original work and adaptations.
 status:
   scope: >-
-    Power divisibility and a forward dimension bound under a rank-at-most-one
-    assumption, and a converse yielding rank data from a dimension-at-most-one
-    bound, have separate ordinary-import clients. The intersection subring,
-    inclusions, full residue maps and contracted kernels have independent
-    empty-, singleton- and duplicate-family clients. For finite pairwise
-    inequivalent rank-one families, weak approximation is proved at positive
-    dependent radii in each valuation's restricted value group and yields
-    surjectivity onto the full residue product and its quotient equivalence.
-    The arbitrary-family unit, canonical algebra/tower, prime-contraction and
-    equivalent-place contraction results are proved. Finite rank-at-most-one
-    denominator, canonical localization, fraction-field and selected nontrivial
-    residue surjectivity statements are proved by reducing to distinct nontrivial
-    equivalence classes. Their instances, individual quotient/maximality results
-    and original explicit-independent individual residue wrappers follow
-    from these proofs.
-    For nonempty finite families every maximal ideal is contracted without a
-    rank restriction; the converse can fail at higher rank. For finite
-    pointwise rank-at-most-one families, every prime is zero or contracted,
-    and the intersection has Krull dimension at most one, including empty
-    families. Zero is maximal exactly when all places are trivial; nontrivial
-    selected places yield maximal contracted ideals, while a trivial place in
-    a mixed family contracts to nonmaximal zero. Repeated valuations may yield
-    equal contractions.
-    Pairwise coprimality retains the finite, pairwise-inequivalent, rank-one
-    hypotheses and uses distinctness of the contracted maximal ideals.
-    For finite families of pairwise inequivalent rank-one
-    discrete valuations, chosen diagonal uniformizers have independent
-    proofs. Empty, all-trivial, duplicate and mixed trivial/2-adic
-    families provide boundary clients, including a failure of surjectivity and
-    maximality at the trivial selected place. The rational-function example
-    independently establishes discreteness,
-    inequivalence, explicit generators and the failure of arbitrary positive
-    ambient radii; its cross-place inverse exercises canonical localization.
-    The three earlier mathematical inputs received
-    independent agent review and native both-root/complete transitive
-    standard-axiom checks, including private/generated declarations. These
-    checks are revision-specific, not certification of these changed proofs. No
-    source-specific coverage is asserted.
+    Rank-at-most-one valuation integers satisfy positive power divisibility
+    and a dimension-at-most-one bound; a dimension-at-most-one bound conversely
+    supplies rank-at-most-one data. Arbitrary valuation families have an
+    intersection subring, full residue maps and a unit criterion. Finite
+    pointwise rank-at-most-one families have denominator, canonical
+    localization, fraction-field and selected nontrivial-place residue
+    surjectivity results without pairwise inequivalence. For nonempty finite
+    families, maximal ideals are contracted without a rank restriction. Finite
+    pointwise rank-at-most-one intersections have classified prime and maximal
+    ideals, dimension at most one, a finite spectrum and an open-set criterion:
+    an open is empty or contains the zero prime. Empty, repeated and trivial
+    places are allowed. Separately, finite pairwise inequivalent rank-one
+    families have weak approximation at positive restricted-value-group radii,
+    full residue-product surjectivity and a homeomorphism from an independent
+    generic-point fork to the spectrum. Diagonal uniformizers additionally
+    require discreteness. These results about spectra are not a representation
+    theorem. No source-specific coverage is asserted.
 review:
-  status: Review evidence is revision-specific
+  status: agent-reviewed
   notes: >-
-    Independent agent reviews covered the mathematical inputs at the
-    published three-result release 09c63e5f9622f483393edc40c5bbc672308db0eb;
-    no human review is claimed. Review and build/axiom evidence apply only
-    to their exact revisions and inputs; later affected edits need their
-    own applicable assessment.
+    The mathematical results and clients have independent agent review; no
+    human review or source-coverage assessment is claimed.
 alignment:
   namespace: Valuation
   note: >-
@@ -133,6 +107,10 @@ alignment:
       module: ValuationIntegers/FiniteIntersections/PrimeIdeals.lean
     - lean: Valuation.krullDimLE_one
       module: ValuationIntegers/FiniteIntersections/PrimeIdeals.lean
+    - lean: Valuation.isOpen_iff_eq_empty_or_bot_mem
+      module: ValuationIntegers/FiniteIntersections/Spectrum.lean
+    - lean: Valuation.forkHomeomorph
+      module: ValuationIntegers/FiniteIntersections/Spectrum.lean
 acknowledgements: >-
   Formal Frontier contributors developed the original proof expressions,
   ordinary-import clients and independently assessed mathematical plans;

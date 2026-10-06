@@ -31,6 +31,18 @@ arbitrary-family unit criterion, canonical localization and the dimension
 bound for rank-at-most-one valuation integers. The existing approximation,
 localization and residue results described here retain their independent proofs.
 
+The [spectrum module](Spectrum.lean) gives the finite spectrum as an instance
+for the same rank-at-most-one families, reuses Mathlib's bottom prime, and proves
+that an open subset is empty or contains that prime. It defines an independent
+generic-point fork with lower-set topology. For finite pairwise inequivalent
+nontrivial rank-one families, its point map is a homeomorphism to the spectrum,
+sending the generic point to zero and each indexed closed point to its
+contracted ideal, with explicit forward and inverse equations. The empty family
+has a one-point spectrum; a singleton nontrivial place gives a non-discrete
+two-point spectrum, and two distinct adic places
+over `ZMod 2` give a branching three-point spectrum. Repeated and trivial
+places do not provide additional distinct closed points.
+
 With `[Finite ι]`, pointwise rank-one valuations, and pairwise inequivalence
 in Mathlib's `Valuation.IsEquiv` sense, `Valuation.exists_approximation`
 takes dependent radii `radius : ∀ i, MonoidWithZeroHom.ValueGroup₀ (.ofClass (val i))`, positive
