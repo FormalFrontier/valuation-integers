@@ -7,6 +7,8 @@ project:
     rank-at-most-one valuation, a converse producing rank data from a
     dimension bound, and intersections of valuation subrings with full
     residue-field maps, including empty-family and finite-field cases.
+    For finite families of rank-at-most-one valuations, it classifies prime
+    and maximal ideals of the intersection and bounds its Krull dimension by one.
   authors:
     - Formal Frontier Agents
   responsible_maintainers:
@@ -90,7 +92,7 @@ review:
 alignment:
   namespace: Valuation
   note: >-
-    Public library API inventory, not a source-passage or coverage mapping.
+    Selected public library API inventory, not a source-passage or coverage mapping.
     Private client fixtures and imported mathlib declarations are excluded.
   statements:
     - lean: Valuation.Integers.exists_pos_pow_dvd_of_mem_maximalIdeal
@@ -119,6 +121,18 @@ alignment:
       module: ValuationIntegers/FiniteIntersections.lean
     - lean: Valuation.intersectionResidueMap_surjective_of_rankLeOne
       module: ValuationIntegers/FiniteIntersections.lean
+    - lean: Valuation.exists_contractedIdeal_of_isMaximal
+      module: ValuationIntegers/FiniteIntersections/PrimeIdeals.lean
+    - lean: Valuation.contractedIdeal_eq_bot_iff
+      module: ValuationIntegers/FiniteIntersections/PrimeIdeals.lean
+    - lean: Valuation.isField_intersectionSubring_iff
+      module: ValuationIntegers/FiniteIntersections/PrimeIdeals.lean
+    - lean: Valuation.isPrime_iff_eq_bot_or_contractedIdeal
+      module: ValuationIntegers/FiniteIntersections/PrimeIdeals.lean
+    - lean: Valuation.isMaximal_iff_eq_bot_or_contractedIdeal
+      module: ValuationIntegers/FiniteIntersections/PrimeIdeals.lean
+    - lean: Valuation.krullDimLE_one
+      module: ValuationIntegers/FiniteIntersections/PrimeIdeals.lean
 acknowledgements: >-
   Formal Frontier contributors developed the original proof expressions,
   ordinary-import clients and independently assessed mathematical plans;
