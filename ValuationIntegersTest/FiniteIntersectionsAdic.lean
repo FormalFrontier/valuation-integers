@@ -86,7 +86,7 @@ private theorem places_inequivalent :
   have hac := atLinear_injective hp
   cases b <;> cases c <;> simp_all
 
-private noncomputable example : Topology.GenericFork Bool ≃ₜ
+private noncomputable example : Topology.WithGenericPoint Bool ≃ₜ
     PrimeSpectrum (Valuation.intersectionSubring places) :=
   Valuation.forkHomeomorph places places_inequivalent
 
@@ -101,7 +101,7 @@ private example : ∃ p q r : PrimeSpectrum (Valuation.intersectionSubring place
 private example : (Valuation.forkHomeomorph places places_inequivalent).symm
     (⟨Valuation.contractedIdeal places false,
       inferInstance⟩ : PrimeSpectrum (Valuation.intersectionSubring places)) =
-      Topology.GenericFork.closed false := by
+      Topology.WithGenericPoint.closed false := by
   simp
 
 private example : IsOpen
@@ -113,8 +113,8 @@ private example : IsOpen
   exact Or.inr (by simp)
 
 private example : ¬ IsOpen
-    ({Topology.GenericFork.closed true} : Set (Topology.GenericFork Bool)) := by
-  simp [Topology.GenericFork.isOpen_iff]
+    ({Topology.WithGenericPoint.closed true} : Set (Topology.WithGenericPoint Bool)) := by
+  simp [Topology.WithGenericPoint.isOpen_iff]
 
 private noncomputable def linearElement (a : Coeff) : RatField :=
   algebraMap Coeff[X] RatField (Polynomial.X - Polynomial.C a)

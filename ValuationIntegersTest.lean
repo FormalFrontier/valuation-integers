@@ -9,3 +9,5 @@ import ValuationIntegersTest.RankLeOneDimension
 import ValuationIntegersTest.RankLeOneConverse
 import ValuationIntegersTest.FiniteIntersections
 import ValuationIntegersTest.FiniteIntersectionsAdic
+import ValuationIntegersTest.GenericForkCompatibility
+import ValuationIntegersTest.GenericForkMixed

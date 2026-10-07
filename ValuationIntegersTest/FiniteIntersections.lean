@@ -159,7 +159,7 @@ private example : ¬ DiscreteTopology
   intro hdiscrete
   exact singleton_closed_not_open (isOpen_discrete _)
 
-private noncomputable example : Topology.GenericFork PUnit ≃ₜ
+private noncomputable example : Topology.WithGenericPoint PUnit ≃ₜ
     PrimeSpectrum (Valuation.intersectionSubring singletonValuations) :=
   Valuation.forkHomeomorph singletonValuations
     (by intro i j hij; cases i; cases j; exact False.elim (hij rfl))

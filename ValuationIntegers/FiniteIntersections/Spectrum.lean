@@ -7,6 +7,7 @@ module
 public import ValuationIntegers.FiniteIntersections.PrimeIdeals
 public import Mathlib.Topology.AlexandrovDiscrete
 public import Mathlib.Topology.Order.UpperLowerSetTopology
+public import SpectralStoneDuality.Topology.GenericPoint
 
 /-!
 # Spectra of finite intersections of valuation rings
@@ -15,8 +16,9 @@ A finite pointwise rank-at-most-one intersection has a finite spectrum whose
 open sets are precisely the empty set and the subsets containing the zero prime.
 For pairwise inequivalent nontrivial rank-one places, its spectrum has the
 topology of a fork: a generic point below one closed point for each place.
-The fork is defined independently of the ring, and its point map is a
-homeomorphism onto the spectrum.
+The fork is `Topology.WithGenericPoint` from Spectral Stone Duality; the
+previous `Topology.GenericFork` names remain as deprecated aliases. Its point
+map is a homeomorphism onto the spectrum.
 
 The finite rank-at-most-one and empty/trivial-place cases extend beyond the
 finite nontrivial rank-one strategy cited below. The homeomorphism concerns
@@ -26,6 +28,8 @@ only a spectrum, not a representation of a source topological space.
 
 * Mathlib contributors: prime-spectrum specialization, finite Alexandrov
   spaces and lower-set topologies.
+* Formal Frontier Agents, `SpectralStoneDuality.Topology.GenericPoint`:
+  the reusable generic-point fork and its order and topology.
 * Formal Frontier Agents, `ValuationIntegers.FiniteIntersections.PrimeIdeals`:
   the finite-family prime classification and dimension bound reused below.
 * Stefan Schröer, *A simple proof for Hochster's Theorem*, §2: the finite-space
@@ -39,76 +43,65 @@ universe u v w
 
 namespace Topology
 
-/-- A generic point and a family of pairwise incomparable closed points. -/
-inductive GenericFork (ι : Type v) : Type v
-  | generic : GenericFork ι
-  | closed (i : ι) : GenericFork ι
+/-- The former name for a generic point with independently indexed closed points.
+Use `WithGenericPoint` directly in new developments. -/
+@[deprecated WithGenericPoint (since := "2026-10-07")]
+abbrev GenericFork (ι : Type v) : Type v := WithGenericPoint ι
 
 namespace GenericFork
 
 variable {ι : Type v}
 
-instance : PartialOrder (GenericFork ι) where
-  le x y := x = .generic ∨ x = y
-  le_refl _ := Or.inr rfl
-  le_trans _ _ _ hxy hyz := by
-    rcases hxy with rfl | rfl
-    · exact Or.inl rfl
-    · exact hyz
-  le_antisymm _ _ hxy hyx := by
-    rcases hxy with h | h
-    · rcases hyx with h' | h'
-      · exact h.trans h'.symm
-      · exact h'.symm
-    · exact h
+/-- The old constructor for the unique generic point. -/
+@[match_pattern, deprecated WithGenericPoint.generic (since := "2026-10-07")]
+abbrev generic : WithGenericPoint ι := WithGenericPoint.generic
 
-/-- Lower-set topology: a nonempty open containing any closed point also
-contains the generic point. This construction does not use a spectrum. -/
-instance : TopologicalSpace (GenericFork ι) := Topology.lowerSet _
+/-- The old constructor for an indexed closed point. -/
+@[match_pattern, deprecated WithGenericPoint.closed (since := "2026-10-07")]
+abbrev closed (i : ι) : WithGenericPoint ι := WithGenericPoint.closed i
 
-/-- The characteristic open sets of a fork are precisely the empty set and
-those containing its generic point. -/
-theorem isOpen_iff (s : Set (GenericFork ι)) :
-    IsOpen s ↔ s = ∅ ∨ GenericFork.generic ∈ s := by
-  change IsLowerSet s ↔ _
-  constructor
-  · intro hs
-    by_cases h : s = ∅
-    · exact Or.inl h
-    · right
-      obtain ⟨x, hx⟩ := Set.nonempty_iff_ne_empty.mpr h
-      exact hs (Or.inl rfl) hx
-  · rintro (rfl | h) x y hxy hy
-    · exact hy
-    · rcases hxy with heq | heq
-      · simpa [heq] using h
-      · simpa [heq] using hy
+@[deprecated (since := "2026-10-07")] noncomputable alias rec := WithGenericPoint.rec
+@[deprecated (since := "2026-10-07")] noncomputable alias recOn := WithGenericPoint.recOn
+@[deprecated (since := "2026-10-07")] alias casesOn := WithGenericPoint.casesOn
+@[deprecated (since := "2026-10-07")]
+noncomputable alias noConfusion := WithGenericPoint.noConfusion
+@[deprecated (since := "2026-10-07")] alias noConfusionType := WithGenericPoint.noConfusionType
+@[deprecated (since := "2026-10-07")] alias ctorIdx := WithGenericPoint.ctorIdx
+@[deprecated (since := "2026-10-07")] alias ctorElim := WithGenericPoint.ctorElim
+@[deprecated (since := "2026-10-07")] alias ctorElimType := WithGenericPoint.ctorElimType
+@[deprecated (since := "2026-10-07")]
+noncomputable alias _sizeOf_inst := WithGenericPoint._sizeOf_inst
+@[deprecated (since := "2026-10-07")]
+alias instPartialOrder := WithGenericPoint.instPartialOrder
+@[deprecated (since := "2026-10-07")]
+alias instTopologicalSpace := WithGenericPoint.instTopologicalSpace
 
-/-- The generic point specializes to each closed point. -/
-theorem generic_specializes (i : ι) :
-    (GenericFork.generic : GenericFork ι) ⤳ GenericFork.closed i := by
-  apply specializes_iff_forall_open.mpr
-  intro s hs hclosed
-  exact (isOpen_iff s).mp hs |>.elim (fun h => by simp [h] at hclosed) id
+namespace generic
 
-/-- Each indexed point is closed in the independent fork topology. -/
-theorem closed_isClosed (i : ι) :
-    IsClosed ({GenericFork.closed i} : Set (GenericFork ι)) := by
-  rw [← isOpen_compl_iff]
-  exact (isOpen_iff _).mpr (Or.inr (by simp))
+@[deprecated (since := "2026-10-07")] alias elim := WithGenericPoint.generic.elim
+@[deprecated (since := "2026-10-07")]
+alias sizeOf_spec := WithGenericPoint.generic.sizeOf_spec
 
-/-- Two indexed points specialize to one another precisely when their
-indices agree. -/
-theorem closed_specializes_closed_iff (i j : ι) :
-    (GenericFork.closed i : GenericFork ι) ⤳ GenericFork.closed j ↔ i = j := by
-  constructor
-  · intro h
-    let s : Set (GenericFork ι) := {GenericFork.generic, GenericFork.closed j}
-    have hopen : IsOpen s := (isOpen_iff s).mpr (Or.inr (by simp [s]))
-    have hmem := (specializes_iff_forall_open.mp h) s hopen (by simp [s])
-    simpa [s] using hmem
-  · rintro rfl
-    exact specializes_refl _
+end generic
+
+namespace closed
+
+@[deprecated (since := "2026-10-07")] alias elim := WithGenericPoint.closed.elim
+@[deprecated (since := "2026-10-07")] alias inj := WithGenericPoint.closed.inj
+@[deprecated (since := "2026-10-07")] alias injEq := WithGenericPoint.closed.injEq
+@[deprecated (since := "2026-10-07")]
+alias noConfusion := WithGenericPoint.closed.noConfusion
+@[deprecated (since := "2026-10-07")]
+alias sizeOf_spec := WithGenericPoint.closed.sizeOf_spec
+
+end closed
+
+@[deprecated (since := "2026-10-07")] alias isOpen_iff := WithGenericPoint.isOpen_iff
+@[deprecated (since := "2026-10-07")]
+alias generic_specializes := WithGenericPoint.generic_specializes
+@[deprecated (since := "2026-10-07")] alias closed_isClosed := WithGenericPoint.closed_isClosed
+@[deprecated (since := "2026-10-07")]
+alias closed_specializes_closed_iff := WithGenericPoint.closed_specializes_closed_iff
 
 end GenericFork
 
@@ -188,17 +181,17 @@ section PairwiseInequivalent
 
 /-- The fork's generic point maps to zero, and its indexed closed points
 map to the contracted maximal ideals. -/
-noncomputable def forkPoint : Topology.GenericFork ι → PrimeSpectrum (intersectionSubring val)
+noncomputable def forkPoint : Topology.WithGenericPoint ι → PrimeSpectrum (intersectionSubring val)
   | .generic => ⊥
   | .closed i => ⟨contractedIdeal val i, inferInstance⟩
 
 @[simp]
 theorem forkPoint_generic :
-    forkPoint val Topology.GenericFork.generic = (⊥ : PrimeSpectrum _) := rfl
+    forkPoint val Topology.WithGenericPoint.generic = (⊥ : PrimeSpectrum _) := rfl
 
 @[simp]
 theorem forkPoint_closed (i : ι) :
-    forkPoint val (Topology.GenericFork.closed i) =
+    forkPoint val (Topology.WithGenericPoint.closed i) =
       (⟨contractedIdeal val i, inferInstance⟩ : PrimeSpectrum _) := rfl
 
 /-- Pairwise inequivalence and nontriviality make the generic and indexed
@@ -225,7 +218,7 @@ theorem forkPoint_bijective [Finite ι] [∀ i, (val i).RankOne]
         exact ((contractedIdeal_eq_bot_iff val i).mp hbot
           (inferInstance : (val i).IsNontrivial)).elim
       | closed j =>
-        exact congrArg Topology.GenericFork.closed
+        exact congrArg Topology.WithGenericPoint.closed
           (contractedIdeal_injective val hindep (congrArg PrimeSpectrum.asIdeal hxy))
   · intro p
     rcases (isPrime_iff_eq_bot_or_contractedIdeal val p.asIdeal).mp p.isPrime with
@@ -241,7 +234,7 @@ theorem forkPoint_bijective [Finite ι] [∀ i, (val i).RankOne]
 is homeomorphic to its independent generic-point fork. -/
 noncomputable def forkHomeomorph [Finite ι] [∀ i, (val i).RankOne]
     (hindep : Pairwise fun i j => ¬(val i).IsEquiv (val j)) :
-    Topology.GenericFork ι ≃ₜ PrimeSpectrum (intersectionSubring val) :=
+    Topology.WithGenericPoint ι ≃ₜ PrimeSpectrum (intersectionSubring val) :=
   (Equiv.ofBijective (forkPoint val) (forkPoint_bijective val hindep)).toHomeomorph
     (by
       intro s
@@ -255,10 +248,10 @@ noncomputable def forkHomeomorph [Finite ι] [∀ i, (val i).RankOne]
           simp only [h, Set.mem_empty_iff_false] at hx
         · rintro rfl
           rfl
-      rw [Topology.GenericFork.isOpen_iff,
+      rw [Topology.WithGenericPoint.isOpen_iff,
         PrimeSpectrum.isOpen_iff_eq_empty_or_bot_mem]
       change (forkPoint val ⁻¹' s = ∅ ∨
-        Topology.GenericFork.generic ∈ forkPoint val ⁻¹' s) ↔
+        Topology.WithGenericPoint.generic ∈ forkPoint val ⁻¹' s) ↔
           s = ∅ ∨ (⊥ : PrimeSpectrum (intersectionSubring val)) ∈ s
       rw [hempty]
       simp only [Set.mem_preimage, forkPoint_generic])
@@ -268,18 +261,18 @@ variable [Finite ι] [∀ i, (val i).RankOne]
 
 @[simp]
 theorem forkHomeomorph_generic :
-    forkHomeomorph val hindep Topology.GenericFork.generic =
+    forkHomeomorph val hindep Topology.WithGenericPoint.generic =
       (⊥ : PrimeSpectrum _) := rfl
 
 @[simp]
 theorem forkHomeomorph_closed (i : ι) :
-    forkHomeomorph val hindep (Topology.GenericFork.closed i) =
+    forkHomeomorph val hindep (Topology.WithGenericPoint.closed i) =
       (⟨contractedIdeal val i, inferInstance⟩ : PrimeSpectrum _) := rfl
 
 @[simp]
 theorem forkHomeomorph_symm_bot :
     (forkHomeomorph val hindep).symm (⊥ : PrimeSpectrum _) =
-      Topology.GenericFork.generic := by
+      Topology.WithGenericPoint.generic := by
   apply (forkHomeomorph val hindep).injective
   simp
 
@@ -287,7 +280,7 @@ theorem forkHomeomorph_symm_bot :
 theorem forkHomeomorph_symm_contractedIdeal (i : ι) :
     (forkHomeomorph val hindep).symm
       (⟨contractedIdeal val i, inferInstance⟩ : PrimeSpectrum _) =
-      Topology.GenericFork.closed i := by
+      Topology.WithGenericPoint.closed i := by
   apply (forkHomeomorph val hindep).injective
   simp
 

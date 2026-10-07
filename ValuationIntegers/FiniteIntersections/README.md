@@ -33,8 +33,10 @@ localization and residue results described here retain their independent proofs.
 
 The [spectrum module](Spectrum.lean) gives the finite spectrum as an instance
 for the same rank-at-most-one families, reuses Mathlib's bottom prime, and proves
-that an open subset is empty or contains that prime. It defines an independent
-generic-point fork with lower-set topology. For finite pairwise inequivalent
+that an open subset is empty or contains that prime. It reuses the
+generic-point fork `Topology.WithGenericPoint` from Spectral Stone Duality;
+the previous `Topology.GenericFork` names are deprecated aliases of the same
+type and laws. For finite pairwise inequivalent
 nontrivial rank-one families, its point map is a homeomorphism to the spectrum,
 sending the generic point to zero and each indexed closed point to its
 contracted ideal, with explicit forward and inverse equations. The empty family

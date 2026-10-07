@@ -4,8 +4,8 @@ This Apache-2.0 Lean library supplies
 reusable power-divisibility and Krull-dimension bounds for rank-at-most-one
 valuation rings of integers, and a converse constructing rank-at-most-one data
 from a dimension bound. It also develops finite intersections of valuation
-subrings, their residue maps and prime spectra, using mathlib and no other
-direct dependency.
+subrings, their residue maps and prime spectra, using mathlib and the released
+Spectral Stone Duality library for generic-point topology.
 
 ## Headline results
 
@@ -45,11 +45,15 @@ direct dependency.
   prime, including empty, repeated and trivial families.
 - [`Valuation.forkHomeomorph`](ValuationIntegers/FiniteIntersections/Spectrum.lean):
   for a finite family of pairwise inequivalent rank-one valuations, the
-  spectrum is homeomorphic to the independent generic-point fork
-  [`Topology.GenericFork`](ValuationIntegers/FiniteIntersections/Spectrum.lean).
+  spectrum is homeomorphic to
+  [`Topology.WithGenericPoint`](https://github.com/FormalFrontier/spectral-stone-duality/blob/d7dad16f9308a468bb964c0f13caf896a780621d/SpectralStoneDuality/Topology/GenericPoint.lean).
   The generic point maps to zero and each indexed closed point to its
   contracted ideal, with forward and inverse point equations. This describes
-  spectra, not a representation theorem for arbitrary spaces. See the
+  spectra, not a representation theorem for arbitrary spaces. The former
+  `Topology.GenericFork` API remains available from the spectrum module as
+  deprecated aliases for this same type, its constructors and laws. Internal
+  compiler-generated order proofs and the internal size-of helper are not
+  compatibility names; use the canonical order and size-of instances. See the
   [spectrum guide](ValuationIntegers/FiniteIntersections/README.md).
 
 The three rank/dimension statements assume a field `K`, an arbitrary
@@ -115,9 +119,12 @@ mixed family.
 
 ## Building
 
-The committed Lean toolchain is `leanprover/lean4:v4.34.0-rc2`. The only
-direct Lake dependency is GitHub mathlib at
-`83abb3e776bdefcbc447a1e44d0debe4010039e5`; keep the committed
+The committed Lean toolchain is `leanprover/lean4:v4.34.0-rc2`. The direct
+Lake dependencies are GitHub mathlib at
+`83abb3e776bdefcbc447a1e44d0debe4010039e5` and the released
+[`spectral-stone-duality`](https://github.com/FormalFrontier/spectral-stone-duality)
+at `d7dad16f9308a468bb964c0f13caf896a780621d`, which depends on released
+`ideal-completion` at `001e3b7508184ecd51e0d86177cb1d54508bf59d`. Keep the committed
 `lake-manifest.json`. From a checkout, fetch the matching precompiled cache
 **before** building either target:
 
