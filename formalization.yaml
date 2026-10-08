@@ -30,6 +30,11 @@ related_formalizations:
     note: >-
       Uses native valuation rank, integers, value-group, local-ring,
       ideal, Krull-dimension, discrete adic valuation and quotient APIs.
+  - id: https://github.com/FormalFrontier/spectral-stone-duality
+    relationship: builds-on
+    note: >-
+      Provides the canonical generic-point topology Topology.WithGenericPoint
+      used by the valuation spectrum homeomorphism.
 automation:
   methods:
     - method: agent
@@ -54,8 +59,9 @@ status:
     an open is empty or contains the zero prime. Empty, repeated and trivial
     places are allowed. Separately, finite pairwise inequivalent rank-one
     families have weak approximation at positive restricted-value-group radii,
-    full residue-product surjectivity and a homeomorphism from an independent
-    generic-point fork to the spectrum. Diagonal uniformizers additionally
+    full residue-product surjectivity and a homeomorphism from the canonical
+    generic-point fork Topology.WithGenericPoint of Spectral Stone Duality
+    to the spectrum. Diagonal uniformizers additionally
     require discreteness. These results about spectra are not a representation
     theorem. No source-specific coverage is asserted.
 review:
