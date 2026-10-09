@@ -9,19 +9,23 @@ Spectral Stone Duality library for generic-point topology.
 
 ## Headline results
 
-- [`Valuation.Integers.exists_pos_pow_dvd_of_mem_maximalIdeal`](ValuationIntegers/RankLeOnePower.lean):
+- **Positive-power divisibility.**
+  [`Valuation.Integers.exists_pos_pow_dvd_of_mem_maximalIdeal`](ValuationIntegers/RankLeOnePower.lean):
   for `hv : val.Integers O`, `x` in the maximal ideal and nonzero `y : O`,
   some *positive* `n : ℕ` satisfies `y ∣ x ^ n`.
   See the [power-divisibility guide](ValuationIntegers/RankLeOnePower/README.md).
-- [`Valuation.Integers.krullDimLE_one`](ValuationIntegers/RankLeOneDimension.lean):
+- **Krull dimension at most one.**
+  [`Valuation.Integers.krullDimLE_one`](ValuationIntegers/RankLeOneDimension.lean):
   the same valuation integers satisfy `Ring.KrullDimLE 1 O`, hence
   `ringKrullDim O ≤ (1 : WithBot ℕ∞)` by mathlib's `Ring.krullDimLE_iff`.
   See the [dimension guide](ValuationIntegers/RankLeOneDimension/README.md).
-- [`Valuation.Integers.nonempty_rankLeOne_of_krullDimLE_one`](ValuationIntegers/RankLeOneConverse.lean):
+- **Rank-at-most-one data from a dimension bound.**
+  [`Valuation.Integers.nonempty_rankLeOne_of_krullDimLE_one`](ValuationIntegers/RankLeOneConverse.lean):
   from `hv : val.Integers O` and `Ring.KrullDimLE 1 O`, constructs
   `Nonempty (Valuation.RankLeOne val)` without assuming rank beforehand.
   See the [converse guide](ValuationIntegers/RankLeOneConverse/README.md).
-- [`Valuation.intersectionSubring`](ValuationIntegers/FiniteIntersections.lean):
+- **Intersections, residue maps and approximation.**
+  [`Valuation.intersectionSubring`](ValuationIntegers/FiniteIntersections.lean):
   common valuation integers for an arbitrary family of valuations of a field,
   together with inclusions, full residue maps and contracted kernels. For a
   finite family of pairwise inequivalent rank-one valuations, the module proves
@@ -32,18 +36,21 @@ Spectral Stone Duality library for generic-point topology.
   residue surjectivity at a selected nontrivial place. Diagonal uniformizers
   require finite pairwise inequivalent rank-one *discrete* valuations. See the
   [intersection guide](ValuationIntegers/FiniteIntersections/README.md).
-- [`Valuation.isPrime_iff_eq_bot_or_contractedIdeal`](ValuationIntegers/FiniteIntersections/PrimeIdeals.lean):
+- **Prime and maximal ideals of finite intersections.**
+  [`Valuation.isPrime_iff_eq_bot_or_contractedIdeal`](ValuationIntegers/FiniteIntersections/PrimeIdeals.lean):
   for a finite pointwise rank-at-most-one family, every prime of the
   intersection is zero or contracted from a place, even with empty, repeated
   or trivial places. Every maximal ideal of a *nonempty* finite intersection
   is contracted without a rank assumption; in the rank-at-most-one case the
   same module classifies maximal ideals and proves
   [`Valuation.krullDimLE_one`](ValuationIntegers/FiniteIntersections/PrimeIdeals.lean).
-- [`Valuation.isOpen_iff_eq_empty_or_bot_mem`](ValuationIntegers/FiniteIntersections/Spectrum.lean):
+- **Finite spectra and their open sets.**
+  [`Valuation.isOpen_iff_eq_empty_or_bot_mem`](ValuationIntegers/FiniteIntersections/Spectrum.lean):
   the spectrum of a finite pointwise rank-at-most-one intersection is finite;
   its open subsets are exactly the empty set and those containing the zero
   prime, including empty, repeated and trivial families.
-- [`Valuation.forkHomeomorph`](ValuationIntegers/FiniteIntersections/Spectrum.lean):
+- **Generic-point spectrum model.**
+  [`Valuation.forkHomeomorph`](ValuationIntegers/FiniteIntersections/Spectrum.lean):
   for a finite family of pairwise inequivalent rank-one valuations, the
   spectrum is homeomorphic to
   [`Topology.WithGenericPoint`](https://github.com/FormalFrontier/spectral-stone-duality/blob/d7dad16f9308a468bb964c0f13caf896a780621d/SpectralStoneDuality/Topology/GenericPoint.lean).
