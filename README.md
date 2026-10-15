@@ -5,10 +5,20 @@ reusable power-divisibility and Krull-dimension bounds for rank-at-most-one
 valuation rings of integers, and a converse constructing rank-at-most-one data
 from a dimension bound. It also develops finite intersections of valuation
 subrings, their residue maps and prime spectra, using mathlib and the released
-Spectral Stone Duality library for generic-point topology.
+Spectral Stone Duality library for generic-point topology. Equivalent surjective
+valuations into a common cyclic-unit ordered codomain are equal. Its valuation-topology
+API characterizes convergence of powers and recognizes equivalence from the
+specified identity homeomorphism.
 
 ## Headline results
 
+- **Rigidity of normalized valuations.**
+  [`Valuation.isEquiv_iff_eq_of_surjective`](ValuationIntegers/Equivalence.lean):
+  for valuations of any ring into a common linearly ordered commutative group
+  with zero whose units are cyclic, if both valuations are surjective, then
+  `v.IsEquiv w ↔ v = w`. This includes normalized integer-valued valuations
+  and codomains with trivial units; no rank or nontriviality premise is needed.
+  This is algebraic equivalence, not a characterization of equal topologies.
 - **Positive-power divisibility.**
   [`Valuation.Integers.exists_pos_pow_dvd_of_mem_maximalIdeal`](ValuationIntegers/RankLeOnePower.lean):
   for `hv : val.Integers O`, `x` in the maximal ideal and nonzero `y : O`,
@@ -24,6 +34,17 @@ Spectral Stone Duality library for generic-point topology.
   from `hv : val.Integers O` and `Ring.KrullDimLE 1 O`, constructs
   `Nonempty (Valuation.RankLeOne val)` without assuming rank beforehand.
   See the [converse guide](ValuationIntegers/RankLeOneConverse/README.md).
+- **Geometric powers in a valuative topology.**
+  [`IsValuativeTopology.isTopologicallyNilpotent_iff_vlt_one`](ValuationIntegers/Topology.lean):
+  in a ring with a canonical valuative topology of rank at most one, the powers
+  of `x` tend to zero exactly when `x <ᵥ 1`. Separation and commutativity are
+  not required; rank concerns the generated value group, not an ambient codomain.
+- **Topology recognizes valuation equivalence.**
+  [`Valuation.isEquiv_iff_isHomeomorph`](ValuationIntegers/Topology.lean):
+  two rank-at-most-one valuations on a division ring, possibly with different
+  value types, are equivalent iff `WithVal.congr v w (RingEquiv.refl K)` is a
+  homeomorphism. Both rank assumptions are required; trivial valuations are
+  included. The conclusion is equivalence, not equality of normalized values.
 - **Intersections, residue maps and approximation.**
   [`Valuation.intersectionSubring`](ValuationIntegers/FiniteIntersections.lean):
   common valuation integers for an arbitrary family of valuations of a field,
@@ -92,13 +113,15 @@ GitHub `main` contains reviewed releases. Lake resolves it when you add or
 update the dependency; `lake-manifest.json` pins the resolved commit until you
 update again. Replace `main` with a release commit to pin explicitly.
 
-`import ValuationIntegers` exports the rank/dimension results and the intersection
-API, including the finite-intersection classification and spectrum results;
+`import ValuationIntegers` exports normalized valuation rigidity, rank/dimension,
+valuation-topology and intersection APIs, including the finite-intersection
+classification and spectrum results. Import `ValuationIntegers.Equivalence` for
+rigidity alone;
 alternatively import
 `ValuationIntegers.RankLeOnePower` or
 `ValuationIntegers.RankLeOneDimension` or
-`ValuationIntegers.RankLeOneConverse` individually. The forward dimension
-module imports the power module; the converse imports mathlib directly.
+`ValuationIntegers.RankLeOneConverse` or `ValuationIntegers.Topology` individually.
+The forward dimension module imports the power module; the converse imports mathlib directly.
 With an existing rank instance, the forward results apply:
 
 ```lean
@@ -117,12 +140,27 @@ have hpower : ∃ n : ℕ, 0 < n ∧ y ∣ x ^ n :=
   hv.exists_pos_pow_dvd_of_mem_maximalIdeal x hx y hy
 ```
 
+For `[IsValuativeTopology R]` and `[ValuativeRel.IsRankLeOne R]`, use
+`IsValuativeTopology.isTopologicallyNilpotent_iff_vlt_one.mpr hx` to turn
+`hx : x <ᵥ 1` into convergence of powers. For valuations `v,w` on a division
+ring with `[v.RankLeOne] [w.RankLeOne]`, use
+`(Valuation.isEquiv_iff_isHomeomorph v w).mpr h` to recover equivalence from
+the specified identity homeomorphism `h`. The canonical `WithVal` rank instance
+uses the generated value group, so ambient Archimedeanness is unnecessary.
+
 `ValuationIntegersTest` is a separate ordinary-import client target, *not*
 exported from `ValuationIntegers`. The linked guides give proof outlines and
 specializations. Clients exercise dimension zero for a trivial valuation on
 `ℚ`, empty and repeated families, distinct adic places over `ZMod 2`, and
 localization at a trivial place whose residue map is not surjective in a
-mixed family.
+mixed family. The [normalization client](ValuationIntegersTest/Equivalence.lean)
+uses the canonical valuation on the fraction field of `PowerSeries ℚ`; squaring
+its values gives an unequal equivalent valuation that is not surjective,
+showing why both normalization premises are needed.
+[`ValuationIntegersTest.Topology`](ValuationIntegersTest/Topology.lean) contains
+usual 2-adic power convergence and a heterogeneous restricted-value comparison,
+the trivial valuation, an independent nonseparated product-ring boundary, and
+recovery of mathlib's ambient-Archimedean `Valued` power criterion.
 
 ## Building
 
@@ -156,6 +194,11 @@ separate pairwise-inequivalence and rank-one hypotheses.
 
 ## References
 
+- I. B. Fesenko and S. V. Vostokov, *Local Fields and Their Extensions*, second
+  edition, Chapter I, (3.5)–(3.6): normalized discrete valuation rigidity,
+  geometric powers and topology recognition. Here algebraic rigidity is
+  generalized to rings and cyclic-unit codomains, while topology recognizes
+  equivalence of rank-at-most-one valuations on division rings.
 - Fujiwara--Kato, *Foundations of Rigid Geometry I*, Remark 2.2.4(2).
   Motivation for finite valuation intersections, not an exact source for the
   generalized rank-at-most-one and trivial-place statements.
@@ -163,8 +206,11 @@ separate pairwise-inequivalence and rank-one hypotheses.
   §2. The antecedent credit to Y. Ershov follows Schröer's presentation;
   Ershov's original text was not consulted.
 - [Mathlib contributors](https://github.com/leanprover-community/mathlib4):
-  valuation subrings, full residue fields, discrete value groups and real
-  absolute-value weak approximation.
+  valuation subrings, full residue fields, discrete value groups, cyclic
+  ordered-group classification, integer ordered-automorphism uniqueness,
+  geometric-power convergence, valuation uniform equivalences and real
+  absolute-value weak approximation. The identity-homeomorphism API and
+  power-transfer argument follow Michael Stoll's absolute-value equivalence theorem.
 
 ## Credits and license
 

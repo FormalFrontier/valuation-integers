@@ -4,9 +4,11 @@ Authors: Formal Frontier Agents
 -/
 module
 
+import ValuationIntegersTest.Equivalence
 import ValuationIntegersTest.RankLeOnePower
 import ValuationIntegersTest.RankLeOneDimension
 import ValuationIntegersTest.RankLeOneConverse
+import ValuationIntegersTest.Topology
 import ValuationIntegersTest.FiniteIntersections
 import ValuationIntegersTest.FiniteIntersectionsAdic
 import ValuationIntegersTest.GenericForkCompatibility

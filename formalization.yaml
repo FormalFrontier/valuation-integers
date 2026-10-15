@@ -9,7 +9,12 @@ project:
     residue-field maps. Finite rank-at-most-one intersections have classified
     primes, dimension at most one and finite spectra whose nonempty opens
     contain zero. Finite pairwise inequivalent rank-one intersections have a
-    separately hypothesized generic-point fork homeomorphism.
+    separately hypothesized generic-point fork homeomorphism. Equivalent
+    surjective valuations of a ring into a common cyclic-unit linearly ordered
+    commutative group with zero are equal. A canonical rank-at-most-one
+    valuative topology detects values less than one by convergence of powers;
+    for division rings, the specified identity homeomorphism recognizes
+    equivalence of two rank-at-most-one valuations.
   authors:
     - Formal Frontier Agents
   responsible_maintainers:
@@ -24,12 +29,30 @@ sources:
       with earlier project proofs and clients adapted into this library.
       This is not copied source text or a claim of endorsement by any
       external source author; no source-specific coverage is asserted.
+  - title: Local Fields and Their Extensions
+    authors:
+      - I. B. Fesenko
+      - S. V. Vostokov
+    type: book
+    location: Second edition, Chapter I, (3.5)–(3.6)
+    relationship: adapts
+    note: >-
+      Normalized discrete valuation rigidity, geometric powers and topology
+      recognition motivate the algebraic rigidity theorem, ring-general power
+      criterion and heterogeneous division-ring equivalence theorem.
+      Algebraic rigidity assumes a common cyclic-unit codomain and both
+      valuations surjective; topology recognition concerns equivalence, not
+      equality of normalized values. No source-specific coverage is asserted.
 related_formalizations:
   - id: https://github.com/leanprover-community/mathlib4
     relationship: builds-on
     note: >-
-      Uses native valuation rank, integers, value-group, local-ring,
-      ideal, Krull-dimension, discrete adic valuation and quotient APIs.
+      Uses Mathlib valuation rank, integers, value-group, local-ring,
+      ideal, Krull-dimension, discrete adic valuation and quotient APIs,
+      cyclic ordered-group classification and integer ordered-automorphism
+      uniqueness. The topology results use canonical valuative topologies,
+      generated value groups and valuation uniform equivalences, and follow
+      Michael Stoll's absolute-value identity-homeomorphism API and power-transfer argument.
   - id: https://github.com/FormalFrontier/spectral-stone-duality
     relationship: builds-on
     note: >-
@@ -63,7 +86,16 @@ status:
     generic-point fork Topology.WithGenericPoint of Spectral Stone Duality
     to the spectrum. Diagonal uniformizers additionally
     require discreteness. These results about spectra are not a representation
-    theorem. No source-specific coverage is asserted.
+    theorem. Equivalent surjective valuations of an arbitrary ring into a
+    common linearly ordered commutative group with zero having cyclic units
+    are equal, including trivial unit groups. Both surjectivity premises are
+    essential for this algebraic rigidity theorem. For arbitrary rings,
+    a rank-at-most-one valuative topology has powers tending to zero exactly
+    at values less than one, without separation or ambient Archimedeanness.
+    For division rings, two rank-at-most-one valuations are equivalent exactly
+    when the specified underlying identity between their WithVal spaces is a
+    homeomorphism. The value types may differ, and trivial valuations are
+    included. No source-specific coverage is asserted.
 review:
   status: agent-reviewed
   notes: >-
@@ -75,12 +107,18 @@ alignment:
     Selected public library API inventory, not a source-passage or coverage mapping.
     Private client fixtures and imported mathlib declarations are excluded.
   statements:
+    - lean: Valuation.isEquiv_iff_eq_of_surjective
+      module: ValuationIntegers/Equivalence.lean
     - lean: Valuation.Integers.exists_pos_pow_dvd_of_mem_maximalIdeal
       module: ValuationIntegers/RankLeOnePower.lean
     - lean: Valuation.Integers.krullDimLE_one
       module: ValuationIntegers/RankLeOneDimension.lean
     - lean: Valuation.Integers.nonempty_rankLeOne_of_krullDimLE_one
       module: ValuationIntegers/RankLeOneConverse.lean
+    - lean: IsValuativeTopology.isTopologicallyNilpotent_iff_vlt_one
+      module: ValuationIntegers/Topology.lean
+    - lean: Valuation.isEquiv_iff_isHomeomorph
+      module: ValuationIntegers/Topology.lean
     - lean: Valuation.intersectionSubring
       module: ValuationIntegers/FiniteIntersections.lean
     - lean: Valuation.intersectionResidueProduct
@@ -124,7 +162,10 @@ acknowledgements: >-
   guides distinguish their roles and credit mathlib contributors, including
   Jingting Wang, Mario Carneiro, María Inés de Frutos-Fernández,
   Filippo A. E. Nuccio, Antoine Chambert-Loir, Yakov Pechersky and Kenny Lau.
-  Mathlib supplies native rank, valuation, local-ring and dimension foundations
+  Mathlib supplies rank, valuation, local-ring and dimension foundations
   and retains its contributors' Apache-2.0 notices. The finite-intersection
   motivation follows Stefan Schröer's presentation, with antecedent credit
   to Y. Ershov conveyed through Schröer rather than direct consultation.
+  The valuation-topology arguments adapt Fesenko–Vostokov and follow Mathlib's
+  geometric-power convergence, valuation uniform equivalences and Michael
+  Stoll's absolute-value topology-recognition proof.
