@@ -23,10 +23,13 @@ project:
     extensions induce dense integer algebra maps and bijective residue maps,
     specializing to a reduction-compatible residue equivalence for the uniform
     completion at arbitrary valuation rank.
+    Bounded submodules of finite-dimensional
+    normed spaces over complete fields are finitely generated over Noetherian coefficient
+    rings whose images contain the norm unit ball, with an extension-integer application.
   authors:
     - Formal Frontier Agents
   responsible_maintainers:
-    - Anchor
+    - Formal Frontier Agents
   license: Apache-2.0
 sources:
   - title: "Valuation integers: power divisibility, dimension bound and rank converse"
@@ -42,7 +45,7 @@ sources:
       - I. B. Fesenko
       - S. V. Vostokov
     type: book
-    location: Second edition (2002), Chapter I, (3.5)–(3.6), (4.2)–(4.4), (4.5)(1)
+    location: Second edition (2002), Chapter I, (3.5)–(3.6), (4.2)–(4.4), (4.5)(1), and Chapter II, §2
     relationship: adapts
     note: >-
       Normalized discrete valuation rigidity, geometric powers and topology
@@ -56,6 +59,9 @@ sources:
       generalizes the completion residue assertion, not its full valued-extension
       uniqueness or sequence-quotient construction. No source-specific coverage
       is asserted, and no redistribution license for the book is inferred.
+      The finite-extension integer-ring argument
+      motivates bounded-submodule finite generation over complete normed fields and its
+      normed-ring application with separate norm cutoffs.
 related_formalizations:
   - id: https://github.com/leanprover-community/mathlib4
     relationship: builds-on
@@ -73,6 +79,8 @@ related_formalizations:
       and locality instances, the residue-field functor, quotient topology for
       open subgroups, dense-to-discrete surjectivity and specified p-adic
       completion, integer and reduction comparisons.
+      Bounded-module finiteness uses finite-dimensional continuous coordinates,
+      operator-norm bounds, scalar restriction and Noetherian submodule finiteness.
   - id: https://github.com/FormalFrontier/spectral-stone-duality
     relationship: builds-on
     note: >-
@@ -139,6 +147,12 @@ status:
     the original maximal ideal and reduces to zero, while 1 survives. Integer-map
     surjectivity, full valued-completion uniqueness, sequence-quotient and
     principal-adic-completion comparisons are not asserted.
+    For a complete normed field K and a commutative Noetherian coefficient
+    ring R with compatible scalars and image containing K's norm unit ball, every bounded
+    R-submodule of a finite-dimensional normed K-space is finitely generated. For a
+    finite-dimensional normed K-algebra L with compatible valuation integers, Noetherian
+    base integers, an integral base norm unit ball and norm-bounded extension integers,
+    the extension integers form a finite module.
     No source-specific coverage is asserted.
 review:
   status: partially-agent-reviewed
@@ -184,6 +198,10 @@ alignment:
       module: ValuationIntegers/AbsoluteValueTopology.lean
     - lean: Valuation.absoluteValueUniformEquiv
       module: ValuationIntegers/AbsoluteValueTopology.lean
+    - lean: Submodule.fg_of_isBounded_of_unitBall_subset_range
+      module: ValuationIntegers/BoundedModule.lean
+    - lean: Valuation.module_finite_integer_of_norm_bounds
+      module: ValuationIntegers/BoundedModule.lean
     - lean: Valuation.isEquiv_iff_eq_of_surjective
       module: ValuationIntegers/Equivalence.lean
     - lean: Valuation.Integers.exists_pos_pow_dvd_of_mem_maximalIdeal
@@ -250,3 +268,5 @@ acknowledgements: >-
   Mathlib's supplied valued-field completion and integer, locality, residue,
   dense-image and discrete-quotient APIs; the rational two-adic example uses
   Mathlib's specified p-adic comparisons and reduction maps.
+  The quadratic 5-adic client follows
+  the polynomial and valuation-parity construction in the norm-forms spectral-norm example.

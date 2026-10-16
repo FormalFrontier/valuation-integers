@@ -11,6 +11,9 @@ API characterizes convergence of powers and recognizes equivalence from the
 specified identity homeomorphism. Dense compatible valued-field extensions induce
 dense maps on valuation integers and bijective residue maps; in particular the
 uniform completion has a specified reduction-compatible residue equivalence.
+Bounded submodules of finite-dimensional normed
+spaces have finite generation over suitable Noetherian coefficient rings, giving
+finite-module results for extension integers.
 
 ## Headline results
 
@@ -33,6 +36,17 @@ uniform completion has a specified reduction-compatible residue equivalence.
   topology on the original ring, discreteness or fixed numerical normalization
   is assumed. Mathlib already constructs the uniformity-preserving normed-field
   structure on a rank-one valued field via `Valued.toNormedField`.
+- **Finite generation of bounded modules.**
+  [`Submodule.fg_of_isBounded_of_unitBall_subset_range`](ValuationIntegers/BoundedModule.lean):
+  a bounded R-submodule of a finite-dimensional normed K-space is finitely
+  generated if K is complete, R is commutative Noetherian, the scalar actions
+  are compatible and the image of R contains K's closed unit ball. No norm on
+  R, injectivity or nontrivial-base-norm hypothesis is required.
+  [`Valuation.module_finite_integer_of_norm_bounds`](ValuationIntegers/BoundedModule.lean)
+  applies this to valuations v,w on complete K and a finite-dimensional normed K-algebra
+  L, where L is a normed ring: with `v.HasExtension w` and Noetherian base
+  integers, extension integers are finite if K's norm unit ball is v-integral
+  and every w-integral element has norm at most one.
 - **Rigidity of normalized valuations.**
   [`Valuation.isEquiv_iff_eq_of_surjective`](ValuationIntegers/Equivalence.lean):
   for valuations of any ring into a common linearly ordered commutative group
@@ -146,9 +160,9 @@ GitHub `main` contains reviewed releases. Lake resolves it when you add or
 update the dependency; `lake-manifest.json` pins the resolved commit until you
 update again. Replace `main` with a release commit to pin explicitly.
 
-`import ValuationIntegers` exports normalized valuation rigidity, rank/dimension,
-valuation-topology, completion-residue and intersection APIs, including the
-finite-intersection classification and spectrum results. Import
+`import ValuationIntegers` exports bounded-module finiteness, normalized valuation
+rigidity, rank/dimension, valuation-topology, completion-residue and intersection APIs,
+including the finite-intersection classification and spectrum results. Import
 `ValuationIntegers.Completion` for dense integer/residue transport alone, or
 `ValuationIntegers.Equivalence` for
 rigidity alone, or `ValuationIntegers.AbsoluteValue` for the real absolute-value
@@ -223,6 +237,9 @@ singleton open unit ball. No completion or fixed numerical normalization is requ
 comparisons with `ℚ_[2]`, `ℤ_[2]` and `ZMod 2` give a rational-cast law and a
 commuting reduction square for the same integer map. The nonzero integer `2`
 lies in the original maximal ideal and reduces to zero, while `1` survives.
+[`ValuationIntegersTest.BoundedModule`](ValuationIntegersTest/BoundedModule.lean)
+uses integral pairs in ℚ₅² and the proper quadratic field extension ℚ₅(√5),
+with boundedness, degree and norm cutoffs proved independently of finiteness.
 
 ## Building
 
@@ -265,8 +282,9 @@ a verbatim statement from the source.
 ## References
 
 - I. B. Fesenko and S. V. Vostokov, *Local Fields and Their Extensions*, second
-  edition, Chapter I, (3.5)–(3.6): normalized discrete valuation rigidity,
-  geometric powers and topology recognition. Here algebraic rigidity is
+  edition, Chapter I, (3.5)–(3.6), and Chapter II, §2: normalized discrete valuation
+  rigidity, geometric powers, topology recognition and finite-extension integer
+  modules. Here algebraic rigidity is
   generalized to rings and cyclic-unit codomains, while topology recognizes
   equivalence of rank-at-most-one valuations on division rings.
 - The same work, second edition (2002), Chapter I, (4.2)–(4.4) and (4.5)(1):
@@ -280,6 +298,8 @@ a verbatim statement from the source.
 - Stefan Schröer, *A simple proof for Hochster's Theorem*, arXiv:2606.20016v1,
   §2. The antecedent credit to Y. Ershov follows Schröer's presentation;
   Ershov's original text was not consulted.
+- [Norm-forms quadratic 5-adic model](https://github.com/FormalFrontier/norm-forms/blob/2d4f3696c4f104cb0b79c8cca70002e04862e8e4/NormFormsTests/SpectralNorm.lean):
+  the polynomial and valuation-parity construction used by the quadratic client.
 - [Mathlib contributors](https://github.com/leanprover-community/mathlib4):
   valuation subrings, full residue fields, discrete value groups, cyclic
   ordered-group classification, integer ordered-automorphism uniqueness,

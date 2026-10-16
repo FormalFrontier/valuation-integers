@@ -15,3 +15,4 @@ public import ValuationIntegers.Completion
 public import ValuationIntegers.FiniteIntersections
 public import ValuationIntegers.FiniteIntersections.PrimeIdeals
 public import ValuationIntegers.FiniteIntersections.Spectrum
+public import ValuationIntegers.BoundedModule
