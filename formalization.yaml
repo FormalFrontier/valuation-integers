@@ -22,7 +22,10 @@ project:
     even for different ambient value groups. Dense compatible valued-field
     extensions induce dense integer algebra maps and bijective residue maps,
     specializing to a reduction-compatible residue equivalence for the uniform
-    completion at arbitrary valuation rank.
+    completion at arbitrary valuation rank. A dense ring homomorphism preserving
+    raw values exactly identifies the canonical completion of a valued field
+    with a complete separated valued ring over an arbitrary common value group.
+    Dense exactly value-preserving additive maps of valued rings induce uniformities.
     Bounded submodules of finite-dimensional
     normed spaces over complete fields are finitely generated over Noetherian coefficient
     rings whose images contain the norm unit ball, with an extension-integer application.
@@ -58,9 +61,13 @@ sources:
       equality of normalized values. Completion, integer density and induced
       residue-field identification motivate the completion-residue API and
       rational two-adic example. The arbitrary-rank dense-extension formulation
-      generalizes the completion residue assertion, not its full valued-extension
-      uniqueness or sequence-quotient construction. No source-specific coverage
-      is asserted, and no redistribution license for the book is inferred.
+      generalizes the completion residue assertion. The separate canonical
+      completion comparison assumes a given dense exactly value-preserving ring
+      homomorphism into a complete separated valued ring, with uniqueness among
+      continuous ring homomorphisms agreeing on the base. It does not construct
+      an extension of a prescribed valuation or the book's sequence-quotient model.
+      No source-specific coverage is asserted, and no redistribution license
+      for the book is inferred.
       The finite-extension integer-ring argument
       motivates bounded-submodule finite generation over complete normed fields and its
       normed-ring application with separate norm cutoffs.
@@ -93,7 +100,10 @@ related_formalizations:
       valuation and its exact restriction equality, HasExtension integer algebra
       and locality instances, the residue-field functor, quotient topology for
       open subgroups, dense-to-discrete surjectivity and specified p-adic
-      completion, integer and reduction comparisons.
+      completion, integer and reduction comparisons. The canonical completion
+      comparison reuses UniformSpace.Completion.extensionHom and
+      IsDenseInducing.extendRingHom; exact raw values use nonzero local constancy
+      and the dense base, without continuity into the ambient value group.
       Bounded-module finiteness uses finite-dimensional continuous coordinates,
       operator-norm bounds, scalar restriction and Noetherian submodule finiteness.
       Bernoulli integrality uses the Bernoulli generating function, formal power
@@ -162,8 +172,26 @@ status:
     reduction law. The rational two-adic client compares this integer map and
     residue equivalence with the specified p-adic comparisons: nonzero 2 is in
     the original maximal ideal and reduces to zero, while 1 survives. Integer-map
-    surjectivity, full valued-completion uniqueness, sequence-quotient and
-    principal-adic-completion comparisons are not asserted.
+    surjectivity and principal-adic-completion comparisons are not asserted.
+    Separately, for valued rings over an arbitrary common linearly ordered
+    commutative group with zero, a dense additive homomorphism preserving raw
+    values at every element, including zero, is uniform-inducing and uniformly
+    continuous. No injectivity, multiplicativity, field, separation or completeness
+    hypothesis is needed; ring valuations can have nonzero support. For a valued
+    field K and a complete T0 valued ring L over the same group, a dense ring
+    homomorphism f preserving raw values gives Valued.completionRingEquiv,
+    a ring equivalence from UniformSpace.Completion K to L. Its forward map is
+    Mathlib's Completion.extensionHom; its laws specify stock-extension, base and
+    inverse-base equations, exact raw values and uniform continuity both ways,
+    and uniqueness among continuous ring homomorphisms agreeing with f on K.
+    No source completeness, target field, rank, normalization or surjectivity
+    hypothesis is imposed. The Hahn-series client supplies independent canonical
+    completion hypothesis witnesses without Hahn-field completeness, followed
+    by a separate comparison API exercise. Prescribed-valuation extension existence,
+    normalization, sequential Cauchy-quotient and neighborhood-basis constructions,
+    negative-coordinate conversion, identifications with the book's original
+    integer-ring and maximal-ideal carriers, and a join to residue transport are
+    not supplied; the full Chapter I, section 4 completion construction is not assembled.
     For a complete normed field K and a commutative Noetherian coefficient
     ring R with compatible scalars and image containing K's norm unit ball, every bounded
     R-submodule of a finite-dimensional normed K-space is finitely generated. For a
@@ -190,6 +218,14 @@ alignment:
   statements:
     - lean: Bernoulli.isIntegral_pow_mul_pow_sub_one_mul_bernoulli_div
       module: ValuationIntegers/NumberTheory/BernoulliIntegrality.lean
+    - lean: Valued.isUniformInducing_of_denseRange_of_map_eq
+      module: ValuationIntegers/Completion.lean
+    - lean: Valued.uniformContinuous_of_denseRange_of_map_eq
+      module: ValuationIntegers/Completion.lean
+    - lean: Valued.completionRingEquiv
+      module: ValuationIntegers/Completion.lean
+    - lean: Valued.completionRingEquiv_unique
+      module: ValuationIntegers/Completion.lean
     - lean: Valued.denseRange_algebraMap_integer
       module: ValuationIntegers/Completion.lean
     - lean: Valued.residueFieldMap_bijective_of_denseRange
@@ -289,7 +325,10 @@ acknowledgements: >-
   arguments generalize the Fesenko–Vostokov completion residue assertion using
   Mathlib's supplied valued-field completion and integer, locality, residue,
   dense-image and discrete-quotient APIs; the rational two-adic example uses
-  Mathlib's specified p-adic comparisons and reduction maps.
+  Mathlib's specified p-adic comparisons and reduction maps. The completion
+  comparison reuses Mathlib's UniformSpace.Completion.extensionHom and
+  IsDenseInducing.extendRingHom machinery; the Hahn-series client uses its
+  HahnSeries, AddValuation.toValuation, WithVal and canonical completion APIs.
   The quadratic 5-adic client follows
   the polynomial and valuation-parity construction in the norm-forms spectral-norm example.
   Bernoulli integrality follows Hatcher's logarithmic-derivative method using

@@ -11,6 +11,8 @@ API characterizes convergence of powers and recognizes equivalence from the
 specified identity homeomorphism. Dense compatible valued-field extensions induce
 dense maps on valuation integers and bijective residue maps; in particular the
 uniform completion has a specified reduction-compatible residue equivalence.
+A dense ring homomorphism preserving raw values exactly canonically identifies
+that completion with a complete separated valued ring over the same value group.
 Bounded submodules of finite-dimensional normed
 spaces have finite generation over suitable Noetherian coefficient rings, giving
 finite-module results for extension integers.
@@ -97,6 +99,25 @@ finite-module results for extension integers.
   value types, are equivalent iff `WithVal.congr v w (RingEquiv.refl K)` is a
   homeomorphism. Both rank assumptions are required; trivial valuations are
   included. The conclusion is equivalence, not equality of normalized values.
+- **Canonical comparison with a dense exactly valued completion.**
+  [`Valued.completionRingEquiv f hValue hDense`](ValuationIntegers/Completion.lean) constructs
+  `UniformSpace.Completion K ≃+* L` for `[Field K]`, `[Ring L]`,
+  `[Valued K Γ₀] [Valued L Γ₀]` over an arbitrary common
+  `[LinearOrderedCommGroupWithZero Γ₀]`, with `[CompleteSpace L] [T0Space L]`
+  and `f : K →+* L` of dense range preserving raw values at every element,
+  including zero. Its forward homomorphism is Mathlib's
+  `UniformSpace.Completion.extensionHom`; the API gives stock-extension, base
+  and inverse-base equations, exact raw values and uniform continuity both ways,
+  and uniqueness among **continuous** ring homomorphisms agreeing with `f` on `K`.
+  No source completeness, target field, rank, normalization or surjectivity is assumed.
+  See the [Hahn-series client](ValuationIntegersTest/CompletionComparison.lean).
+- **Uniformity from a dense exactly valued additive map.**
+  [`Valued.isUniformInducing_of_denseRange_of_map_eq`](ValuationIntegers/Completion.lean)
+  takes only `f : R →+ S` between arbitrary valued rings over an arbitrary common
+  linearly ordered commutative group with zero, exact raw values and dense range.
+  It gives `IsUniformInducing` and a uniform-continuity corollary, not injectivity
+  or an embedding: ring valuations can have nonzero support. No multiplicativity,
+  separation, completeness or field hypothesis is needed.
 - **Residue transport along dense valued-field extensions.**
   [`Valued.denseRange_algebraMap_integer`](ValuationIntegers/Completion.lean) and
   [`Valued.residueFieldMap_bijective_of_denseRange`](ValuationIntegers/Completion.lean):
@@ -178,10 +199,11 @@ update the dependency; `lake-manifest.json` pins the resolved commit until you
 update again. Replace `main` with a release commit to pin explicitly.
 
 `import ValuationIntegers` exports bounded-module finiteness, normalized valuation
-rigidity, rank/dimension, valuation-topology, completion-residue and intersection APIs,
+rigidity, rank/dimension, valuation-topology, completion-comparison/residue and intersection APIs,
 including the finite-intersection classification, spectrum and Bernoulli integrality results.
 Import `ValuationIntegers.NumberTheory.BernoulliIntegrality` for Bernoulli integrality alone.
-Import `ValuationIntegers.Completion` for dense integer/residue transport alone, or
+Import `ValuationIntegers.Completion` for the additive uniformity bridge, canonical completion
+comparison and dense integer/residue transport, or
 `ValuationIntegers.Equivalence` for
 rigidity alone, or `ValuationIntegers.AbsoluteValue` for the real absolute-value
 construction and its comparison API. `ValuationIntegers.AbsoluteValueTopology`
@@ -255,6 +277,11 @@ singleton open unit ball. No completion or fixed numerical normalization is requ
 comparisons with `ℚ_[2]`, `ℤ_[2]` and `ZMod 2` give a rational-cast law and a
 commuting reduction square for the same integer map. The nonzero integer `2`
 lies in the original maximal ideal and reduces to zero, while `1` survives.
+[`ValuationIntegersTest.CompletionComparison`](ValuationIntegersTest/CompletionComparison.lean)
+uses `HahnSeries ℤ (ZMod 2)` through `WithVal` and its stock uniform completion.
+Density, exact base values, completeness and separation are witnessed independently
+of the comparison, without assuming Hahn-field completeness; a separate API exercise
+uses these witnesses.
 [`ValuationIntegersTest.BoundedModule`](ValuationIntegersTest/BoundedModule.lean)
 uses integral pairs in ℚ₅² and the proper quadratic field extension ℚ₅(√5),
 with boundedness, degree and norm cutoffs proved independently of finiteness.
@@ -292,13 +319,22 @@ product. At a trivial place in a mixed family, the residue map need not be
 surjective or its contracted ideal maximal. The fork homeomorphism has its
 separate pairwise-inequivalence and rank-one hypotheses.
 
+Completion comparison assumes a given dense ring homomorphism preserving the raw
+valuation into a complete separated valued ring. Its uniqueness is among continuous
+ring homomorphisms agreeing on the base. Target completeness and separation supply
+the canonical unique extension and closed range. This does not construct an extension
+of a prescribed valuation or choose its normalization. Sequential Cauchy-quotient
+and neighborhood-basis constructions, conversion of negative additive-value coordinates,
+and identifications with the book's original integer-ring and maximal-ideal carriers
+are not supplied, nor is the comparison joined to residue transport. These APIs do
+not assemble the full completion construction of Fesenko–Vostokov, Chapter I, §4.
+
 Completion-residue transport concerns the given valued-field uniformity and
 Mathlib's canonical completion, integer algebra map and local residue map. It
-does not assert integer-map surjectivity, full uniqueness as a valued extension,
-an identification with a sequence-quotient construction, or a comparison with
-principal-adic completions of integer rings. The general dense-extension
-formulation extends the source's completion residue-field assertion; it is not
-a verbatim statement from the source.
+does not assert integer-map surjectivity or a comparison with principal-adic
+completions of integer rings. The general dense-extension formulation extends
+the source's completion residue-field assertion; it is not a verbatim statement
+from the source.
 
 ## References
 
@@ -316,8 +352,10 @@ a verbatim statement from the source.
 - The same work, second edition (2002), Chapter I, (4.2)–(4.4) and (4.5)(1):
   completion of a valued field, integer density and its induced residue-field
   identification, with the rational/p-adic example. The dense-extension residue
-  theorem generalizes this completion assertion, without adding a uniqueness or
-  principal-adic comparison theorem.
+  theorem generalizes this completion assertion. The separate canonical completion
+  comparison assumes a given dense exactly value-preserving map into a complete
+  separated valued ring; it does not construct an extension of a prescribed
+  valuation or supply a principal-adic comparison.
 - Fujiwara--Kato, *Foundations of Rigid Geometry I*, Remark 2.2.4(2).
   Motivation for finite valuation intersections, not an exact source for the
   generalized rank-at-most-one and trivial-place statements.
@@ -332,6 +370,9 @@ a verbatim statement from the source.
   geometric-power convergence, valuation uniform equivalences and real
   absolute-value weak approximation. The identity-homeomorphism API and
   power-transfer argument follow Michael Stoll's absolute-value equivalence theorem.
+  The completion comparison reuses Mathlib's `UniformSpace.Completion.extensionHom`
+  and `IsDenseInducing.extendRingHom` machinery. Exact raw values use nonzero local
+  constancy and the dense base, without continuity into the ambient value group.
   Completion-residue transport uses Mathlib's extended valuation, stock
   `Valuation.HasExtension` integer/locality instances, residue-field functor,
   open-subgroup quotient topology, dense-to-discrete surjectivity, and specified
