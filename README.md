@@ -23,6 +23,14 @@ specified identity homeomorphism.
   and the associated absolute values are equivalent exactly when the valuations
   are, even for different ambient value groups. Arbitrary restricted-value radii
   are transported by the same embedding used in finite weak approximation.
+- **The absolute-value topology.**
+  [`Valuation.absoluteValueUniformEquiv`](ValuationIntegers/AbsoluteValueTopology.lean)
+  compares `WithVal v` with `WithAbs v.absoluteValue` on a division ring with
+  `RankLeOne` data. Both directions preserve the underlying element, and the
+  absolute-value metric is ultrametric. Trivial valuations are included; no
+  topology on the original ring, discreteness or fixed numerical normalization
+  is assumed. Mathlib already constructs the uniformity-preserving normed-field
+  structure on a rank-one valued field via `Valued.toNormedField`.
 - **Rigidity of normalized valuations.**
   [`Valuation.isEquiv_iff_eq_of_surjective`](ValuationIntegers/Equivalence.lean):
   for valuations of any ring into a common linearly ordered commutative group
@@ -128,7 +136,8 @@ update again. Replace `main` with a release commit to pin explicitly.
 valuation-topology and intersection APIs, including the finite-intersection
 classification and spectrum results. Import `ValuationIntegers.Equivalence` for
 rigidity alone, or `ValuationIntegers.AbsoluteValue` for the real absolute-value
-construction and its comparison API;
+construction and its comparison API. `ValuationIntegers.AbsoluteValueTopology`
+adds ultrametricity and the specified identity comparison with the valued copy;
 alternatively import
 `ValuationIntegers.RankLeOnePower` or
 `ValuationIntegers.RankLeOneDimension` or
@@ -178,7 +187,9 @@ uses the 2-adic valuation on `ℚ`: its absolute values at `2`, `1` and `1/2`
 are strictly ordered, and restriction to the generated value group preserves
 these comparisons. The trivial valuation gives an absolute value that is
 not nontrivial, showing why the nontriviality assertion requires rank one.
-No completion or fixed numerical normalization is required.
+The identity comparison carries `2` into the open unit ball and `1` outside it,
+and ultrametricity recenters the ball at `2`. The trivial valuation has a
+singleton open unit ball. No completion or fixed numerical normalization is required.
 
 ## Building
 

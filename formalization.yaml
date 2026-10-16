@@ -109,6 +109,10 @@ status:
     norm of Valued.toNormedField over a valued field. Rank-one valuations give
     nontrivial absolute values. The associated absolute values are equivalent
     exactly when the valuations are, even for different ambient value groups.
+    The absolute-value metric is ultrametric, and the specified underlying
+    ring identity compares WithVal v with WithAbs v.absoluteValue as uniform
+    spaces. This comparison includes trivial valuations and chooses no
+    topology on the original division ring or numerical normalization.
     Finite weak approximation uses this construction and transports arbitrary
     positive restricted-value radii through the same specified embedding.
     No source-specific coverage is asserted.
@@ -133,6 +137,12 @@ alignment:
       module: ValuationIntegers/AbsoluteValue.lean
     - lean: Valuation.absoluteValue_isEquiv_iff
       module: ValuationIntegers/AbsoluteValue.lean
+    - lean: Valuation.isNonarchimedean_absoluteValue
+      module: ValuationIntegers/AbsoluteValue.lean
+    - lean: Valuation.isUltrametricDist_absoluteValue
+      module: ValuationIntegers/AbsoluteValueTopology.lean
+    - lean: Valuation.absoluteValueUniformEquiv
+      module: ValuationIntegers/AbsoluteValueTopology.lean
     - lean: Valuation.isEquiv_iff_eq_of_surjective
       module: ValuationIntegers/Equivalence.lean
     - lean: Valuation.Integers.exists_pos_pow_dvd_of_mem_maximalIdeal

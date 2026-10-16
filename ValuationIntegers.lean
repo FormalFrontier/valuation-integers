@@ -6,6 +6,7 @@ module
 
 public import ValuationIntegers.Equivalence
 public import ValuationIntegers.AbsoluteValue
+public import ValuationIntegers.AbsoluteValueTopology
 public import ValuationIntegers.RankLeOnePower
 public import ValuationIntegers.RankLeOneDimension
 public import ValuationIntegers.RankLeOneConverse

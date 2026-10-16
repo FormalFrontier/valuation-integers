@@ -107,6 +107,14 @@ theorem absoluteValue_le_iff (x y : K) :
   simp only [absoluteValue_apply, NNReal.coe_le_coe,
     (RankLeOne.strictMono' (v := v)).le_iff_le, restrict_le_iff]
 
+/-- The absolute value of a rank-at-most-one valuation satisfies the strong triangle inequality.
+This uses the valuation preorder and does not require nontriviality. -/
+theorem isNonarchimedean_absoluteValue : IsNonarchimedean v.absoluteValue := by
+  intro x y
+  change v.absoluteValue (x + y) ≤ max (v.absoluteValue x) (v.absoluteValue y)
+  rw [le_max_iff, absoluteValue_le_iff, absoluteValue_le_iff]
+  exact le_max_iff.mp (v.map_add x y)
+
 /-- Strict comparison of absolute values is strict comparison of valuation values. -/
 @[simp]
 theorem absoluteValue_lt_iff (x y : K) :
