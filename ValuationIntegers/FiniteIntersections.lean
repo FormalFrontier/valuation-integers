@@ -7,9 +7,9 @@ module
 public import Mathlib.RingTheory.Valuation.Discrete.RankOne
 public import Mathlib.RingTheory.Ideal.Quotient.ChineseRemainder
 public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
-public import Mathlib.Analysis.AbsoluteValue.Equivalence
 public import Mathlib.RingTheory.Localization.AtPrime.Basic
 public import Mathlib.RingTheory.Localization.FractionRing
+public import ValuationIntegers.AbsoluteValue
 
 /-!
 # Intersections of valuation subrings and their full residue fields
@@ -203,58 +203,6 @@ theorem ker_intersectionResidueProduct_of_isEmpty [IsEmpty ι] :
 
 section Finite
 
-private noncomputable def realAbsoluteValue (v : Valuation K Γ₀) [v.RankOne] :
-    AbsoluteValue K ℝ where
-  toFun x := (RankOne.hom v (v.restrict x) : ℝ)
-  map_mul' x y := by simp only [map_mul, NNReal.coe_mul]
-  nonneg' x := NNReal.coe_nonneg _
-  eq_zero' x := by
-    rw [NNReal.coe_eq_zero, RankOne.hom_eq_zero_iff, restrict_eq_zero_iff, map_eq_zero]
-  add_le' x y := by
-    change (RankOne.hom v (v.restrict (x + y)) : ℝ) ≤
-      (RankOne.hom v (v.restrict x) : ℝ) + (RankOne.hom v (v.restrict y) : ℝ)
-    rw [← NNReal.coe_add, NNReal.coe_le_coe]
-    calc
-      RankOne.hom v (v.restrict (x + y)) ≤
-          RankOne.hom v (max (v.restrict x) (v.restrict y)) :=
-        (RankOne.strictMono v).monotone (v.restrict.map_add x y)
-      _ = max (RankOne.hom v (v.restrict x)) (RankOne.hom v (v.restrict y)) :=
-        (RankOne.strictMono v).monotone.map_max
-      _ ≤ _ := max_le (le_add_of_nonneg_right zero_le)
-        (le_add_of_nonneg_left zero_le)
-
-private theorem realAbsoluteValue_isNontrivial (v : Valuation K Γ₀) [v.RankOne] :
-    (realAbsoluteValue v).IsNontrivial := by
-  obtain ⟨x, hx₀, hx₁⟩ := RankOne.nontrivial v
-  refine ⟨x, ?_, ?_⟩
-  · intro hzero
-    exact hx₀ (by simp [hzero])
-  · intro h
-    apply hx₁
-    apply (v.restrict_eq_one_iff).mp
-    apply (RankOne.strictMono v).injective
-    change (RankOne.hom v (v.restrict x) : ℝ) = 1 at h
-    have hnn : RankOne.hom v (v.restrict x) = (1 : NNReal) := by exact_mod_cast h
-    exact (by simpa only [map_one] using hnn)
-
-private theorem realAbsoluteValue_isEquiv_iff (v w : Valuation K Γ₀)
-    [v.RankOne] [w.RankOne] :
-    (realAbsoluteValue v).IsEquiv (realAbsoluteValue w) ↔ v.IsEquiv w := by
-  constructor <;> intro h x y
-  · have hxy := h x y
-    change ((RankOne.hom v (v.restrict x) : ℝ) ≤
-      (RankOne.hom v (v.restrict y) : ℝ)) ↔
-      ((RankOne.hom w (w.restrict x) : ℝ) ≤
-        (RankOne.hom w (w.restrict y) : ℝ)) at hxy
-    simpa only [NNReal.coe_le_coe, (RankOne.strictMono v).le_iff_le,
-      (RankOne.strictMono w).le_iff_le, Valuation.restrict_le_iff] using hxy
-  · change ((RankOne.hom v (v.restrict x) : ℝ) ≤
-      (RankOne.hom v (v.restrict y) : ℝ)) ↔
-      ((RankOne.hom w (w.restrict x) : ℝ) ≤
-        (RankOne.hom w (w.restrict y) : ℝ))
-    simpa only [NNReal.coe_le_coe, (RankOne.strictMono v).le_iff_le,
-      (RankOne.strictMono w).le_iff_le, Valuation.restrict_le_iff] using h x y
-
 variable [Finite ι] [∀ i, (val i).RankOne]
   (hindep : Pairwise fun i j => ¬(val i).IsEquiv (val j))
 
@@ -267,17 +215,15 @@ theorem exists_approximation (a : ι → K)
     (hradius : ∀ i, 0 < radius i) :
     ∃ x : K, ∀ i, (val i).restrict (x - a i) < radius i := by
   classical
-  let abv (i : ι) : AbsoluteValue K ℝ := realAbsoluteValue (val i)
-  have hnontrivial (i : ι) : (abv i).IsNontrivial := realAbsoluteValue_isNontrivial (val i)
+  let abv (i : ι) : AbsoluteValue K ℝ := (val i).absoluteValue
+  have hnontrivial (i : ι) : (abv i).IsNontrivial := (val i).absoluteValue_isNontrivial
   have hdistinct : Pairwise fun i j => ¬(abv i).IsEquiv (abv j) := by
     intro i j hij h
-    exact hindep hij ((realAbsoluteValue_isEquiv_iff (val i) (val j)).mp h)
+    exact hindep hij (((val i).absoluteValue_isEquiv_iff (val j)).mp h)
   let center (i : ι) : WithAbs (abv i) := WithAbs.toAbs (abv i) (a i)
-  let epsilon (i : ι) : ℝ := (RankOne.hom (val i) (radius i) : ℝ)
-  have hepsilon (i : ι) : 0 < epsilon i := by
-    have h := (RankOne.strictMono (val i)) (hradius i)
-    rw [map_zero] at h
-    exact_mod_cast h
+  let epsilon (i : ι) : ℝ := (RankLeOne.hom' (val i) (radius i) : ℝ)
+  have hepsilon (i : ι) : 0 < epsilon i :=
+    (RankLeOne.coe_hom'_pos_iff (val i) (radius i)).mpr (hradius i)
   let ball : Set (∀ i, WithAbs (abv i)) :=
     Set.pi Set.univ (fun i => Metric.ball (center i) (epsilon i))
   have hcenter : center ∈ ball := by
@@ -288,12 +234,9 @@ theorem exists_approximation (a : ι → K)
   have hball : dist (WithAbs.toAbs (abv i) x) (center i) < epsilon i := by
     simpa [Pi.algebraMap_apply, WithAbs.algebraMap_right_apply] using
       hx i (Set.mem_univ i)
-  have hreal : (RankOne.hom (val i) ((val i).restrict (x - a i)) : ℝ) <
-      (RankOne.hom (val i) (radius i) : ℝ) := by
-    change dist (WithAbs.toAbs (abv i) x) (WithAbs.toAbs (abv i) (a i)) < epsilon i at hball
-    rw [dist_eq_norm, ← WithAbs.toAbs_sub, WithAbs.norm_toAbs_eq] at hball
-    exact hball
-  exact (RankOne.strictMono (val i)).lt_iff_lt.mp (by exact_mod_cast hreal)
+  have habs : (abv i) (x - a i) < epsilon i := by
+    simpa only [center, dist_eq_norm, ← WithAbs.toAbs_sub, WithAbs.norm_toAbs_eq] using hball
+  exact ((val i).absoluteValue_lt_coe_hom'_iff (x - a i) (radius i)).mp habs
 
 private theorem exists_integral_approximation (a : ι → K)
     (ha : ∀ i, val i (a i) ≤ 1) :

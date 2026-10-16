@@ -12,6 +12,17 @@ specified identity homeomorphism.
 
 ## Headline results
 
+- **Real absolute values of valuations of rank at most one.**
+  [`Valuation.absoluteValue`](ValuationIntegers/AbsoluteValue.lean):
+  a construction on a division ring using the embedding of the restricted
+  value group supplied by its `RankLeOne` data, without a `Valued` instance.
+  These data retain a specified numerical realization. Its comparison lemmas
+  recover the valuation preorder and unit balls, including trivial valuations.
+  In rank one, over a valued field, it agrees with the bundled norm of Mathlib's
+  `Valued.toNormedField`. Rank-one valuations give nontrivial absolute values,
+  and the associated absolute values are equivalent exactly when the valuations
+  are, even for different ambient value groups. Arbitrary restricted-value radii
+  are transported by the same embedding used in finite weak approximation.
 - **Rigidity of normalized valuations.**
   [`Valuation.isEquiv_iff_eq_of_surjective`](ValuationIntegers/Equivalence.lean):
   for valuations of any ring into a common linearly ordered commutative group
@@ -116,7 +127,8 @@ update again. Replace `main` with a release commit to pin explicitly.
 `import ValuationIntegers` exports normalized valuation rigidity, rank/dimension,
 valuation-topology and intersection APIs, including the finite-intersection
 classification and spectrum results. Import `ValuationIntegers.Equivalence` for
-rigidity alone;
+rigidity alone, or `ValuationIntegers.AbsoluteValue` for the real absolute-value
+construction and its comparison API;
 alternatively import
 `ValuationIntegers.RankLeOnePower` or
 `ValuationIntegers.RankLeOneDimension` or
@@ -161,6 +173,12 @@ showing why both normalization premises are needed.
 usual 2-adic power convergence and a heterogeneous restricted-value comparison,
 the trivial valuation, an independent nonseparated product-ring boundary, and
 recovery of mathlib's ambient-Archimedean `Valued` power criterion.
+[`ValuationIntegersTest.AbsoluteValue`](ValuationIntegersTest/AbsoluteValue.lean)
+uses the 2-adic valuation on `ℚ`: its absolute values at `2`, `1` and `1/2`
+are strictly ordered, and restriction to the generated value group preserves
+these comparisons. The trivial valuation gives an absolute value that is
+not nontrivial, showing why the nontriviality assertion requires rank one.
+No completion or fixed numerical normalization is required.
 
 ## Building
 

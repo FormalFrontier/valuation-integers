@@ -14,7 +14,12 @@ project:
     commutative group with zero are equal. A canonical rank-at-most-one
     valuative topology detects values less than one by convergence of powers;
     for division rings, the specified identity homeomorphism recognizes
-    equivalence of two rank-at-most-one valuations.
+    equivalence of two rank-at-most-one valuations. Valuations of rank at most
+    one on division rings also have a real absolute-value construction using
+    the specified rank embedding, with comparison lemmas including trivial
+    valuations. Rank-one valuations give nontrivial absolute values, and the
+    associated absolute values are equivalent exactly when the valuations are,
+    even for different ambient value groups.
   authors:
     - Formal Frontier Agents
   responsible_maintainers:
@@ -53,6 +58,9 @@ related_formalizations:
       uniqueness. The topology results use canonical valuative topologies,
       generated value groups and valuation uniform equivalences, and follow
       Michael Stoll's absolute-value identity-homeomorphism API and power-transfer argument.
+      The real absolute-value construction uses the restricted-value embedding
+      in RankLeOne data and, in rank one, agrees with the bundled norm of
+      Valued.toNormedField.
   - id: https://github.com/FormalFrontier/spectral-stone-duality
     relationship: builds-on
     note: >-
@@ -95,18 +103,36 @@ status:
     For division rings, two rank-at-most-one valuations are equivalent exactly
     when the specified underlying identity between their WithVal spaces is a
     homeomorphism. The value types may differ, and trivial valuations are
-    included. No source-specific coverage is asserted.
+    included. The real absolute-value module constructs an AbsoluteValue on
+    a division ring from rank-at-most-one data, reflects valuation comparisons
+    including trivial valuations, and, in rank one, agrees with the bundled
+    norm of Valued.toNormedField over a valued field. Rank-one valuations give
+    nontrivial absolute values. The associated absolute values are equivalent
+    exactly when the valuations are, even for different ambient value groups.
+    Finite weak approximation uses this construction and transports arbitrary
+    positive restricted-value radii through the same specified embedding.
+    No source-specific coverage is asserted.
 review:
-  status: agent-reviewed
+  status: partially-agent-reviewed
   notes: >-
-    The mathematical results and clients have independent agent review; no
-    human review or source-coverage assessment is claimed.
+    The power, dimension, rigidity, topology and intersection results and
+    their clients have independent agent review, as do the real absolute-value
+    definition and theorem statements. No human review or source-coverage
+    assessment is claimed.
 alignment:
   namespace: Valuation
   note: >-
     Selected public library API inventory, not a source-passage or coverage mapping.
     Private client fixtures and imported mathlib declarations are excluded.
   statements:
+    - lean: Valuation.absoluteValue
+      module: ValuationIntegers/AbsoluteValue.lean
+    - lean: Valuation.absoluteValue_le_iff
+      module: ValuationIntegers/AbsoluteValue.lean
+    - lean: Valuation.absoluteValue_isNontrivial
+      module: ValuationIntegers/AbsoluteValue.lean
+    - lean: Valuation.absoluteValue_isEquiv_iff
+      module: ValuationIntegers/AbsoluteValue.lean
     - lean: Valuation.isEquiv_iff_eq_of_surjective
       module: ValuationIntegers/Equivalence.lean
     - lean: Valuation.Integers.exists_pos_pow_dvd_of_mem_maximalIdeal
