@@ -21,6 +21,15 @@ proof methods, imports, examples and boundaries.
   `-1 - (padicValNat p (2 * k) : ℤ)`. Its positive reduced denominator, given
   by `Rat.den`, has `p`-adic exponent `1 + padicValNat p (2 * k)`.
   These are the selected-prime formulas at a positive even index.
+- **Complete denominators of divided Bernoulli numbers.**
+  [`Bernoulli.factorization_den_bernoulli_div`](ValuationIntegers/NumberTheory/BernoulliFactorization.lean):
+  for `k : ℕ` with `0 < k` and every `p : ℕ`, the reduced denominator of
+  `B_(2*k)/(2*k)` has factorization coordinate `1 + padicValNat p (2 * k)` if
+  `p.Prime ∧ p - 1 ∣ 2 * k`, and zero otherwise.
+  [`Bernoulli.den_bernoulli_div_eq_prod`](ValuationIntegers/NumberTheory/BernoulliFactorization.lean):
+  for every `k : ℕ`, the denominator equals the product of
+  `p ^ (1 + padicValNat p (2 * k))` over primes `p < 2 * k + 2` with
+  `p - 1 ∣ 2 * k`. At `k = 0`, the denominator and empty product are one.
 - **Bernoulli integrality for integer arguments**
   ([`Bernoulli.isIntegral_pow_mul_pow_sub_one_mul_bernoulli_div`](ValuationIntegers/NumberTheory/BernoulliIntegrality.lean)).
   For `n : ℤ` and positive `k : ℕ`, `n^k * (n^k - 1) * (bernoulli k / k)`
@@ -127,6 +136,11 @@ import ValuationIntegers
 
 The root also exports the selected-prime divided Bernoulli formulas; import
 `ValuationIntegers.NumberTheory.Bernoulli` for these formulas alone.
+
+The root also exports the selected-prime divided Bernoulli formulas and the
+complete reduced-denominator factorization and finite-product formulas. Import
+`ValuationIntegers.NumberTheory.Bernoulli` for the selected-prime formulas alone, or
+`ValuationIntegers.NumberTheory.BernoulliFactorization` for the complete denominator API.
 
 The root exports the producer APIs; `ValuationIntegersTest` is a separate ordinary-import
 client target, not a root export. The [import and client guide](docs/Guide.md#imports-and-clients)

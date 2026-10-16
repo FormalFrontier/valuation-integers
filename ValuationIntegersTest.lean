@@ -21,6 +21,7 @@ import ValuationIntegersTest.BoundedModule
 import ValuationIntegersTest.NumberTheory.BernoulliIntegrality
 import ValuationIntegersTest.Power
 import ValuationIntegersTest.DividedBernoulli
+import ValuationIntegersTest.DividedBernoulliFactorization
 
 /-!
 # Valuation-integer examples and boundary cases

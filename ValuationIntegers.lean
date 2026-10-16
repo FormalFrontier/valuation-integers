@@ -21,6 +21,7 @@ public import ValuationIntegers.NumberTheory.DenominatorSupport
 public import ValuationIntegers.NumberTheory.BernoulliIntegrality
 public import ValuationIntegers.Power
 public import ValuationIntegers.NumberTheory.Bernoulli
+public import ValuationIntegers.NumberTheory.BernoulliFactorization
 
 /-!
 # Valuation integers and their arithmetic and topology

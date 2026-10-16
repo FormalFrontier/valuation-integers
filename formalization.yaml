@@ -285,6 +285,10 @@ alignment:
       module: ValuationIntegers/NumberTheory/Bernoulli.lean
     - lean: Bernoulli.padicValNat_den_bernoulli_div
       module: ValuationIntegers/NumberTheory/Bernoulli.lean
+    - lean: Bernoulli.factorization_den_bernoulli_div
+      module: ValuationIntegers/NumberTheory/BernoulliFactorization.lean
+    - lean: Bernoulli.den_bernoulli_div_eq_prod
+      module: ValuationIntegers/NumberTheory/BernoulliFactorization.lean
     - lean: Rat.sub_one_dvd_of_dvd_den_of_forall_isIntegral_pow_mul_pow_sub_one_mul
       module: ValuationIntegers/NumberTheory/DenominatorSupport.lean
     - lean: Bernoulli.sub_one_dvd_of_dvd_den_bernoulli_div
