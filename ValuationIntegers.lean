@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 module
 
 public import ValuationIntegers.Equivalence
+public import ValuationIntegers.DiscreteRoots
 public import ValuationIntegers.AbsoluteValue
 public import ValuationIntegers.AbsoluteValueTopology
 public import ValuationIntegers.RankLeOnePower

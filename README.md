@@ -17,6 +17,17 @@ finite-module results for extension integers.
 
 ## Headline results
 
+- **Discrete values of elements with roots of all depths.**
+  [`Valuation.eq_zero_or_eq_one_of_forall_exists_pow_eq`](ValuationIntegers/DiscreteRoots.lean):
+  for an arbitrary `[Ring R]`, an integer-valued valuation `v : Valuation R ℤᵐ⁰`
+  and a natural `q > 1`, if `x` admits a `q ^ n`-th root for every natural `n`,
+  then `v x = 0 ∨ v x = 1`. Zero is included and the roots need not be compatible;
+  no commutativity, field structure, characteristic or topology is assumed.
+  The [Laurent-series client](ValuationIntegersTest/DiscreteRoots.lean) applies
+  this to the constant two in `LaurentSeries (ZMod 3)`, obtaining value one.
+  Its canonical valuation is nontrivial, and the series `X` shows why `q = 1`
+  is excluded. The proof reuses Mathlib's `FiniteMultiplicity.not_iff_forall`
+  and `Int.finiteMultiplicity_iff`, with the stock `WithZero` logarithm.
 - **Real absolute values of valuations of rank at most one.**
   [`Valuation.absoluteValue`](ValuationIntegers/AbsoluteValue.lean):
   a construction on a division ring using the embedding of the restricted
