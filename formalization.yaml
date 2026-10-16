@@ -31,6 +31,9 @@ project:
     rings whose images contain the norm unit ball, with an extension-integer application.
     For every integer n and positive natural k, the rational expression
     n^k * (n^k - 1) * (bernoulli k / k) is integral over the integers.
+    More generally, if n^k * (n^k - 1) * q is integral for every natural n,
+    every prime p in the reduced denominator of q satisfies p - 1 divides k.
+    This includes k = 0 and applies to divided Bernoulli numbers at every index.
   authors:
     - Formal Frontier Agents
   responsible_maintainers:
@@ -75,15 +78,18 @@ sources:
     authors:
       - Allen Hatcher
     type: book
-    location: Version 2.2 (November 2017), Lemma 4.12, printed p. 117
+    location: Version 2.2 (November 2017), §4.1, Lemma 4.12, printed p. 117, and the following argument in the proof of Theorem 4.9
     relationship: adapts
     note: >-
       The Bernoulli integrality statement for all integer arguments and positive
       natural indices, proved by the logarithmic-derivative method using finite
       exponential sums and integer Euler-polynomial numerators. The index-one
-      case uses Mathlib's convention bernoulli 1 = -1/2. No source prose or PDF
-      is reproduced, no redistribution license for the book is inferred, and
-      no source-specific coverage is asserted.
+      case uses Mathlib's convention bernoulli 1 = -1/2. The following
+      prime-cancellation argument is generalized to an arbitrary rational
+      coefficient whose products n^k * (n^k - 1) * q are integral for every
+      natural n. It bounds prime support, not exact denominator exponents.
+      No source prose or PDF is reproduced, no redistribution license for the
+      book is inferred, and no source-specific coverage is asserted.
 related_formalizations:
   - id: https://github.com/leanprover-community/mathlib4
     relationship: builds-on
@@ -107,7 +113,10 @@ related_formalizations:
       Bounded-module finiteness uses finite-dimensional continuous coordinates,
       operator-norm bounds, scalar restriction and Noetherian submodule finiteness.
       Bernoulli integrality uses the Bernoulli generating function, formal power
-      series, polynomial derivations and rational-integrality APIs.
+      series, polynomial derivations and rational-integrality APIs. Rational
+      denominator support uses integer witnesses for integral rational numbers,
+      reduced numerator-denominator coprimality and the exponent and cardinality
+      of the cyclic group of units of a finite field.
   - id: https://github.com/FormalFrontier/spectral-stone-duality
     relationship: builds-on
     note: >-
@@ -201,6 +210,11 @@ status:
     For every n : Int and k : Nat with 0 < k, the rational number
     n^k * (n^k - 1) * (bernoulli k / k) is integral over Int. This includes
     zero and negative arguments and the index-one case with bernoulli 1 = -1/2.
+    For q : Rat and k : Nat, integrality of n^k * (n^k - 1) * q for all natural
+    n implies p - 1 divides k for every prime p dividing q.den. The zero
+    exponent is included. Applied to divided Bernoulli numbers, this restricts
+    prime support at every natural index, without computing exact denominator
+    exponents. The model q = 1/12, k = 2 also shows why primality is necessary.
     No source-specific coverage is asserted.
 review:
   status: partially-agent-reviewed
@@ -216,6 +230,10 @@ alignment:
     Selected public library API inventory, not a source-passage or coverage mapping.
     Private client fixtures and imported mathlib declarations are excluded.
   statements:
+    - lean: Rat.sub_one_dvd_of_dvd_den_of_forall_isIntegral_pow_mul_pow_sub_one_mul
+      module: ValuationIntegers/NumberTheory/DenominatorSupport.lean
+    - lean: Bernoulli.sub_one_dvd_of_dvd_den_bernoulli_div
+      module: ValuationIntegers/NumberTheory/BernoulliIntegrality.lean
     - lean: Bernoulli.isIntegral_pow_mul_pow_sub_one_mul_bernoulli_div
       module: ValuationIntegers/NumberTheory/BernoulliIntegrality.lean
     - lean: Valued.isUniformInducing_of_denseRange_of_map_eq
@@ -333,4 +351,6 @@ acknowledgements: >-
   the polynomial and valuation-parity construction in the norm-forms spectral-norm example.
   Bernoulli integrality follows Hatcher's logarithmic-derivative method using
   Mathlib's Bernoulli generating function, formal power series, polynomial
-  derivations and rational-integrality APIs.
+  derivations and rational-integrality APIs. The rational denominator-support
+  criterion generalizes Hatcher's prime-cancellation argument using Mathlib's
+  rational-root, coprimality, finite-field cyclicity and group-exponent APIs.

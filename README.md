@@ -25,6 +25,16 @@ finite-module results for extension integers.
   `n^k * (n^k - 1) * (bernoulli k / k)` is integral over `ℤ` as a rational number.
   This is Hatcher's Lemma 4.12, including negative arguments and the index-one
   case with Mathlib's convention `bernoulli 1 = -1/2`.
+- **Prime support of rational denominators.**
+  [`Rat.sub_one_dvd_of_dvd_den_of_forall_isIntegral_pow_mul_pow_sub_one_mul`](ValuationIntegers/NumberTheory/DenominatorSupport.lean):
+  if `q : ℚ` and `k : ℕ` satisfy integrality over `ℤ` of
+  `n^k * (n^k - 1) * q` for every natural `n`, then every prime `p` dividing
+  the reduced denominator `q.den` satisfies `p - 1 ∣ k`. This includes `k = 0`.
+  Applying this to Bernoulli integrality gives
+  [`Bernoulli.sub_one_dvd_of_dvd_den_bernoulli_div`](ValuationIntegers/NumberTheory/BernoulliIntegrality.lean)
+  for every natural index, including zero and one. These are restrictions on
+  prime support, not exact denominator exponents. Primality is essential:
+  `q = 1/12` and `k = 2` satisfy the integrality condition, but `4 - 1 ∤ 2`.
 - **Discrete values of elements with roots of all depths.**
   [`Valuation.eq_zero_or_eq_one_of_forall_exists_pow_eq`](ValuationIntegers/DiscreteRoots.lean):
   for an arbitrary `[Ring R]`, an integer-valued valuation `v : Valuation R ℤᵐ⁰`
@@ -200,8 +210,11 @@ update again. Replace `main` with a release commit to pin explicitly.
 
 `import ValuationIntegers` exports bounded-module finiteness, normalized valuation
 rigidity, rank/dimension, valuation-topology, completion-comparison/residue and intersection APIs,
-including the finite-intersection classification, spectrum and Bernoulli integrality results.
-Import `ValuationIntegers.NumberTheory.BernoulliIntegrality` for Bernoulli integrality alone.
+including the finite-intersection classification, spectrum, Bernoulli integrality
+and denominator-support results.
+Import `ValuationIntegers.NumberTheory.BernoulliIntegrality` for Bernoulli integrality
+and its denominator-support corollary, or
+`ValuationIntegers.NumberTheory.DenominatorSupport` for the rational criterion alone.
 Import `ValuationIntegers.Completion` for the additive uniformity bridge, canonical completion
 comparison and dense integer/residue transport, or
 `ValuationIntegers.Equivalence` for
@@ -287,7 +300,10 @@ uses integral pairs in ℚ₅² and the proper quadratic field extension ℚ₅(
 with boundedness, degree and norm cutoffs proved independently of finiteness.
 [`ValuationIntegersTest.NumberTheory.BernoulliIntegrality`](ValuationIntegersTest/NumberTheory/BernoulliIntegrality.lean)
 computes independent values `1`, `-2` and `-1` at `(2, 2)`, `(2, 4)` and
-`(-1, 1)`, and applies the public integrality theorem at `(2, 2)`.
+`(-1, 1)`, and applies the public integrality theorem at `(2, 2)`. It also
+uses the all-natural-number model `q = 1/12`, `k = 2`, the zero-exponent
+model `q = 1/5`, and the composite-denominator boundary above; the
+Bernoulli corollary excludes prime `5` from the denominator at index `2`.
 
 ## Building
 
@@ -339,10 +355,12 @@ from the source.
 ## References
 
 - Allen Hatcher, *Vector Bundles and K-Theory*, version 2.2 (November 2017),
-  Lemma 4.12, printed p. 117: the Bernoulli integrality statement and
-  logarithmic-derivative proof method. The Lean proof uses Mathlib's Bernoulli
-  generating function, formal power series, polynomial derivations and
-  rational-integrality APIs; no source prose or PDF is reproduced.
+  §4.1, Lemma 4.12, printed p. 117: the Bernoulli integrality statement and
+  logarithmic-derivative proof method; the prime-cancellation argument following
+  the lemma in the proof of Theorem 4.9 motivates the rational denominator criterion.
+  The Lean proofs use Mathlib's Bernoulli generating function, formal power series,
+  polynomial derivations, rational-integrality and finite-field cyclic-unit
+  exponent APIs; no source prose or PDF is reproduced.
 - I. B. Fesenko and S. V. Vostokov, *Local Fields and Their Extensions*, second
   edition, Chapter I, (3.5)–(3.6), and Chapter II, §2: normalized discrete valuation
   rigidity, geometric powers, topology recognition and finite-extension integer

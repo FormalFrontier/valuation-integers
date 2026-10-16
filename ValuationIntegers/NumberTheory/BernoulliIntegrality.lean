@@ -7,6 +7,7 @@ module
 public import Mathlib.NumberTheory.Bernoulli
 public import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
 public import Mathlib.RingTheory.Polynomial.RationalRoot
+public import ValuationIntegers.NumberTheory.DenominatorSupport
 import Mathlib.Algebra.Polynomial.Derivation
 import Mathlib.Algebra.Ring.Int.Parity
 import Mathlib.Tactic.Ring
@@ -314,5 +315,25 @@ theorem isIntegral_pow_mul_pow_sub_one_mul_bernoulli_div
   rw [hcoefficient, ← mul_assoc] at hz
   rw [hz]
   exact isIntegral_intCast z
+
+/-- Every prime in the reduced denominator of `bernoulli k / k` satisfies
+`p - 1 ∣ k`. For positive `k`, use the integrality of
+`n^k * (n^k - 1) * (bernoulli k / k)` from Hatcher's *Vector Bundles and K-Theory*,
+Lemma 4.12, and the prime-cancellation argument following that lemma in the proof
+of Theorem 4.9 (§4.1). At `k = 0`, the conclusion holds because every natural
+number divides zero.
+The statement includes index one, with `bernoulli 1 = -1/2`, and odd indices
+above one, where the quotient is zero. -/
+theorem sub_one_dvd_of_dvd_den_bernoulli_div
+    (k p : ℕ) (hp : p.Prime)
+    (hden : p ∣ (bernoulli k / (k : ℚ)).den) : p - 1 ∣ k := by
+  cases k with
+  | zero => exact dvd_zero _
+  | succ k =>
+    refine Rat.sub_one_dvd_of_dvd_den_of_forall_isIntegral_pow_mul_pow_sub_one_mul
+      (bernoulli k.succ / (k.succ : ℚ)) k.succ p hp ?_ hden
+    intro n
+    simpa only [Int.cast_natCast] using
+      isIntegral_pow_mul_pow_sub_one_mul_bernoulli_div (n : ℤ) k.succ (Nat.succ_pos k)
 
 end Bernoulli
