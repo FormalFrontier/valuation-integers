@@ -8,7 +8,9 @@ subrings, their residue maps and prime spectra, using mathlib and the released
 Spectral Stone Duality library for generic-point topology. Equivalent surjective
 valuations into a common cyclic-unit ordered codomain are equal. Its valuation-topology
 API characterizes convergence of powers and recognizes equivalence from the
-specified identity homeomorphism.
+specified identity homeomorphism. Dense compatible valued-field extensions induce
+dense maps on valuation integers and bijective residue maps; in particular the
+uniform completion has a specified reduction-compatible residue equivalence.
 
 ## Headline results
 
@@ -64,6 +66,18 @@ specified identity homeomorphism.
   value types, are equivalent iff `WithVal.congr v w (RingEquiv.refl K)` is a
   homeomorphism. Both rank assumptions are required; trivial valuations are
   included. The conclusion is equivalence, not equality of normalized values.
+- **Residue transport along dense valued-field extensions.**
+  [`Valued.denseRange_algebraMap_integer`](ValuationIntegers/Completion.lean) and
+  [`Valued.residueFieldMap_bijective_of_denseRange`](ValuationIntegers/Completion.lean):
+  a dense field algebra map compatible through Mathlib's `Valuation.HasExtension`
+  induces a **dense**, not necessarily surjective, integer algebra map and a
+  bijective map on residue fields. The fields and their value groups may have
+  independent universes and different equivalent normalizations. No rank,
+  discreteness, nontriviality, completeness or finite/perfect-residue assumption
+  is imposed. The completion specialization
+  [`Valued.residueFieldCompletionEquiv`](ValuationIntegers/Completion.lean) is a
+  `RingEquiv.ofBijective` over the induced residue map of the canonical integer
+  algebra map, with homomorphism and reduction-commuting laws fixing that map.
 - **Intersections, residue maps and approximation.**
   [`Valuation.intersectionSubring`](ValuationIntegers/FiniteIntersections.lean):
   common valuation integers for an arbitrary family of valuations of a field,
@@ -133,8 +147,10 @@ update the dependency; `lake-manifest.json` pins the resolved commit until you
 update again. Replace `main` with a release commit to pin explicitly.
 
 `import ValuationIntegers` exports normalized valuation rigidity, rank/dimension,
-valuation-topology and intersection APIs, including the finite-intersection
-classification and spectrum results. Import `ValuationIntegers.Equivalence` for
+valuation-topology, completion-residue and intersection APIs, including the
+finite-intersection classification and spectrum results. Import
+`ValuationIntegers.Completion` for dense integer/residue transport alone, or
+`ValuationIntegers.Equivalence` for
 rigidity alone, or `ValuationIntegers.AbsoluteValue` for the real absolute-value
 construction and its comparison API. `ValuationIntegers.AbsoluteValueTopology`
 adds ultrametricity and the specified identity comparison with the valued copy;
@@ -169,6 +185,18 @@ ring with `[v.RankLeOne] [w.RankLeOne]`, use
 the specified identity homeomorphism `h`. The canonical `WithVal` rank instance
 uses the generated value group, so ambient Archimedeanness is unnecessary.
 
+For valued fields `K,L` with `[Algebra K L]` and the stock `Valuation.HasExtension`
+instance, `Valued.denseRange_algebraMap_integer hd` restricts
+`hd : DenseRange (algebraMap K L)` to the valuation integers, while
+`Valued.residueFieldMap_bijective_of_denseRange hd` applies to exactly
+`IsLocalRing.ResidueField.map (algebraMap 𝒪[K] 𝒪[L])`.
+For `UniformSpace.Completion K`, `Valued.hasExtension_completion` follows from
+Mathlib's equality `Valued.valuedCompletion_apply` for the original valuation,
+and the density input is `UniformSpace.Completion.denseRange_coe`.
+The laws `Valued.residueFieldCompletionEquiv_toRingHom` and
+`Valued.residueFieldCompletionEquiv_residue` identify the forward map and its
+value on every reduced integer without unfolding the equivalence.
+
 `ValuationIntegersTest` is a separate ordinary-import client target, *not*
 exported from `ValuationIntegers`. The linked guides give proof outlines and
 specializations. Clients exercise dimension zero for a trivial valuation on
@@ -190,6 +218,11 @@ not nontrivial, showing why the nontriviality assertion requires rank one.
 The identity comparison carries `2` into the open unit ball and `1` outside it,
 and ultrametricity recenters the ball at `2`. The trivial valuation has a
 singleton open unit ball. No completion or fixed numerical normalization is required.
+[`ValuationIntegersTest.Completion`](ValuationIntegersTest/Completion.lean) uses
+`WithVal (Rat.padicValuation 2)` and its uniform completion. Mathlib's specified
+comparisons with `ℚ_[2]`, `ℤ_[2]` and `ZMod 2` give a rational-cast law and a
+commuting reduction square for the same integer map. The nonzero integer `2`
+lies in the original maximal ideal and reduces to zero, while `1` survives.
 
 ## Building
 
@@ -221,6 +254,14 @@ product. At a trivial place in a mixed family, the residue map need not be
 surjective or its contracted ideal maximal. The fork homeomorphism has its
 separate pairwise-inequivalence and rank-one hypotheses.
 
+Completion-residue transport concerns the given valued-field uniformity and
+Mathlib's canonical completion, integer algebra map and local residue map. It
+does not assert integer-map surjectivity, full uniqueness as a valued extension,
+an identification with a sequence-quotient construction, or a comparison with
+principal-adic completions of integer rings. The general dense-extension
+formulation extends the source's completion residue-field assertion; it is not
+a verbatim statement from the source.
+
 ## References
 
 - I. B. Fesenko and S. V. Vostokov, *Local Fields and Their Extensions*, second
@@ -228,6 +269,11 @@ separate pairwise-inequivalence and rank-one hypotheses.
   geometric powers and topology recognition. Here algebraic rigidity is
   generalized to rings and cyclic-unit codomains, while topology recognizes
   equivalence of rank-at-most-one valuations on division rings.
+- The same work, second edition (2002), Chapter I, (4.2)–(4.4) and (4.5)(1):
+  completion of a valued field, integer density and its induced residue-field
+  identification, with the rational/p-adic example. The dense-extension residue
+  theorem generalizes this completion assertion, without adding a uniqueness or
+  principal-adic comparison theorem.
 - Fujiwara--Kato, *Foundations of Rigid Geometry I*, Remark 2.2.4(2).
   Motivation for finite valuation intersections, not an exact source for the
   generalized rank-at-most-one and trivial-place statements.
@@ -240,6 +286,10 @@ separate pairwise-inequivalence and rank-one hypotheses.
   geometric-power convergence, valuation uniform equivalences and real
   absolute-value weak approximation. The identity-homeomorphism API and
   power-transfer argument follow Michael Stoll's absolute-value equivalence theorem.
+  Completion-residue transport uses Mathlib's extended valuation, stock
+  `Valuation.HasExtension` integer/locality instances, residue-field functor,
+  open-subgroup quotient topology, dense-to-discrete surjectivity, and specified
+  p-adic completion and reduction comparisons.
 
 ## Credits and license
 

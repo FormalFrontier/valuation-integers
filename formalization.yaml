@@ -19,7 +19,10 @@ project:
     the specified rank embedding, with comparison lemmas including trivial
     valuations. Rank-one valuations give nontrivial absolute values, and the
     associated absolute values are equivalent exactly when the valuations are,
-    even for different ambient value groups.
+    even for different ambient value groups. Dense compatible valued-field
+    extensions induce dense integer algebra maps and bijective residue maps,
+    specializing to a reduction-compatible residue equivalence for the uniform
+    completion at arbitrary valuation rank.
   authors:
     - Formal Frontier Agents
   responsible_maintainers:
@@ -39,7 +42,7 @@ sources:
       - I. B. Fesenko
       - S. V. Vostokov
     type: book
-    location: Second edition, Chapter I, (3.5)–(3.6)
+    location: Second edition (2002), Chapter I, (3.5)–(3.6), (4.2)–(4.4), (4.5)(1)
     relationship: adapts
     note: >-
       Normalized discrete valuation rigidity, geometric powers and topology
@@ -47,7 +50,12 @@ sources:
       criterion and heterogeneous division-ring equivalence theorem.
       Algebraic rigidity assumes a common cyclic-unit codomain and both
       valuations surjective; topology recognition concerns equivalence, not
-      equality of normalized values. No source-specific coverage is asserted.
+      equality of normalized values. Completion, integer density and induced
+      residue-field identification motivate the completion-residue API and
+      rational two-adic example. The arbitrary-rank dense-extension formulation
+      generalizes the completion residue assertion, not its full valued-extension
+      uniqueness or sequence-quotient construction. No source-specific coverage
+      is asserted, and no redistribution license for the book is inferred.
 related_formalizations:
   - id: https://github.com/leanprover-community/mathlib4
     relationship: builds-on
@@ -60,7 +68,11 @@ related_formalizations:
       Michael Stoll's absolute-value identity-homeomorphism API and power-transfer argument.
       The real absolute-value construction uses the restricted-value embedding
       in RankLeOne data and, in rank one, agrees with the bundled norm of
-      Valued.toNormedField.
+      Valued.toNormedField. Completion-residue transport uses the extended
+      valuation and its exact restriction equality, HasExtension integer algebra
+      and locality instances, the residue-field functor, quotient topology for
+      open subgroups, dense-to-discrete surjectivity and specified p-adic
+      completion, integer and reduction comparisons.
   - id: https://github.com/FormalFrontier/spectral-stone-duality
     relationship: builds-on
     note: >-
@@ -115,13 +127,26 @@ status:
     topology on the original division ring or numerical normalization.
     Finite weak approximation uses this construction and transports arbitrary
     positive restricted-value radii through the same specified embedding.
+    For valued fields with independently universed value groups, a dense field
+    algebra map compatible through Valuation.HasExtension induces a dense stock
+    integer algebra map and a bijective stock local residue map. No rank,
+    discreteness, nontriviality, completeness or finite/perfect-residue assumption
+    is required. The same-valuation equality on the uniform completion supplies
+    its HasExtension instance. Its residue equivalence is RingEquiv.ofBijective
+    over the induced map, characterized by its underlying homomorphism and
+    reduction law. The rational two-adic client compares this integer map and
+    residue equivalence with the specified p-adic comparisons: nonzero 2 is in
+    the original maximal ideal and reduces to zero, while 1 survives. Integer-map
+    surjectivity, full valued-completion uniqueness, sequence-quotient and
+    principal-adic-completion comparisons are not asserted.
     No source-specific coverage is asserted.
 review:
   status: partially-agent-reviewed
   notes: >-
     The power, dimension, rigidity, topology and intersection results and
     their clients have independent agent review, as do the real absolute-value
-    definition and theorem statements. No human review or source-coverage
+    definition and theorem statements and the completion-residue definition
+    and headline statements. No human review or source-coverage
     assessment is claimed.
 alignment:
   namespace: Valuation
@@ -129,6 +154,22 @@ alignment:
     Selected public library API inventory, not a source-passage or coverage mapping.
     Private client fixtures and imported mathlib declarations are excluded.
   statements:
+    - lean: Valued.denseRange_algebraMap_integer
+      module: ValuationIntegers/Completion.lean
+    - lean: Valued.residueFieldMap_bijective_of_denseRange
+      module: ValuationIntegers/Completion.lean
+    - lean: Valued.hasExtension_completion
+      module: ValuationIntegers/Completion.lean
+    - lean: Valued.denseRange_algebraMap_completionInteger
+      module: ValuationIntegers/Completion.lean
+    - lean: Valued.residueFieldMap_completion_bijective
+      module: ValuationIntegers/Completion.lean
+    - lean: Valued.residueFieldCompletionEquiv
+      module: ValuationIntegers/Completion.lean
+    - lean: Valued.residueFieldCompletionEquiv_toRingHom
+      module: ValuationIntegers/Completion.lean
+    - lean: Valued.residueFieldCompletionEquiv_residue
+      module: ValuationIntegers/Completion.lean
     - lean: Valuation.absoluteValue
       module: ValuationIntegers/AbsoluteValue.lean
     - lean: Valuation.absoluteValue_le_iff
@@ -204,4 +245,8 @@ acknowledgements: >-
   to Y. Ershov conveyed through Schröer rather than direct consultation.
   The valuation-topology arguments adapt Fesenko–Vostokov and follow Mathlib's
   geometric-power convergence, valuation uniform equivalences and Michael
-  Stoll's absolute-value topology-recognition proof.
+  Stoll's absolute-value topology-recognition proof. The completion-residue
+  arguments generalize the Fesenko–Vostokov completion residue assertion using
+  Mathlib's supplied valued-field completion and integer, locality, residue,
+  dense-image and discrete-quotient APIs; the rational two-adic example uses
+  Mathlib's specified p-adic comparisons and reduction maps.
