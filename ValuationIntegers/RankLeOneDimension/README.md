@@ -1,5 +1,7 @@
 # Krull dimension of rank-at-most-one valuation integers
 
+## Headline results
+
 Import `ValuationIntegers.RankLeOneDimension` (or the root
 `ValuationIntegers`) for `Valuation.Integers.krullDimLE_one`. Its hypotheses
 are a field `K`, any `LinearOrderedCommGroupWithZero Γ₀`, a valuation
@@ -30,13 +32,14 @@ nonzero `y ∈ P`. Every `x` in the maximal ideal has a power divisible by
 `y`, so primality puts `x ∈ P`; maximality then forces `P` to be the maximal
 ideal. Native `Ring.KrullDimLE.mk₁'` yields the bound.
 
-The ordinary-import private clients in
+The ordinary-import clients in
 `ValuationIntegersTest.RankLeOneDimension` check the generic bound, its
 numerical inequality, and a valuation on `ValuationSubring` with an explicit
 rank-at-most-one instance. They also check the concrete trivial valuation
 on `ℚ` valued in `ℝ≥0`, for which the *native* field dimension is zero. The
 rank instance in that fixture is constructed from the actual value-group
-embedding; these tests do not export further public theorems.
+embedding. The named verification theorem `valuationSubring_krullDimLE_one`
+is public in this test module, separately from its private fixtures.
 
 ## Reproduce
 
@@ -47,15 +50,12 @@ fetch the pinned mathlib precompiled cache *successfully before building*:
 ```sh
 elan toolchain install leanprover/lean4:v4.34.0-rc2
 lake exe cache get
-lake --wfail build ValuationIntegers ValuationIntegersTest
+lake build ValuationIntegers ValuationIntegersTest
 printf 'import ValuationIntegers.RankLeOneDimension\n#print axioms Valuation.Integers.krullDimLE_one\n' | lake env lean /dev/stdin
 ```
 
-The final command checks the public declaration only. Original configured
-native checks for the published three-result release also built both roots
-and audited all eight modules, including private/generated declarations,
-against the standard-three-axiom policy. This evidence is bound to the exact
-checked inputs; it does not automatically approve later edits.
+The final command checks the public declaration only, not every private or
+generated declaration in the library and its clients.
 
 ## Development credit
 

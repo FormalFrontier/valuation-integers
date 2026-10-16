@@ -1,5 +1,7 @@
 # Power divisibility in rank-at-most-one valuation integers
 
+## Headline results
+
 Import `ValuationIntegers.RankLeOnePower` (or the root `ValuationIntegers`)
 for `Valuation.Integers.exists_pos_pow_dvd_of_mem_maximalIdeal`. Let `K` be a
 field, `Γ₀` any `LinearOrderedCommGroupWithZero`, and
@@ -34,10 +36,12 @@ The maintained ordinary-import clients in
 zero `x`, unit `y`, abstract valuation domains with their fraction fields,
 and `ValuationSubring` instances. The latter two specializations require an
 *explicit* rank-at-most-one instance on the associated valuation; they do
-not deduce it from the domain/subring alone. Another private client shows
-that for a nonzero `a` in the maximal ideal,
+not deduce it from the domain/subring alone. The named verification theorem
+`radical_span_eq_maximalIdeal` shows that for a nonzero `a` in the maximal ideal,
 `(Ideal.span {a}).radical = IsLocalRing.maximalIdeal O` using this theorem
-and native ideal lemmas. These clients add no public declarations.
+and native ideal lemmas. This theorem is public in the verification module,
+separately from its private clients; the production root does not re-export
+that module.
 
 ## Reproduce
 
@@ -48,16 +52,12 @@ fetch the matching precompiled mathlib cache *successfully before building*:
 ```sh
 elan toolchain install leanprover/lean4:v4.34.0-rc2
 lake exe cache get
-lake --wfail build ValuationIntegers ValuationIntegersTest
+lake build ValuationIntegers ValuationIntegersTest
 printf 'import ValuationIntegers.RankLeOnePower\n#print axioms Valuation.Integers.exists_pos_pow_dvd_of_mem_maximalIdeal\n' | lake env lean /dev/stdin
 ```
 
 The last command checks the public theorem's transitive axioms only; it does
-not audit private/generated client declarations. Original configured native
-checks for the published three-result release built both roots and audited
-all eight modules, including private/generated declarations. Their successful
-standard-axiom evidence is revision-specific, not a certificate for later
-edits to documentation, metadata or Lean inputs.
+not audit private/generated client declarations.
 
 ## Development credit
 

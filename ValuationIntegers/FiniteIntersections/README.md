@@ -1,5 +1,7 @@
 # Intersections and full residues of valuation subrings
 
+## Headline results
+
 Let `K` be a field, let `Γ₀` be any linearly ordered commutative group with
 zero, and let `val : ι → Valuation K Γ₀`. The subring
 `Valuation.intersectionSubring val` consists exactly of the `x : K` with

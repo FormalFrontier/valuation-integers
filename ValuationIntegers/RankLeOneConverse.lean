@@ -13,6 +13,17 @@ public import Mathlib.RingTheory.Valuation.RankOne
 
 This constructs rank data for the actual restricted value group, including
 trivial valuations and valuation rings that are fields.
+
+## References
+
+* The local-domain radical pattern in Mathlib's `KrullDimension/LocalRing.lean`
+  (Jingting Wang), valuation/rank work (María Inés de Frutos-Fernández and
+  Filippo A. E. Nuccio), `ValueGroup₀` surjectivity (Antoine Chambert-Loir and
+  those contributors), valuation integers (Kenny Lau), and the multiplicative
+  Archimedean definition and `arch` field (Mario Carneiro). See the
+  [converse guide](RankLeOneConverse/README.md) for the original-project and
+  adaptation credit; the [Mathlib modules](https://github.com/leanprover-community/mathlib4)
+  retain their Apache-2.0 notices.
 -/
 
 @[expose] public section

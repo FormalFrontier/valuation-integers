@@ -17,8 +17,10 @@ surjective. Its uniqueness among surjective equivalent valuations is an instance
 normalized valuation rigidity. Squaring its values preserves equivalence but changes the
 valuation and destroys surjectivity, showing why both normalizations are needed.
 
+## References
+
 The DVR and fraction-field constructions, surjectivity, and change-of-values equivalence
-are supplied independently by Mathlib.
+are supplied independently by [Mathlib](https://github.com/leanprover-community/mathlib4).
 -/
 
 set_option warningAsError true

@@ -18,6 +18,12 @@ The trivial valuation detects precisely zero as topologically nilpotent. A produ
 has a nonnilpotent topologically nilpotent element, illustrating why the Ring-general power
 criterion does not require separation. The `Valued` client recovers Mathlib's geometric-power
 convergence statement under its original ambient Archimedean hypothesis.
+
+## References
+
+* [Mathlib](https://github.com/leanprover-community/mathlib4) supplies the p-adic rank
+  hypotheses and the geometric-power convergence statement, including
+  `Mathlib.NumberTheory.Padics.ValuativeRel` and `Valued.tendsto_zero_pow_of_v_lt_one`.
 -/
 
 set_option warningAsError true

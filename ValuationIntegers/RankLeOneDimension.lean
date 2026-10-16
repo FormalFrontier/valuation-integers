@@ -12,6 +12,16 @@ public import Mathlib.RingTheory.KrullDimension.Basic
 
 The ring of integers of a valuation of rank at most one has Krull dimension at
 most one, including the case in which that ring is a field.
+
+## References
+
+* Mathlib's `KrullDimension/Basic.lean` and the local-domain pattern in
+  `KrullDimension/LocalRing.lean` (Jingting Wang). The supporting power theorem
+  uses work by María Inés de Frutos-Fernández, Filippo A. E. Nuccio,
+  Yakov Pechersky and Kenny Lau. See the
+  [dimension guide](RankLeOneDimension/README.md) for the original-project and
+  adaptation credit; the [Mathlib modules](https://github.com/leanprover-community/mathlib4)
+  retain their Apache-2.0 notices.
 -/
 
 @[expose] public section

@@ -20,10 +20,12 @@ The proper field extension `ℚ₅(√5)` uses Mathlib's polynomial quotient, po
 and spectral norm. Its degree, norm cutoffs and integer-ring scalar coherence are
 independent inputs to the integer finiteness statement.
 
+## References
+
 The polynomial and valuation-parity construction follows the mathematical model in
-`NormFormsTests/SpectralNorm.lean` at the published norm-forms revision
-`2d4f3696c4f104cb0b79c8cca70002e04862e8e4`. Only Mathlib is imported here; no norm-form
-identity or result from that test library is used.
+[`NormFormsTests/SpectralNorm.lean`](https://github.com/FormalFrontier/norm-forms/blob/2d4f3696c4f104cb0b79c8cca70002e04862e8e4/NormFormsTests/SpectralNorm.lean)
+at the published norm-forms revision `2d4f3696c4f104cb0b79c8cca70002e04862e8e4`.
+Only Mathlib is imported here; no norm-form identity or result from that test library is used.
 -/
 
 set_option warningAsError true

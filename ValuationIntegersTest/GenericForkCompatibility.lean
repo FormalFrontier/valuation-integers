@@ -38,6 +38,7 @@ namespace ValuationIntegersTest.GenericForkCompatibility
 
 variable {ι : Type v}
 
+/-- Return `none` at the generic point and `some i` at the closed point indexed by `i`. -/
 def index? : Topology.GenericFork ι → Option ι
   | Topology.GenericFork.generic => none
   | Topology.GenericFork.closed i => some i

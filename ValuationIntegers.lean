@@ -19,3 +19,14 @@ public import ValuationIntegers.FiniteIntersections.Spectrum
 public import ValuationIntegers.BoundedModule
 public import ValuationIntegers.NumberTheory.DenominatorSupport
 public import ValuationIntegers.NumberTheory.BernoulliIntegrality
+public import ValuationIntegers.Power
+public import ValuationIntegers.NumberTheory.Bernoulli
+
+/-!
+# Valuation integers and their arithmetic and topology
+
+This module re-exports valuation-ring rank and dimension, normalized valuation rigidity,
+valuation topology, completion comparisons and finite intersections with residue maps.
+It also provides bounded-module finiteness, Henselian power neighborhoods, Bernoulli
+integrality and rational denominator-support results.
+-/

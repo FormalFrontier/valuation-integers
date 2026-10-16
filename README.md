@@ -1,201 +1,115 @@
 # Valuation Integers
 
-This Apache-2.0 Lean library supplies
-reusable power-divisibility and Krull-dimension bounds for rank-at-most-one
-valuation rings of integers, and a converse constructing rank-at-most-one data
-from a dimension bound. It also develops finite intersections of valuation
-subrings, their residue maps and prime spectra, using mathlib and the released
-Spectral Stone Duality library for generic-point topology. Equivalent surjective
-valuations into a common cyclic-unit ordered codomain are equal. Its valuation-topology
-API characterizes convergence of powers and recognizes equivalence from the
-specified identity homeomorphism. Dense compatible valued-field extensions induce
-dense maps on valuation integers and bijective residue maps; in particular the
-uniform completion has a specified reduction-compatible residue equivalence.
-A dense ring homomorphism preserving raw values exactly canonically identifies
-that completion with a complete separated valued ring over the same value group.
-Bounded submodules of finite-dimensional normed
-spaces have finite generation over suitable Noetherian coefficient rings, giving
-finite-module results for extension integers.
+A Lean library for valuation integers, rank and dimension, valuation topologies,
+completions and finite intersections, with bounded-module and arithmetic applications.
+The [mathematical and client guide](docs/Guide.md) gives detailed statements,
+proof methods, imports, examples and boundaries.
 
 ## Headline results
 
-- **Bernoulli integrality for integer arguments.**
-  [`Bernoulli.isIntegral_pow_mul_pow_sub_one_mul_bernoulli_div`](ValuationIntegers/NumberTheory/BernoulliIntegrality.lean):
-  for every `n : ℤ` and `k : ℕ` with `0 < k`,
-  `n^k * (n^k - 1) * (bernoulli k / k)` is integral over `ℤ` as a rational number.
-  This is Hatcher's Lemma 4.12, including negative arguments and the index-one
-  case with Mathlib's convention `bernoulli 1 = -1/2`.
-- **Prime support of rational denominators.**
-  [`Rat.sub_one_dvd_of_dvd_den_of_forall_isIntegral_pow_mul_pow_sub_one_mul`](ValuationIntegers/NumberTheory/DenominatorSupport.lean):
-  if `q : ℚ` and `k : ℕ` satisfy integrality over `ℤ` of
-  `n^k * (n^k - 1) * q` for every natural `n`, then every prime `p` dividing
-  the reduced denominator `q.den` satisfies `p - 1 ∣ k`. This includes `k = 0`.
-  Applying this to Bernoulli integrality gives
-  [`Bernoulli.sub_one_dvd_of_dvd_den_bernoulli_div`](ValuationIntegers/NumberTheory/BernoulliIntegrality.lean)
-  for every natural index, including zero and one. These are restrictions on
-  prime support, not exact denominator exponents. Primality is essential:
-  `q = 1/12` and `k = 2` satisfy the integrality condition, but `4 - 1 ∤ 2`.
-- **Discrete values of elements with roots of all depths.**
-  [`Valuation.eq_zero_or_eq_one_of_forall_exists_pow_eq`](ValuationIntegers/DiscreteRoots.lean):
-  for an arbitrary `[Ring R]`, an integer-valued valuation `v : Valuation R ℤᵐ⁰`
-  and a natural `q > 1`, if `x` admits a `q ^ n`-th root for every natural `n`,
-  then `v x = 0 ∨ v x = 1`. Zero is included and the roots need not be compatible;
-  no commutativity, field structure, characteristic or topology is assumed.
-  The [Laurent-series client](ValuationIntegersTest/DiscreteRoots.lean) applies
-  this to the constant two in `LaurentSeries (ZMod 3)`, obtaining value one.
-  Its canonical valuation is nontrivial, and the series `X` shows why `q = 1`
-  is excluded. The proof reuses Mathlib's `FiniteMultiplicity.not_iff_forall`
-  and `Int.finiteMultiplicity_iff`, with the stock `WithZero` logarithm.
-- **Real absolute values of valuations of rank at most one.**
-  [`Valuation.absoluteValue`](ValuationIntegers/AbsoluteValue.lean):
-  a construction on a division ring using the embedding of the restricted
-  value group supplied by its `RankLeOne` data, without a `Valued` instance.
-  These data retain a specified numerical realization. Its comparison lemmas
-  recover the valuation preorder and unit balls, including trivial valuations.
-  In rank one, over a valued field, it agrees with the bundled norm of Mathlib's
-  `Valued.toNormedField`. Rank-one valuations give nontrivial absolute values,
-  and the associated absolute values are equivalent exactly when the valuations
-  are, even for different ambient value groups. Arbitrary restricted-value radii
-  are transported by the same embedding used in finite weak approximation.
-- **The absolute-value topology.**
-  [`Valuation.absoluteValueUniformEquiv`](ValuationIntegers/AbsoluteValueTopology.lean)
-  compares `WithVal v` with `WithAbs v.absoluteValue` on a division ring with
-  `RankLeOne` data. Both directions preserve the underlying element, and the
-  absolute-value metric is ultrametric. Trivial valuations are included; no
-  topology on the original ring, discreteness or fixed numerical normalization
-  is assumed. Mathlib already constructs the uniformity-preserving normed-field
-  structure on a rank-one valued field via `Valued.toNormedField`.
-- **Finite generation of bounded modules.**
-  [`Submodule.fg_of_isBounded_of_unitBall_subset_range`](ValuationIntegers/BoundedModule.lean):
-  a bounded R-submodule of a finite-dimensional normed K-space is finitely
-  generated if K is complete, R is commutative Noetherian, the scalar actions
-  are compatible and the image of R contains K's closed unit ball. No norm on
-  R, injectivity or nontrivial-base-norm hypothesis is required.
-  [`Valuation.module_finite_integer_of_norm_bounds`](ValuationIntegers/BoundedModule.lean)
-  applies this to valuations v,w on complete K and a finite-dimensional normed K-algebra
-  L, where L is a normed ring: with `v.HasExtension w` and Noetherian base
-  integers, extension integers are finite if K's norm unit ball is v-integral
-  and every w-integral element has norm at most one.
-- **Rigidity of normalized valuations.**
-  [`Valuation.isEquiv_iff_eq_of_surjective`](ValuationIntegers/Equivalence.lean):
-  for valuations of any ring into a common linearly ordered commutative group
-  with zero whose units are cyclic, if both valuations are surjective, then
-  `v.IsEquiv w ↔ v = w`. This includes normalized integer-valued valuations
-  and codomains with trivial units; no rank or nontriviality premise is needed.
-  This is algebraic equivalence, not a characterization of equal topologies.
-- **Positive-power divisibility.**
-  [`Valuation.Integers.exists_pos_pow_dvd_of_mem_maximalIdeal`](ValuationIntegers/RankLeOnePower.lean):
-  for `hv : val.Integers O`, `x` in the maximal ideal and nonzero `y : O`,
-  some *positive* `n : ℕ` satisfies `y ∣ x ^ n`.
-  See the [power-divisibility guide](ValuationIntegers/RankLeOnePower/README.md).
-- **Krull dimension at most one.**
-  [`Valuation.Integers.krullDimLE_one`](ValuationIntegers/RankLeOneDimension.lean):
-  the same valuation integers satisfy `Ring.KrullDimLE 1 O`, hence
-  `ringKrullDim O ≤ (1 : WithBot ℕ∞)` by mathlib's `Ring.krullDimLE_iff`.
-  See the [dimension guide](ValuationIntegers/RankLeOneDimension/README.md).
-- **Rank-at-most-one data from a dimension bound.**
-  [`Valuation.Integers.nonempty_rankLeOne_of_krullDimLE_one`](ValuationIntegers/RankLeOneConverse.lean):
-  from `hv : val.Integers O` and `Ring.KrullDimLE 1 O`, constructs
-  `Nonempty (Valuation.RankLeOne val)` without assuming rank beforehand.
-  See the [converse guide](ValuationIntegers/RankLeOneConverse/README.md).
-- **Geometric powers in a valuative topology.**
-  [`IsValuativeTopology.isTopologicallyNilpotent_iff_vlt_one`](ValuationIntegers/Topology.lean):
-  in a ring with a canonical valuative topology of rank at most one, the powers
-  of `x` tend to zero exactly when `x <ᵥ 1`. Separation and commutativity are
-  not required; rank concerns the generated value group, not an ambient codomain.
-- **Topology recognizes valuation equivalence.**
-  [`Valuation.isEquiv_iff_isHomeomorph`](ValuationIntegers/Topology.lean):
-  two rank-at-most-one valuations on a division ring, possibly with different
-  value types, are equivalent iff `WithVal.congr v w (RingEquiv.refl K)` is a
-  homeomorphism. Both rank assumptions are required; trivial valuations are
-  included. The conclusion is equivalence, not equality of normalized values.
-- **Canonical comparison with a dense exactly valued completion.**
-  [`Valued.completionRingEquiv f hValue hDense`](ValuationIntegers/Completion.lean) constructs
-  `UniformSpace.Completion K ≃+* L` for `[Field K]`, `[Ring L]`,
-  `[Valued K Γ₀] [Valued L Γ₀]` over an arbitrary common
-  `[LinearOrderedCommGroupWithZero Γ₀]`, with `[CompleteSpace L] [T0Space L]`
-  and `f : K →+* L` of dense range preserving raw values at every element,
-  including zero. Its forward homomorphism is Mathlib's
-  `UniformSpace.Completion.extensionHom`; the API gives stock-extension, base
-  and inverse-base equations, exact raw values and uniform continuity both ways,
-  and uniqueness among **continuous** ring homomorphisms agreeing with `f` on `K`.
-  No source completeness, target field, rank, normalization or surjectivity is assumed.
-  See the [Hahn-series client](ValuationIntegersTest/CompletionComparison.lean).
-- **Uniformity from a dense exactly valued additive map.**
-  [`Valued.isUniformInducing_of_denseRange_of_map_eq`](ValuationIntegers/Completion.lean)
-  takes only `f : R →+ S` between arbitrary valued rings over an arbitrary common
-  linearly ordered commutative group with zero, exact raw values and dense range.
-  It gives `IsUniformInducing` and a uniform-continuity corollary, not injectivity
-  or an embedding: ring valuations can have nonzero support. No multiplicativity,
-  separation, completeness or field hypothesis is needed.
-- **Residue transport along dense valued-field extensions.**
-  [`Valued.denseRange_algebraMap_integer`](ValuationIntegers/Completion.lean) and
-  [`Valued.residueFieldMap_bijective_of_denseRange`](ValuationIntegers/Completion.lean):
-  a dense field algebra map compatible through Mathlib's `Valuation.HasExtension`
-  induces a **dense**, not necessarily surjective, integer algebra map and a
-  bijective map on residue fields. The fields and their value groups may have
-  independent universes and different equivalent normalizations. No rank,
-  discreteness, nontriviality, completeness or finite/perfect-residue assumption
-  is imposed. The completion specialization
-  [`Valued.residueFieldCompletionEquiv`](ValuationIntegers/Completion.lean) is a
-  `RingEquiv.ofBijective` over the induced residue map of the canonical integer
-  algebra map, with homomorphism and reduction-commuting laws fixing that map.
-- **Intersections, residue maps and approximation.**
-  [`Valuation.intersectionSubring`](ValuationIntegers/FiniteIntersections.lean):
-  common valuation integers for an arbitrary family of valuations of a field,
-  together with inclusions, full residue maps and contracted kernels. For a
-  finite family of pairwise inequivalent rank-one valuations, the module proves
-  weak approximation at positive radii in each valuation's restricted value
-  group and surjectivity onto the product of full residue fields. For any finite
-  pointwise rank-at-most-one family, it proves denominator, canonical
-  localization and fraction-field results without independence, and individual
-  residue surjectivity at a selected nontrivial place. Diagonal uniformizers
-  require finite pairwise inequivalent rank-one *discrete* valuations. See the
-  [intersection guide](ValuationIntegers/FiniteIntersections/README.md).
-- **Prime and maximal ideals of finite intersections.**
-  [`Valuation.isPrime_iff_eq_bot_or_contractedIdeal`](ValuationIntegers/FiniteIntersections/PrimeIdeals.lean):
-  for a finite pointwise rank-at-most-one family, every prime of the
-  intersection is zero or contracted from a place, even with empty, repeated
-  or trivial places. Every maximal ideal of a *nonempty* finite intersection
-  is contracted without a rank assumption; in the rank-at-most-one case the
-  same module classifies maximal ideals and proves
-  [`Valuation.krullDimLE_one`](ValuationIntegers/FiniteIntersections/PrimeIdeals.lean).
-- **Finite spectra and their open sets.**
-  [`Valuation.isOpen_iff_eq_empty_or_bot_mem`](ValuationIntegers/FiniteIntersections/Spectrum.lean):
-  the spectrum of a finite pointwise rank-at-most-one intersection is finite;
-  its open subsets are exactly the empty set and those containing the zero
-  prime, including empty, repeated and trivial families.
-- **Generic-point spectrum model.**
-  [`Valuation.forkHomeomorph`](ValuationIntegers/FiniteIntersections/Spectrum.lean):
-  for a finite family of pairwise inequivalent rank-one valuations, the
-  spectrum is homeomorphic to
-  [`Topology.WithGenericPoint`](https://github.com/FormalFrontier/spectral-stone-duality/blob/d7dad16f9308a468bb964c0f13caf896a780621d/SpectralStoneDuality/Topology/GenericPoint.lean).
-  The generic point maps to zero and each indexed closed point to its
-  contracted ideal, with forward and inverse point equations. This describes
-  spectra, not a representation theorem for arbitrary spaces. The former
-  `Topology.GenericFork` API remains available from the spectrum module as
-  deprecated aliases for this same type, its constructors and laws. Internal
-  compiler-generated order proofs and the internal size-of helper are not
-  compatibility names; use the canonical order and size-of instances. See the
-  [spectrum guide](ValuationIntegers/FiniteIntersections/README.md).
+- **Power neighborhoods in Henselian valued fields**
+  ([root estimate and open power range](ValuationIntegers/Power.lean)).
+  Henselian valuation integers and `v (a - 1) < v (m : K) ^ 2` give `b ^ m = a`,
+  `v b = 1` and exact correction `v (b - 1) = v (a - 1) / v (m : K) < v (m : K)`.
+  The stock power range in `Kˣ` is open when `(m : K) ≠ 0`; no completeness,
+  rank, discreteness, characteristic-zero or unit-derivative assumption is needed.
+- **Prime valuations of divided Bernoulli numbers.**
+  [`Bernoulli.padicValRat_bernoulli_div`](ValuationIntegers/NumberTheory/Bernoulli.lean) and
+  [`Bernoulli.padicValNat_den_bernoulli_div`](ValuationIntegers/NumberTheory/Bernoulli.lean):
+  for `k p : ℕ`, `0 < k`, `[Fact p.Prime]` and `p - 1 ∣ 2 * k`, the rational
+  number `bernoulli (2 * k) / ((2 * k : ℕ) : ℚ)` has additive `p`-adic valuation
+  `-1 - (padicValNat p (2 * k) : ℤ)`. Its positive reduced denominator, given
+  by `Rat.den`, has `p`-adic exponent `1 + padicValNat p (2 * k)`.
+  These are the selected-prime formulas at a positive even index.
+- **Bernoulli integrality for integer arguments**
+  ([`Bernoulli.isIntegral_pow_mul_pow_sub_one_mul_bernoulli_div`](ValuationIntegers/NumberTheory/BernoulliIntegrality.lean)).
+  For `n : ℤ` and positive `k : ℕ`, `n^k * (n^k - 1) * (bernoulli k / k)`
+  is integral over `ℤ`, including negative arguments and `bernoulli 1 = -1/2`.
+- **Prime support of rational denominators**
+  ([rational criterion](ValuationIntegers/NumberTheory/DenominatorSupport.lean),
+  [Bernoulli corollary](ValuationIntegers/NumberTheory/BernoulliIntegrality.lean)).
+  For `q : ℚ` and `k : ℕ`, if `n^k * (n^k - 1) * q` is integral for every natural `n`,
+  each prime `p ∣ q.den` satisfies `p - 1 ∣ k`, including `k = 0`.
+  This bounds support, not exact exponents.
+- **Discrete values of elements with roots of all depths**
+  ([`Valuation.eq_zero_or_eq_one_of_forall_exists_pow_eq`](ValuationIntegers/DiscreteRoots.lean)).
+  For any ring, `v : Valuation R ℤᵐ⁰` and natural `q > 1`, an element admitting
+  a `q ^ n`-th root for every natural `n` has value zero or one; roots need not be compatible.
+- **Real absolute values and their topology**
+  ([absolute-value construction](ValuationIntegers/AbsoluteValue.lean),
+  [uniform comparison](ValuationIntegers/AbsoluteValueTopology.lean)).
+  Rank-at-most-one data on a division-ring valuation give a real absolute value,
+  reflecting its preorder and unit ball. The underlying identity uniformly compares
+  `WithVal v` with `WithAbs v.absoluteValue`, whose metric is ultrametric.
+  Trivial valuations are included; no original topology or normalization is fixed.
+  In rank one the absolute value is nontrivial and, on a valued field, agrees with
+  Mathlib's `Valued.toNormedField` norm. Absolute values are equivalent exactly
+  when their valuations are, even with different ambient value groups.
+- **Finite generation of bounded modules**
+  ([bounded-module and extension-integer theorems](ValuationIntegers/BoundedModule.lean)).
+  A bounded R-submodule of a finite-dimensional normed K-space is finitely generated
+  when K is complete, R is commutative Noetherian, scalars are compatible and R's
+  image contains K's closed unit ball. For a finite-dimensional normed K-algebra L
+  that is a normed ring, `v.HasExtension w`, Noetherian base integers, a v-integral
+  base norm unit ball and norm-at-most-one w-integers give finite extension integers.
+- **Rigidity of normalized valuations**
+  ([`Valuation.isEquiv_iff_eq_of_surjective`](ValuationIntegers/Equivalence.lean)).
+  Two surjective valuations of any ring into a common linearly ordered commutative
+  group with zero with cyclic units are equivalent iff equal, including trivial units.
+- **Positive-power divisibility** ([power guide](ValuationIntegers/RankLeOnePower/README.md)).
+  In rank at most one, for `x` in the maximal ideal and nonzero `y : O`,
+  some positive natural `n` satisfies `y ∣ x ^ n`.
+- **Krull dimension at most one** ([dimension guide](ValuationIntegers/RankLeOneDimension/README.md)).
+  The same rank-at-most-one valuation integers satisfy `Ring.KrullDimLE 1 O`.
+- **Rank-at-most-one data from a dimension bound**
+  ([converse guide](ValuationIntegers/RankLeOneConverse/README.md)).
+  `hv : val.Integers O` and `Ring.KrullDimLE 1 O` give `Nonempty (Valuation.RankLeOne val)`.
+- **Geometric powers in a valuative topology** ([power criterion](ValuationIntegers/Topology.lean)).
+  In a ring with a canonical rank-at-most-one valuative topology, powers of `x`
+  tend to zero iff `x <ᵥ 1`; neither separation nor commutativity is required.
+- **Topology recognizes valuation equivalence** ([identity criterion](ValuationIntegers/Topology.lean)).
+  Two rank-at-most-one valuations on a division ring are equivalent iff
+  `WithVal.congr v w (RingEquiv.refl K)` is a homeomorphism, even with different value types.
+- **Canonical comparison with a dense exactly valued completion**
+  ([`Valued.completionRingEquiv`](ValuationIntegers/Completion.lean)).
+  A dense ring map from a valued field K to a complete separated valued ring L,
+  preserving raw values in a common arbitrary value group, gives
+  `UniformSpace.Completion K ≃+* L`, unique among continuous ring maps agreeing on K.
+- **Uniformity from a dense exactly valued additive map**
+  ([uniformity bridge](ValuationIntegers/Completion.lean)).
+  Between arbitrary valued rings over a common value group, a dense additive map
+  preserving raw values is uniform-inducing and uniformly continuous, not necessarily injective.
+- **Residue transport along dense valued-field extensions**
+  ([integer density and residue bijectivity](ValuationIntegers/Completion.lean)).
+  A dense field algebra map with `Valuation.HasExtension` induces a dense integer map
+  and a bijective residue map, at arbitrary rank and with different value groups.
+  The canonical uniform completion has a specified reduction-compatible residue equivalence.
+- **Intersections, residue maps and approximation**
+  ([intersection guide](ValuationIntegers/FiniteIntersections/README.md)).
+  Arbitrary valuation families on a field have intersection integers and full residue maps.
+  Finite pointwise rank-at-most-one families have denominator, canonical localization
+  and fraction-field results, and residue surjectivity at each selected nontrivial place.
+  Finite pairwise inequivalent rank-one families have weak approximation at positive
+  restricted-value-group radii and residue-product surjectivity; diagonal uniformizers
+  additionally require discreteness.
+- **Prime ideals, finite spectra and generic-point models**
+  ([prime ideals](ValuationIntegers/FiniteIntersections/PrimeIdeals.lean),
+  [spectrum](ValuationIntegers/FiniteIntersections/Spectrum.lean)).
+  In a finite pointwise rank-at-most-one family, every prime is zero or contracted;
+  dimension is at most one and the spectrum is finite, with opens exactly empty or
+  containing zero. For nonempty finite families, maximal ideals are contracted even
+  without rank hypotheses. Separately, finite pairwise inequivalent rank-one families
+  have a spectrum homeomorphism from Spectral Stone Duality's `Topology.WithGenericPoint`.
 
-The three rank/dimension statements assume a field `K`, an arbitrary
-`[LinearOrderedCommGroupWithZero Γ₀]`, a valuation
-`val : Valuation K Γ₀`, and a commutative local ring `O` with `[Algebra O K]`
-and `hv : val.Integers O`. The **power and forward dimension theorems**
-assume `[Valuation.RankLeOne val]`; the **converse** instead takes
-`hDim : Ring.KrullDimLE 1 O` and returns rank data. Rank concerns the
-valuation's *actual restricted* value group, not necessarily its ambient
-`Γ₀`. None requires a separately assumed domain,
-an ambient Archimedean or discrete group, a nontrivial valuation, a nonfield
-ring, Noetherianity, completeness or separation. The dimension result says
-**at most** one (as does the converse's premise): the trivial valuation on
-`ℚ` has dimension zero. The power theorem does require both maximal-ideal
-membership and nonzero `y`.
+The three rank/dimension statements use a field K, any linearly ordered commutative
+value group with zero, and a commutative local ring O with `[Algebra O K]` and
+`hv : val.Integers O`. Rank concerns the actual restricted value group, not the
+ambient group. No nontriviality or nonfield premise is needed: dimension can be zero.
+The [guide](docs/Guide.md#results-in-detail) retains the full hypotheses and boundary cases.
 
 ## Using the library
 
-Add the GitHub release branch to your `lakefile.toml`:
+Add the GitHub release branch to `lakefile.toml`:
 
 ```toml
 [[require]]
@@ -204,153 +118,54 @@ git = "https://github.com/FormalFrontier/valuation-integers.git"
 rev = "main"
 ```
 
-GitHub `main` contains reviewed releases. Lake resolves it when you add or
-update the dependency; `lake-manifest.json` pins the resolved commit until you
-update again. Replace `main` with a release commit to pin explicitly.
+GitHub `main` contains reviewed releases. Lake resolves it when adding or updating
+and records the commit in `lake-manifest.json`; use a release commit to pin explicitly.
 
-`import ValuationIntegers` exports bounded-module finiteness, normalized valuation
-rigidity, rank/dimension, valuation-topology, completion-comparison/residue and intersection APIs,
-including the finite-intersection classification, spectrum, Bernoulli integrality
-and denominator-support results.
-Import `ValuationIntegers.NumberTheory.BernoulliIntegrality` for Bernoulli integrality
-and its denominator-support corollary, or
-`ValuationIntegers.NumberTheory.DenominatorSupport` for the rational criterion alone.
-Import `ValuationIntegers.Completion` for the additive uniformity bridge, canonical completion
-comparison and dense integer/residue transport, or
-`ValuationIntegers.Equivalence` for
-rigidity alone, or `ValuationIntegers.AbsoluteValue` for the real absolute-value
-construction and its comparison API. `ValuationIntegers.AbsoluteValueTopology`
-adds ultrametricity and the specified identity comparison with the valued copy;
-alternatively import
-`ValuationIntegers.RankLeOnePower` or
-`ValuationIntegers.RankLeOneDimension` or
-`ValuationIntegers.RankLeOneConverse` or `ValuationIntegers.Topology` individually.
-The forward dimension module imports the power module; the converse imports mathlib directly.
-With an existing rank instance, the forward results apply:
+```lean
+import ValuationIntegers
+```
+
+The root also exports the selected-prime divided Bernoulli formulas; import
+`ValuationIntegers.NumberTheory.Bernoulli` for these formulas alone.
+
+The root exports the producer APIs; `ValuationIntegersTest` is a separate ordinary-import
+client target, not a root export. The [import and client guide](docs/Guide.md#imports-and-clients)
+lists selective imports and examples, including local installation of the converse's rank data.
+With the power theorem's hypotheses in scope:
 
 ```lean
 have hpower : ∃ n : ℕ, 0 < n ∧ y ∣ x ^ n :=
   hv.exists_pos_pow_dvd_of_mem_maximalIdeal x hx y hy
-have hbound : Ring.KrullDimLE 1 O := hv.krullDimLE_one
 ```
-
-With a dimension bound instead, construct and install rank data *locally*
-before using the rank-dependent power theorem:
-
-```lean
-obtain ⟨rank⟩ := hv.nonempty_rankLeOne_of_krullDimLE_one hDim
-let _ : Valuation.RankLeOne val := rank
-have hpower : ∃ n : ℕ, 0 < n ∧ y ∣ x ^ n :=
-  hv.exists_pos_pow_dvd_of_mem_maximalIdeal x hx y hy
-```
-
-For `[IsValuativeTopology R]` and `[ValuativeRel.IsRankLeOne R]`, use
-`IsValuativeTopology.isTopologicallyNilpotent_iff_vlt_one.mpr hx` to turn
-`hx : x <ᵥ 1` into convergence of powers. For valuations `v,w` on a division
-ring with `[v.RankLeOne] [w.RankLeOne]`, use
-`(Valuation.isEquiv_iff_isHomeomorph v w).mpr h` to recover equivalence from
-the specified identity homeomorphism `h`. The canonical `WithVal` rank instance
-uses the generated value group, so ambient Archimedeanness is unnecessary.
-
-For valued fields `K,L` with `[Algebra K L]` and the stock `Valuation.HasExtension`
-instance, `Valued.denseRange_algebraMap_integer hd` restricts
-`hd : DenseRange (algebraMap K L)` to the valuation integers, while
-`Valued.residueFieldMap_bijective_of_denseRange hd` applies to exactly
-`IsLocalRing.ResidueField.map (algebraMap 𝒪[K] 𝒪[L])`.
-For `UniformSpace.Completion K`, `Valued.hasExtension_completion` follows from
-Mathlib's equality `Valued.valuedCompletion_apply` for the original valuation,
-and the density input is `UniformSpace.Completion.denseRange_coe`.
-The laws `Valued.residueFieldCompletionEquiv_toRingHom` and
-`Valued.residueFieldCompletionEquiv_residue` identify the forward map and its
-value on every reduced integer without unfolding the equivalence.
-
-`ValuationIntegersTest` is a separate ordinary-import client target, *not*
-exported from `ValuationIntegers`. The linked guides give proof outlines and
-specializations. Clients exercise dimension zero for a trivial valuation on
-`ℚ`, empty and repeated families, distinct adic places over `ZMod 2`, and
-localization at a trivial place whose residue map is not surjective in a
-mixed family. The [normalization client](ValuationIntegersTest/Equivalence.lean)
-uses the canonical valuation on the fraction field of `PowerSeries ℚ`; squaring
-its values gives an unequal equivalent valuation that is not surjective,
-showing why both normalization premises are needed.
-[`ValuationIntegersTest.Topology`](ValuationIntegersTest/Topology.lean) contains
-usual 2-adic power convergence and a heterogeneous restricted-value comparison,
-the trivial valuation, an independent nonseparated product-ring boundary, and
-recovery of mathlib's ambient-Archimedean `Valued` power criterion.
-[`ValuationIntegersTest.AbsoluteValue`](ValuationIntegersTest/AbsoluteValue.lean)
-uses the 2-adic valuation on `ℚ`: its absolute values at `2`, `1` and `1/2`
-are strictly ordered, and restriction to the generated value group preserves
-these comparisons. The trivial valuation gives an absolute value that is
-not nontrivial, showing why the nontriviality assertion requires rank one.
-The identity comparison carries `2` into the open unit ball and `1` outside it,
-and ultrametricity recenters the ball at `2`. The trivial valuation has a
-singleton open unit ball. No completion or fixed numerical normalization is required.
-[`ValuationIntegersTest.Completion`](ValuationIntegersTest/Completion.lean) uses
-`WithVal (Rat.padicValuation 2)` and its uniform completion. Mathlib's specified
-comparisons with `ℚ_[2]`, `ℤ_[2]` and `ZMod 2` give a rational-cast law and a
-commuting reduction square for the same integer map. The nonzero integer `2`
-lies in the original maximal ideal and reduces to zero, while `1` survives.
-[`ValuationIntegersTest.CompletionComparison`](ValuationIntegersTest/CompletionComparison.lean)
-uses `HahnSeries ℤ (ZMod 2)` through `WithVal` and its stock uniform completion.
-Density, exact base values, completeness and separation are witnessed independently
-of the comparison, without assuming Hahn-field completeness; a separate API exercise
-uses these witnesses.
-[`ValuationIntegersTest.BoundedModule`](ValuationIntegersTest/BoundedModule.lean)
-uses integral pairs in ℚ₅² and the proper quadratic field extension ℚ₅(√5),
-with boundedness, degree and norm cutoffs proved independently of finiteness.
-[`ValuationIntegersTest.NumberTheory.BernoulliIntegrality`](ValuationIntegersTest/NumberTheory/BernoulliIntegrality.lean)
-computes independent values `1`, `-2` and `-1` at `(2, 2)`, `(2, 4)` and
-`(-1, 1)`, and applies the public integrality theorem at `(2, 2)`. It also
-uses the all-natural-number model `q = 1/12`, `k = 2`, the zero-exponent
-model `q = 1/5`, and the composite-denominator boundary above; the
-Bernoulli corollary excludes prime `5` from the denominator at index `2`.
 
 ## Building
 
-The committed Lean toolchain is `leanprover/lean4:v4.34.0-rc2`. The direct
-Lake dependencies are GitHub mathlib at
-`83abb3e776bdefcbc447a1e44d0debe4010039e5` and the released
-[`spectral-stone-duality`](https://github.com/FormalFrontier/spectral-stone-duality)
-at `d7dad16f9308a468bb964c0f13caf896a780621d`, which depends on released
-`ideal-completion` at `001e3b7508184ecd51e0d86177cb1d54508bf59d`. Keep the committed
-`lake-manifest.json`. From a checkout, fetch the matching precompiled cache
-**before** building either target:
+Keep the committed `lean-toolchain`, `lakefile.toml` and `lake-manifest.json`.
+The [pinned-input guide](docs/Guide.md#pinned-build-inputs) identifies the dependencies.
+Fetch the matching precompiled cache **before** building either target:
 
 ```sh
 elan toolchain install leanprover/lean4:v4.34.0-rc2
 lake exe cache get
-lake --wfail build ValuationIntegers ValuationIntegersTest
+lake build ValuationIntegers ValuationIntegersTest
 ```
 
 Plan for a cache download and local build storage.
 
 ## Conventions and limitations
 
-The rank/dimension theorems concern the valuation's restricted value group,
-not necessarily its ambient group. The dimension bound is *at most* one: the
-trivial valuation on `ℚ` gives dimension zero. The intersection theorems do not
-require distinct places unless explicitly stated; repeated valuations can
-have equal contracted ideals and need not yield surjectivity onto the residue
-product. At a trivial place in a mixed family, the residue map need not be
-surjective or its contracted ideal maximal. The fork homeomorphism has its
-separate pairwise-inequivalence and rank-one hypotheses.
+The selected-prime divided Bernoulli formulas do not cover nonselected primes,
+denominator products, congruences or K-theory; see the [detailed boundaries](docs/Guide.md#conventions-and-limitations).
 
-Completion comparison assumes a given dense ring homomorphism preserving the raw
-valuation into a complete separated valued ring. Its uniqueness is among continuous
-ring homomorphisms agreeing on the base. Target completeness and separation supply
-the canonical unique extension and closed range. This does not construct an extension
-of a prescribed valuation or choose its normalization. Sequential Cauchy-quotient
-and neighborhood-basis constructions, conversion of negative additive-value coordinates,
-and identifications with the book's original integer-ring and maximal-ideal carriers
-are not supplied, nor is the comparison joined to residue transport. These APIs do
-not assemble the full completion construction of Fesenko–Vostokov, Chapter I, §4.
-
-Completion-residue transport concerns the given valued-field uniformity and
-Mathlib's canonical completion, integer algebra map and local residue map. It
-does not assert integer-map surjectivity or a comparison with principal-adic
-completions of integer rings. The general dense-extension formulation extends
-the source's completion residue-field assertion; it is not a verbatim statement
-from the source.
+Dimension is at most one, not exactly one. Repeated places can have equal contracted
+ideals and nonsurjective residue-product maps; a trivial place in a mixed family can
+have a nonsurjective residue map and nonmaximal contracted ideal. The generic-point
+homeomorphism has separate pairwise-inequivalence and rank-one hypotheses.
+Completion comparison assumes the dense exactly value-preserving map, completeness
+and separation; it does not construct a prescribed valuation extension or normalization.
+Integer density does not assert surjectivity or a principal-adic comparison.
+The [limitations guide](docs/Guide.md#conventions-and-limitations) records the remaining
+completion-construction boundaries; these APIs do not assemble the full Fesenko–Vostokov I§4 construction.
 
 ## References
 
@@ -361,11 +176,15 @@ from the source.
   The Lean proofs use Mathlib's Bernoulli generating function, formal power series,
   polynomial derivations, rational-integrality and finite-field cyclic-unit
   exponent APIs; no source prose or PDF is reproduced.
+  Theorem 4.9 also supplies the selected-prime denominator conclusions for
+  divided Bernoulli numbers. Their proofs reuse Mathlib's undivided Bernoulli
+  valuation theorem `Bernoulli.padicValRat_bernoulli` and its rational valuation
+  and reduced-denominator APIs in `Mathlib.NumberTheory.Padics.PadicVal.Basic`.
 - I. B. Fesenko and S. V. Vostokov, *Local Fields and Their Extensions*, second
-  edition, Chapter I, (3.5)–(3.6), and Chapter II, §2: normalized discrete valuation
-  rigidity, geometric powers, topology recognition and finite-extension integer
-  modules. Here algebraic rigidity is
-  generalized to rings and cyclic-unit codomains, while topology recognizes
+  edition, Chapter I, (3.5)–(3.6), and Chapter II, §1, Corollary 4 and the
+  subsequent Remark, and §2: normalized discrete valuation rigidity, geometric
+  powers, power neighborhoods, topology recognition and finite-extension integer modules.
+  Here algebraic rigidity is generalized to rings and cyclic-unit codomains, while topology recognizes
   equivalence of rank-at-most-one valuations on division rings.
 - The same work, second edition (2002), Chapter I, (4.2)–(4.4) and (4.5)(1):
   completion of a valued field, integer density and its induced residue-field
@@ -378,10 +197,20 @@ from the source.
   Motivation for finite valuation intersections, not an exact source for the
   generalized rank-at-most-one and trivial-place statements.
 - Stefan Schröer, *A simple proof for Hochster's Theorem*, arXiv:2606.20016v1,
-  §2. The antecedent credit to Y. Ershov follows Schröer's presentation;
-  Ershov's original text was not consulted.
+  §2. The antecedent credit to Y. Ershov, *Spectra of rings and lattices*,
+  follows Schröer's presentation; Ershov's original text was not consulted.
 - [Norm-forms quadratic 5-adic model](https://github.com/FormalFrontier/norm-forms/blob/2d4f3696c4f104cb0b79c8cca70002e04862e8e4/NormFormsTests/SpectralNorm.lean):
   the polynomial and valuation-parity construction used by the quadratic client.
+- [Spectral Stone Duality](https://github.com/FormalFrontier/spectral-stone-duality):
+  supplies the canonical generic-point topology `Topology.WithGenericPoint`
+  used by the valuation spectrum homeomorphism.
+- [Adic Modules](https://github.com/FormalFrontier/adic-modules): its generic
+  Henselian-pair root estimate and integral unit witness supply the Power
+  module's root argument and exact correction value for the original valuation.
+- [Polynomial Root Stability](https://github.com/FormalFrontier/polynomial-root-stability):
+  its `Polynomial.sq_sub_seventeen_padic_two_data` input motivates the same
+  `m = 2`, `a = 17` input in the valuation model; no polynomial or Newton
+  fixture is reproduced and no root output is used as input.
 - [Mathlib contributors](https://github.com/leanprover-community/mathlib4):
   valuation subrings, full residue fields, discrete value groups, cyclic
   ordered-group classification, integer ordered-automorphism uniqueness,

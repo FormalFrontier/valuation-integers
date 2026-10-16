@@ -1,5 +1,7 @@
 # Dimension at most one gives rank at most one
 
+## Headline results
+
 Import `ValuationIntegers.RankLeOneConverse` (and, for the optional forward-use
 example below, `ValuationIntegers.RankLeOneDimension` from this same library).
 For a field `K`, any
@@ -28,7 +30,8 @@ power-divisibility theorem after locally installing the witness.
 Neither a separate domain hypothesis nor a nontrivial, nonfield, discrete,
 Noetherian, complete, separated or ambient Archimedean assumption is required.
 The **at-most-one** bound includes dimension zero: integers of a trivial
-valuation can be a field (the private client checks this concretely on `ℚ`).
+valuation can be a field (the public rational verification theorem checks
+this concretely on `ℚ`).
 The theorem does not assert dimension exactly one or classify all such fields.
 
 ## Proof outline
@@ -58,14 +61,8 @@ lake exe cache get
 LEAN_NUM_THREADS=2 lake --wfail build ValuationIntegers.RankLeOneConverse ValuationIntegersTest.RankLeOneConverse
 ```
 
-The configured strict native CI additionally uses `Lean.collectAxioms` with
-private imports and actual-module-origin enumeration. Original configured
-checks for the published three-result release built both roots and audited
-all eight modules, including four declarations in this producer (private/
-generated helpers included) and three private converse clients. Only
-`propext`, `Classical.choice` and `Quot.sound` occurred. This evidence is
-bound to that exact revision's checked inputs, not inferred from earlier
-isolated development or transferable unchanged to later edits.
+The focused build checks these two modules. A transitive axiom audit is a
+separate check, including private and generated declarations.
 
 ## Rights and credit
 

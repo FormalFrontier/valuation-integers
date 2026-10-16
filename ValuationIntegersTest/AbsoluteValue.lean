@@ -19,8 +19,11 @@ preserves the strict inequality at `1/2`. The specified identity from the valued
 `2`. The trivial valuation supplies a rank-at-most-one boundary where the absolute value is
 not nontrivial and the open unit ball is a singleton. No numerical normalization is prescribed.
 
+## References
+
 The rank-one fixture follows the rational 2-adic fixture in
-`ValuationIntegersTest.FiniteIntersections`, using Mathlib's embedding of the restricted
+`ValuationIntegersTest.FiniteIntersections`, using
+[Mathlib](https://github.com/leanprover-community/mathlib4)'s embedding of the restricted
 value group and `Valuation.nonempty_rankOne_iff_mulArchimedean`.
 -/
 

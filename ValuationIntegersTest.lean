@@ -19,3 +19,13 @@ import ValuationIntegersTest.GenericForkCompatibility
 import ValuationIntegersTest.GenericForkMixed
 import ValuationIntegersTest.BoundedModule
 import ValuationIntegersTest.NumberTheory.BernoulliIntegrality
+import ValuationIntegersTest.Power
+import ValuationIntegersTest.DividedBernoulli
+
+/-!
+# Valuation-integer examples and boundary cases
+
+This module collects ordinary-import clients of the valuation-integer APIs, including
+independent model inputs, nontrivial examples and degenerate boundary cases. The clients
+exercise the mathematical interfaces separately from the library's public re-exports.
+-/

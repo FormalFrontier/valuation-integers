@@ -29,11 +29,17 @@ project:
     Bounded submodules of finite-dimensional
     normed spaces over complete fields are finitely generated over Noetherian coefficient
     rings whose images contain the norm unit ball, with an extension-integer application.
+    At a positive even index 2k and a prime p with p - 1 dividing 2k, the divided
+    Bernoulli number B_(2k)/(2k) has additive p-adic valuation -1 - v_p(2k)
+    and positive reduced denominator exponent 1 + v_p(2k).
     For every integer n and positive natural k, the rational expression
     n^k * (n^k - 1) * (bernoulli k / k) is integral over the integers.
     More generally, if n^k * (n^k - 1) * q is integral for every natural n,
     every prime p in the reduced denominator of q satisfies p - 1 divides k.
     This includes k = 0 and applies to divided Bernoulli numbers at every index.
+    For Henselian valuation integers, a sharp power-root neighborhood has an exact
+    correction value, and the stock power range in the canonical units topology is
+    open when the exponent has nonzero image in the field.
   authors:
     - Formal Frontier Agents
   responsible_maintainers:
@@ -53,7 +59,7 @@ sources:
       - I. B. Fesenko
       - S. V. Vostokov
     type: book
-    location: Second edition (2002), Chapter I, (3.5)–(3.6), (4.2)–(4.4), (4.5)(1), and Chapter II, §2
+    location: Second edition (2002), Chapter I, (3.5)–(3.6), (4.2)–(4.4), (4.5)(1); Chapter II, §1, Corollary 4 and subsequent Remark, and §2
     relationship: adapts
     note: >-
       Normalized discrete valuation rigidity, geometric powers and topology
@@ -74,6 +80,10 @@ sources:
       The finite-extension integer-ring argument
       motivates bounded-submodule finite generation over complete normed fields and its
       normed-ring application with separate norm cutoffs.
+      The power-neighborhood statements strengthen the printed
+      characteristic-zero discrete corollary and its Henselian discrete Remark
+      to arbitrary valuation rank and positive characteristic with nonzero
+      exponent cast, with an exact correction value under the strict inequality.
   - title: Vector Bundles and K-Theory
     authors:
       - Allen Hatcher
@@ -81,6 +91,10 @@ sources:
     location: Version 2.2 (November 2017), §4.1, Lemma 4.12, printed p. 117, and the following argument in the proof of Theorem 4.9
     relationship: adapts
     note: >-
+      Theorem 4.9 supplies the selected-prime denominator conclusions for divided
+      Bernoulli numbers at positive even indices. These formulas concern primes
+      p with p - 1 dividing the even index, using Mathlib's undivided Bernoulli
+      valuation and rational valuation APIs.
       The Bernoulli integrality statement for all integer arguments and positive
       natural indices, proved by the logarithmic-derivative method using finite
       exponential sums and integer Euler-polynomial numerators. The index-one
@@ -112,6 +126,10 @@ related_formalizations:
       and the dense base, without continuity into the ambient value group.
       Bounded-module finiteness uses finite-dimensional continuous coordinates,
       operator-norm bounds, scalar restriction and Noetherian submodule finiteness.
+      Divided Bernoulli formulas use Bernoulli.padicValRat_bernoulli for the
+      undivided number, padicValRat.div and padicValRat.of_nat for division by
+      the index, and padicValRat_def with Rat.num_or_den_zero_padicVal for the
+      positive reduced denominator exponent.
       Bernoulli integrality uses the Bernoulli generating function, formal power
       series, polynomial derivations and rational-integrality APIs. Rational
       denominator support uses integer witnesses for integral rational numbers,
@@ -122,6 +140,12 @@ related_formalizations:
     note: >-
       Provides the canonical generic-point topology Topology.WithGenericPoint
       used by the valuation spectrum homeomorphism.
+  - id: https://github.com/FormalFrontier/adic-modules
+    relationship: builds-on
+    note: >-
+      The Power module applies its generic Henselian-pair root-lifting API over
+      the canonical valuation integers. The association's integral unit witness
+      supplies the exact correction value for the original valuation.
 automation:
   methods:
     - method: agent
@@ -207,6 +231,15 @@ status:
     finite-dimensional normed K-algebra L with compatible valuation integers, Noetherian
     base integers, an integral base norm unit ball and norm-bounded extension integers,
     the extension integers form a finite module.
+    For natural k and p with k positive, an explicit Fact p.Prime and
+    p - 1 dividing 2k, the divided Bernoulli number B_(2k)/(2k) has additive
+    p-adic valuation -1 - padicValNat p (2k). Its positive reduced Rat.den has
+    padicValNat exponent 1 + padicValNat p (2k). The divisor is the even index
+    2k, not the half-index k. At k = 1, independent examples compute the quotient
+    as 1/12 and its denominator as 12, giving valuations -2 and -1 at the
+    selected primes 2 and 3; the nonselected prime 5 is coprime to this denominator.
+    These two formulas do not assert valuations at nonselected primes, a complete
+    denominator product, prime congruences or a topological K-theory conclusion.
     For every n : Int and k : Nat with 0 < k, the rational number
     n^k * (n^k - 1) * (bernoulli k / k) is integral over Int. This includes
     zero and negative arguments and the index-one case with bernoulli 1 = -1/2.
@@ -215,6 +248,18 @@ status:
     exponent is included. Applied to divided Bernoulli numbers, this restricts
     prime support at every natural index, without computing exact denominator
     exponents. The model q = 1/12, k = 2 also shows why primality is necessary.
+    The Power module gives a sharp power-root neighborhood over a Henselian valuation
+    integer ring, with an exact correction value and strict correction bound. The
+    root argument applies Adic Modules' generic Henselian-pair root estimate to
+    X^m minus the target over the canonical valuation integers. The associated
+    unit stays in that ring, giving the exact estimate for the original valuation.
+    Openness of the stock power range in the canonical units topology for a
+    nonzero exponent cast uses that root statement. No completeness, valuation
+    rank, characteristic-zero or unit-derivative hypothesis is imposed. The
+    two-adic model independently transports adic completeness from the standard
+    integer ring and proves the valuation inputs for m = 2 and a = 17, including
+    the nonunit derivative. Its root and openness clients then apply the public
+    APIs. No new Newton theorem is introduced.
     No source-specific coverage is asserted.
 review:
   status: partially-agent-reviewed
@@ -224,12 +269,22 @@ review:
     definition and theorem statements and the completion-residue definition
     and headline statements. No human review or source-coverage
     assessment is claimed.
+    The power-neighborhood statements and proofs, including their
+    independent two-adic inputs and clients, have independent agent review.
 alignment:
   namespace: Valuation
   note: >-
     Selected public library API inventory, not a source-passage or coverage mapping.
     Private client fixtures and imported mathlib declarations are excluded.
   statements:
+    - lean: Valuation.exists_pow_eq_of_sub_one_lt_sq
+      module: ValuationIntegers/Power.lean
+    - lean: Valued.isOpen_powMonoidHom_range
+      module: ValuationIntegers/Power.lean
+    - lean: Bernoulli.padicValRat_bernoulli_div
+      module: ValuationIntegers/NumberTheory/Bernoulli.lean
+    - lean: Bernoulli.padicValNat_den_bernoulli_div
+      module: ValuationIntegers/NumberTheory/Bernoulli.lean
     - lean: Rat.sub_one_dvd_of_dvd_den_of_forall_isIntegral_pow_mul_pow_sub_one_mul
       module: ValuationIntegers/NumberTheory/DenominatorSupport.lean
     - lean: Bernoulli.sub_one_dvd_of_dvd_den_bernoulli_div
@@ -349,8 +404,18 @@ acknowledgements: >-
   HahnSeries, AddValuation.toValuation, WithVal and canonical completion APIs.
   The quadratic 5-adic client follows
   the polynomial and valuation-parity construction in the norm-forms spectral-norm example.
+  The divided Bernoulli results follow the selected-prime conclusions of Hatcher's
+  Theorem 4.9 and reuse Mathlib's undivided Bernoulli valuation, rational valuation
+  and reduced-denominator arguments.
   Bernoulli integrality follows Hatcher's logarithmic-derivative method using
   Mathlib's Bernoulli generating function, formal power series, polynomial
   derivations and rational-integrality APIs. The rational denominator-support
   criterion generalizes Hatcher's prime-cancellation argument using Mathlib's
   rational-root, coprimality, finite-field cyclicity and group-exponent APIs.
+  The power-neighborhood
+  statements draw on Fesenko–Vostokov II§1; their model uses Mathlib's norm
+  valuation, p-adic integer completeness and Henselian ring instance. The numeric
+  input is the valuation representation of the same m = 2, a = 17 input already
+  used by Polynomial Root Stability, without reproducing its polynomial fixture
+  or using its root output. The power-root argument reuses Adic Modules'
+  Henselian-pair root estimate and Mathlib's valuation-integer unit criterion.

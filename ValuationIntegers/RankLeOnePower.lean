@@ -15,6 +15,16 @@ public import Mathlib.RingTheory.Valuation.RankOne
 The rank assumption is on the actual value group of the valuation, not on its
 ambient codomain. Every nonunit in its ring of integers has a positive power
 divisible by any nonzero integer.
+
+## References
+
+* Mathlib's `MulArchimedean.comap` construction in `RankOne.lean` (María Inés de
+  Frutos-Fernández and Filippo A. E. Nuccio), `exists_pow_lt₀` in
+  `ArchimedeanDensely.lean` (Yakov Pechersky), and valuation integers in
+  `Integers.lean` (Kenny Lau). See the
+  [power-divisibility guide](RankLeOnePower/README.md) for the original-project
+  and adaptation credit; the [Mathlib modules](https://github.com/leanprover-community/mathlib4)
+  retain their authorship and Apache-2.0 notices.
 -/
 
 @[expose] public section
