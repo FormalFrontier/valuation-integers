@@ -26,6 +26,8 @@ project:
     Bounded submodules of finite-dimensional
     normed spaces over complete fields are finitely generated over Noetherian coefficient
     rings whose images contain the norm unit ball, with an extension-integer application.
+    For every integer n and positive natural k, the rational expression
+    n^k * (n^k - 1) * (bernoulli k / k) is integral over the integers.
   authors:
     - Formal Frontier Agents
   responsible_maintainers:
@@ -62,6 +64,19 @@ sources:
       The finite-extension integer-ring argument
       motivates bounded-submodule finite generation over complete normed fields and its
       normed-ring application with separate norm cutoffs.
+  - title: Vector Bundles and K-Theory
+    authors:
+      - Allen Hatcher
+    type: book
+    location: Version 2.2 (November 2017), Lemma 4.12, printed p. 117
+    relationship: adapts
+    note: >-
+      The Bernoulli integrality statement for all integer arguments and positive
+      natural indices, proved by the logarithmic-derivative method using finite
+      exponential sums and integer Euler-polynomial numerators. The index-one
+      case uses Mathlib's convention bernoulli 1 = -1/2. No source prose or PDF
+      is reproduced, no redistribution license for the book is inferred, and
+      no source-specific coverage is asserted.
 related_formalizations:
   - id: https://github.com/leanprover-community/mathlib4
     relationship: builds-on
@@ -81,6 +96,8 @@ related_formalizations:
       completion, integer and reduction comparisons.
       Bounded-module finiteness uses finite-dimensional continuous coordinates,
       operator-norm bounds, scalar restriction and Noetherian submodule finiteness.
+      Bernoulli integrality uses the Bernoulli generating function, formal power
+      series, polynomial derivations and rational-integrality APIs.
   - id: https://github.com/FormalFrontier/spectral-stone-duality
     relationship: builds-on
     note: >-
@@ -153,6 +170,9 @@ status:
     finite-dimensional normed K-algebra L with compatible valuation integers, Noetherian
     base integers, an integral base norm unit ball and norm-bounded extension integers,
     the extension integers form a finite module.
+    For every n : Int and k : Nat with 0 < k, the rational number
+    n^k * (n^k - 1) * (bernoulli k / k) is integral over Int. This includes
+    zero and negative arguments and the index-one case with bernoulli 1 = -1/2.
     No source-specific coverage is asserted.
 review:
   status: partially-agent-reviewed
@@ -168,6 +188,8 @@ alignment:
     Selected public library API inventory, not a source-passage or coverage mapping.
     Private client fixtures and imported mathlib declarations are excluded.
   statements:
+    - lean: Bernoulli.isIntegral_pow_mul_pow_sub_one_mul_bernoulli_div
+      module: ValuationIntegers/NumberTheory/BernoulliIntegrality.lean
     - lean: Valued.denseRange_algebraMap_integer
       module: ValuationIntegers/Completion.lean
     - lean: Valued.residueFieldMap_bijective_of_denseRange
@@ -270,3 +292,6 @@ acknowledgements: >-
   Mathlib's specified p-adic comparisons and reduction maps.
   The quadratic 5-adic client follows
   the polynomial and valuation-parity construction in the norm-forms spectral-norm example.
+  Bernoulli integrality follows Hatcher's logarithmic-derivative method using
+  Mathlib's Bernoulli generating function, formal power series, polynomial
+  derivations and rational-integrality APIs.

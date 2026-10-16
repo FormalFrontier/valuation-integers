@@ -17,3 +17,4 @@ public import ValuationIntegers.FiniteIntersections
 public import ValuationIntegers.FiniteIntersections.PrimeIdeals
 public import ValuationIntegers.FiniteIntersections.Spectrum
 public import ValuationIntegers.BoundedModule
+public import ValuationIntegers.NumberTheory.BernoulliIntegrality

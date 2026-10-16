@@ -17,6 +17,12 @@ finite-module results for extension integers.
 
 ## Headline results
 
+- **Bernoulli integrality for integer arguments.**
+  [`Bernoulli.isIntegral_pow_mul_pow_sub_one_mul_bernoulli_div`](ValuationIntegers/NumberTheory/BernoulliIntegrality.lean):
+  for every `n : ℤ` and `k : ℕ` with `0 < k`,
+  `n^k * (n^k - 1) * (bernoulli k / k)` is integral over `ℤ` as a rational number.
+  This is Hatcher's Lemma 4.12, including negative arguments and the index-one
+  case with Mathlib's convention `bernoulli 1 = -1/2`.
 - **Discrete values of elements with roots of all depths.**
   [`Valuation.eq_zero_or_eq_one_of_forall_exists_pow_eq`](ValuationIntegers/DiscreteRoots.lean):
   for an arbitrary `[Ring R]`, an integer-valued valuation `v : Valuation R ℤᵐ⁰`
@@ -173,8 +179,9 @@ update again. Replace `main` with a release commit to pin explicitly.
 
 `import ValuationIntegers` exports bounded-module finiteness, normalized valuation
 rigidity, rank/dimension, valuation-topology, completion-residue and intersection APIs,
-including the finite-intersection classification and spectrum results. Import
-`ValuationIntegers.Completion` for dense integer/residue transport alone, or
+including the finite-intersection classification, spectrum and Bernoulli integrality results.
+Import `ValuationIntegers.NumberTheory.BernoulliIntegrality` for Bernoulli integrality alone.
+Import `ValuationIntegers.Completion` for dense integer/residue transport alone, or
 `ValuationIntegers.Equivalence` for
 rigidity alone, or `ValuationIntegers.AbsoluteValue` for the real absolute-value
 construction and its comparison API. `ValuationIntegers.AbsoluteValueTopology`
@@ -251,6 +258,9 @@ lies in the original maximal ideal and reduces to zero, while `1` survives.
 [`ValuationIntegersTest.BoundedModule`](ValuationIntegersTest/BoundedModule.lean)
 uses integral pairs in ℚ₅² and the proper quadratic field extension ℚ₅(√5),
 with boundedness, degree and norm cutoffs proved independently of finiteness.
+[`ValuationIntegersTest.NumberTheory.BernoulliIntegrality`](ValuationIntegersTest/NumberTheory/BernoulliIntegrality.lean)
+computes independent values `1`, `-2` and `-1` at `(2, 2)`, `(2, 4)` and
+`(-1, 1)`, and applies the public integrality theorem at `(2, 2)`.
 
 ## Building
 
@@ -292,6 +302,11 @@ a verbatim statement from the source.
 
 ## References
 
+- Allen Hatcher, *Vector Bundles and K-Theory*, version 2.2 (November 2017),
+  Lemma 4.12, printed p. 117: the Bernoulli integrality statement and
+  logarithmic-derivative proof method. The Lean proof uses Mathlib's Bernoulli
+  generating function, formal power series, polynomial derivations and
+  rational-integrality APIs; no source prose or PDF is reproduced.
 - I. B. Fesenko and S. V. Vostokov, *Local Fields and Their Extensions*, second
   edition, Chapter I, (3.5)–(3.6), and Chapter II, §2: normalized discrete valuation
   rigidity, geometric powers, topology recognition and finite-extension integer

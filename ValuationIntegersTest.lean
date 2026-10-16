@@ -17,3 +17,4 @@ import ValuationIntegersTest.FiniteIntersectionsAdic
 import ValuationIntegersTest.GenericForkCompatibility
 import ValuationIntegersTest.GenericForkMixed
 import ValuationIntegersTest.BoundedModule
+import ValuationIntegersTest.NumberTheory.BernoulliIntegrality
