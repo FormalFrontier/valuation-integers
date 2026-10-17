@@ -79,6 +79,12 @@ proof methods, imports, examples and boundaries.
 - **Topology recognizes valuation equivalence** ([identity criterion](ValuationIntegers/Topology.lean)).
   Two rank-at-most-one valuations on a division ring are equivalent iff
   `WithVal.congr v w (RingEquiv.refl K)` is a homeomorphism, even with different value types.
+- **Completeness of valued rings and their integer subrings**
+  ([`Valued.completeSpace_iff_completeSpace_integer`](ValuationIntegers/Completeness.lean)).
+  Any ring with a supplied `Valued R Γ₀` uniformity is complete if and only if its stock
+  valuation integer subring is complete for the inherited subtype uniformity.
+  The value group is arbitrary; no commutativity, field, separation, rank or discreteness
+  hypothesis is required.
 - **Canonical comparison with a dense exactly valued completion**
   ([`Valued.completionRingEquiv`](ValuationIntegers/Completion.lean)).
   A dense ring map from a valued field K to a complete separated valued ring L,
@@ -145,6 +151,11 @@ complete reduced-denominator factorization and finite-product formulas. Import
 The root exports the producer APIs; `ValuationIntegersTest` is a separate ordinary-import
 client target, not a root export. The [import and client guide](docs/Guide.md#imports-and-clients)
 lists selective imports and examples, including local installation of the converse's rank data.
+
+For completeness of a supplied valued ring and its integer subring, import
+`ValuationIntegers.Completeness` and use
+`Valued.completeSpace_iff_completeSpace_integer.mp` or `.mpr` in the required direction.
+
 With the power theorem's hypotheses in scope:
 
 ```lean
@@ -221,6 +232,9 @@ completion-construction boundaries; these APIs do not assemble the full Fesenko�
 - [Adic Modules](https://github.com/FormalFrontier/adic-modules): its generic
   Henselian-pair root estimate and integral unit witness supply the Power
   module's root argument and exact correction value for the original valuation.
+  Its complete-zero-neighborhood criterion proves the reverse implication of
+  completeness for a valued ring and its integer subring, following the right-uniform
+  group argument of Patrick Massot and Johannes Hölzl in Mathlib.
 - [Polynomial Root Stability](https://github.com/FormalFrontier/polynomial-root-stability):
   its `Polynomial.sq_sub_seventeen_padic_two_data` input motivates the same
   `m = 2`, `a = 17` input in the valuation model; no polynomial or Newton

@@ -13,6 +13,7 @@ public import ValuationIntegers.RankLeOneDimension
 public import ValuationIntegers.RankLeOneConverse
 public import ValuationIntegers.Topology
 public import ValuationIntegers.Completion
+public import ValuationIntegers.Completeness
 public import ValuationIntegers.FiniteIntersections
 public import ValuationIntegers.FiniteIntersections.PrimeIdeals
 public import ValuationIntegers.FiniteIntersections.Spectrum

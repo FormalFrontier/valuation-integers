@@ -323,7 +323,7 @@ Lake dependencies are GitHub mathlib at
 at `d7dad16f9308a468bb964c0f13caf896a780621d`, which depends on released
 `ideal-completion` at `001e3b7508184ecd51e0d86177cb1d54508bf59d`. The direct
 dependency [`adic-modules`](https://github.com/FormalFrontier/adic-modules) at
-`0a09095829b754cb2d5664a29f46383ff939e4b2` supplies the generic Henselian-pair
+`4e50b3b03c0c3ce11498774d72e111654ff35d08` supplies the generic Henselian-pair
 root-lifting API used by the Power module's root argument. Adic Modules depends on
 released [`group-theory`](https://github.com/FormalFrontier/group-theory) at
 `fcd072c51cbda8c94f91f69f251b9572e79f0e63`. Keep the committed
