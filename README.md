@@ -84,6 +84,19 @@ proof methods, imports, examples and boundaries.
 - **Topology recognizes valuation equivalence** ([identity criterion](ValuationIntegers/Topology.lean)).
   Two rank-at-most-one valuations on a division ring are equivalent iff
   `WithVal.congr v w (RingEquiv.refl K)` is a homeomorphism, even with different value types.
+- **Integer-threshold criteria for valued rings**
+  ([uniformity, limits and completeness](ValuationIntegers/IntegerTopology.lean)).
+  For a ring `R : Type u` with a supplied
+  `Valued R (Multiplicative ((WithTop ℤ)ᵒᵈ))` instance, weak integer thresholds
+  on additive valuations of differences describe the supplied valued uniformity:
+  `Valued.hasBasis_uniformity_addValuation_int` gives a uniformity basis;
+  `Valued.cauchySeq_iff_addValuation_int` characterizes Cauchy nets on directed,
+  possibly empty preorders in an independent universe;
+  `Valued.tendsto_iff_addValuation_int` characterizes convergence along any filter;
+  and `Valued.completeSpace_iff_addValuation_int` characterizes completeness by
+  integer-threshold limits of integer-Cauchy sequences indexed by `ℕ`.
+  No field, separation or valuation-surjectivity hypothesis is needed, and no
+  new topology or valuation is constructed.
 - **Completeness of valued rings and their integer subrings**
   ([`Valued.completeSpace_iff_completeSpace_integer`](ValuationIntegers/Completeness.lean)).
   Any ring with a supplied `Valued R Γ₀` uniformity is complete if and only if its stock
