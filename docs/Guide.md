@@ -90,6 +90,18 @@ result boundaries, proof methods, imports and ordinary-import clients.
   L, where L is a normed ring: with `v.HasExtension w` and Noetherian base
   integers, extension integers are finite if K's norm unit ball is v-integral
   and every w-integral element has norm at most one.
+- **Integer presentations and DVR valuations.**
+  [`Valuation.Integers.isEquiv`](../ValuationIntegers/Equivalence.lean) compares
+  valuations on a field whose unit balls are the image of the same commutative ring
+  under the same algebra map. The ordered value groups may differ; no rank,
+  surjectivity or normalization assumption is needed.
+  [`IsDiscreteValuationRing.maximalIdeal_valuation_integers`](../ValuationIntegers/DiscreteValuationRing.lean)
+  presents the integers of the maximal-ideal valuation on any fraction field of a DVR.
+  `IsDiscreteValuationRing.valuation_isEquiv_maximalIdeal` compares this valuation
+  with the abstract valuation of the valuation ring, while
+  `IsDiscreteValuationRing.coe_equivValuationSubring_apply` identifies the ring
+  equivalence's composite with the field inclusion as `algebraMap`.
+  These are algebraic comparisons, not a construction of a uniform equivalence.
 - **Rigidity of normalized valuations.**
   [`Valuation.isEquiv_iff_eq_of_surjective`](../ValuationIntegers/Equivalence.lean):
   for valuations of any ring into a common linearly ordered commutative group
@@ -220,8 +232,9 @@ and its denominator-support corollary, or
 `ValuationIntegers.NumberTheory.DenominatorSupport` for the rational criterion alone.
 Import `ValuationIntegers.Completion` for the additive uniformity bridge, canonical completion
 comparison and dense integer/residue transport, or
-`ValuationIntegers.Equivalence` for
-rigidity alone, or `ValuationIntegers.AbsoluteValue` for the real absolute-value
+`ValuationIntegers.Equivalence` for integer-presentation comparison and normalized
+rigidity. `ValuationIntegers.DiscreteValuationRing` adds the DVR valuation comparison
+and the algebra-map coercion law. Use `ValuationIntegers.AbsoluteValue` for the real absolute-value
 construction and its comparison API. `ValuationIntegers.AbsoluteValueTopology`
 adds ultrametricity and the specified identity comparison with the valued copy;
 alternatively import
@@ -276,6 +289,10 @@ mixed family. The [normalization client](../ValuationIntegersTest/Equivalence.le
 uses the canonical valuation on the fraction field of `PowerSeries ℚ`; squaring
 its values gives an unequal equivalent valuation that is not surjective,
 showing why both normalization premises are needed.
+The [DVR client](../ValuationIntegersTest/DiscreteValuationRing.lean) uses `ℤ_[3]`
+and `ℚ_[3]`: the algebra-map coercion law and valuation equivalence give the strict
+abstract-value bounds `0 < v (3 : ℚ_[3]) < 1`, and the same equivalence sends zero
+and one to their field values.
 [`ValuationIntegersTest.Topology`](../ValuationIntegersTest/Topology.lean) contains
 usual 2-adic power convergence and a heterogeneous restricted-value comparison,
 the trivial valuation, an independent nonseparated product-ring boundary, and

@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 module
 
 public import ValuationIntegers.Equivalence
+public import ValuationIntegers.DiscreteValuationRing
 public import ValuationIntegers.DiscreteRoots
 public import ValuationIntegers.AbsoluteValue
 public import ValuationIntegers.AbsoluteValueTopology
@@ -28,7 +29,8 @@ public import ValuationIntegers.NumberTheory.BernoulliFactorization
 # Valuation integers and their arithmetic and topology
 
 This module re-exports valuation-ring rank and dimension, normalized valuation rigidity,
-valuation topology, completion comparisons and finite intersections with residue maps.
+integer-presentation comparisons for valuations and DVRs, valuation topology, completion
+comparisons and finite intersections with residue maps.
 It also provides bounded-module finiteness, Henselian power neighborhoods, Bernoulli
 integrality and rational denominator-support results.
 -/

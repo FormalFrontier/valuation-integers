@@ -65,6 +65,11 @@ proof methods, imports, examples and boundaries.
   ([`Valuation.isEquiv_iff_eq_of_surjective`](ValuationIntegers/Equivalence.lean)).
   Two surjective valuations of any ring into a common linearly ordered commutative
   group with zero with cyclic units are equivalent iff equal, including trivial units.
+  The same module compares valuations on a field whose integer presentations use
+  the same algebra map from a commutative ring, even with different ordered value groups.
+  The [DVR comparison and map laws](ValuationIntegers/DiscreteValuationRing.lean)
+  specialize this to the abstract and maximal-ideal valuations on any fraction field
+  of a DVR and identify the valuation-subring equivalence with the algebra map.
 - **Positive-power divisibility** ([power guide](ValuationIntegers/RankLeOnePower/README.md)).
   In rank at most one, for `x` in the maximal ideal and nonzero `y : O`,
   some positive natural `n` satisfies `y ∣ x ^ n`.

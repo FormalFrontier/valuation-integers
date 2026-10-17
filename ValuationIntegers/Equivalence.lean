@@ -4,13 +4,16 @@ Authors: Formal Frontier Agents
 -/
 module
 
-public import Mathlib.RingTheory.Valuation.Basic
+public import Mathlib.RingTheory.Valuation.Integers
 public import Mathlib.GroupTheory.SpecificGroups.Cyclic
 import Mathlib.GroupTheory.ArchimedeanDensely
 import Mathlib.Algebra.Order.Hom.Units
 
 /-!
-# Equivalence of normalized valuations
+# Equivalence of valuations
+
+Two valuations on a field are equivalent if they have the same ring of integers, presented
+through the same algebra map. This comparison allows different ordered value groups.
 
 Equivalent surjective valuations with values in a common linearly ordered commutative group
 with zero having cyclic units are equal. In particular, this applies to surjective
@@ -28,7 +31,28 @@ setting. This module concerns `Valuation.IsEquiv`, not equality of induced topol
 
 @[expose] public section
 
+universe uO uK uΓ uΔ
+
 namespace Valuation
+
+/-- Two valuations on a field with the same integer presentation through `algebraMap O K`
+are equivalent. The field hypothesis permits recovering comparisons of values from the
+common unit ball by division. -/
+theorem Integers.isEquiv
+    {O : Type uO} {K : Type uK} {Γ₀ : Type uΓ} {Δ₀ : Type uΔ}
+    [CommRing O] [Field K] [Algebra O K]
+    [LinearOrderedCommGroupWithZero Γ₀] [LinearOrderedCommGroupWithZero Δ₀]
+    {v : Valuation K Γ₀} {w : Valuation K Δ₀}
+    (hv : v.Integers O) (hw : w.Integers O) : v.IsEquiv w := by
+  apply Valuation.isEquiv_of_val_le_one
+  intro x
+  constructor
+  · intro hx
+    obtain ⟨a, rfl⟩ := hv.exists_of_le_one hx
+    exact hw.map_le_one a
+  · intro hx
+    obtain ⟨a, rfl⟩ := hw.exists_of_le_one hx
+    exact hv.map_le_one a
 
 -- Conjugate to the existing uniqueness theorem for ordered automorphisms of the integers.
 private theorem cyclic_orderMonoidIso_eq_refl
