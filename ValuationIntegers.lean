@@ -16,6 +16,7 @@ public import ValuationIntegers.Topology
 public import ValuationIntegers.IntegerTopology
 public import ValuationIntegers.Completion
 public import ValuationIntegers.Completeness
+public import ValuationIntegers.LaurentSeries
 public import ValuationIntegers.FiniteIntersections
 public import ValuationIntegers.FiniteIntersections.PrimeIdeals
 public import ValuationIntegers.FiniteIntersections.Spectrum

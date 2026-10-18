@@ -14,6 +14,7 @@ import ValuationIntegersTest.RankLeOneConverse
 import ValuationIntegersTest.Topology
 import ValuationIntegersTest.Completion
 import ValuationIntegersTest.Completeness
+import ValuationIntegersTest.LaurentSeries
 import ValuationIntegersTest.CompletionComparison
 import ValuationIntegersTest.FiniteIntersections
 import ValuationIntegersTest.FiniteIntersectionsAdic
