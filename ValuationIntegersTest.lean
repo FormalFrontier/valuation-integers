@@ -4,6 +4,8 @@ Authors: Formal Frontier Agents
 -/
 module
 
+import ValuationIntegersTest.Uniformizer
+
 import ValuationIntegersTest.Equivalence
 import ValuationIntegersTest.DiscreteValuationRing
 import ValuationIntegersTest.DiscreteRoots
