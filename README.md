@@ -97,6 +97,16 @@ proof methods, imports, examples and boundaries.
   integer-threshold limits of integer-Cauchy sequences indexed by `ℕ`.
   No field, separation or valuation-surjectivity hypothesis is needed, and no
   new topology or valuation is constructed.
+- **Cauchy-filter stabilization in valuative rings**
+  ([fixed-center alternative](ValuationIntegers/Cauchy.lean)).
+  For any ring with a supplied valuative uniformity and any compatible valuation,
+  a Cauchy filter either converges to a specified center or its difference from
+  that center has eventually constant positive value. The value group is arbitrary;
+  no commutativity, completeness, separation, rank or zero-support condition is needed.
+  Convergence does not assert eventual equality to the center.
+  The [3-adic client](ValuationIntegersTest/Cauchy.lean) uses the alternative at center one;
+  independent convergence to zero excludes the first branch, and one late term determines
+  the eventual value.
 - **Completeness of valued rings and their integer subrings**
   ([`Valued.completeSpace_iff_completeSpace_integer`](ValuationIntegers/Completeness.lean)).
   Any ring with a supplied `Valued R Γ₀` uniformity is complete if and only if its stock

@@ -27,6 +27,7 @@ import ValuationIntegersTest.NumberTheory.BernoulliIntegrality
 import ValuationIntegersTest.Power
 import ValuationIntegersTest.DividedBernoulli
 import ValuationIntegersTest.DividedBernoulliFactorization
+import ValuationIntegersTest.Cauchy
 
 public import ValuationIntegers.IntegerTopology
 public import Mathlib.Algebra.Field.ZMod
