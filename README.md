@@ -139,6 +139,11 @@ eventually equal to a positive constant
   commutative value group with zero. The extension agrees with the original
   valuation on coercions and recovers Mathlib's extension for a supplied
   `Valued` field.
+- **Valuative topology of the extended valuation**
+  ([completion topology](ValuationIntegers/CompletionValuationTopology.lean)).
+  For a field with a valuative additive uniformity and a compatible valuation
+  into an arbitrary linearly ordered commutative group with zero, the extended
+  valuation induces the original uniform completion's topology.
 - **Canonical comparison with a dense exactly valued completion**
   ([`Valued.completionRingEquiv`](ValuationIntegers/Completion.lean)).
   A dense ring map from a valued field K to a complete separated valued ring L,

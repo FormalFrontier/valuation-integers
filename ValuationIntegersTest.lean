@@ -17,6 +17,7 @@ import ValuationIntegersTest.RankLeOneConverse
 import ValuationIntegersTest.Topology
 import ValuationIntegersTest.Completion
 import ValuationIntegersTest.CompletionValuation
+import ValuationIntegersTest.CompletionValuationTopology
 import ValuationIntegersTest.Completeness
 import ValuationIntegersTest.LaurentSeries
 import ValuationIntegersTest.CompletionComparison

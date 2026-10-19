@@ -22,6 +22,7 @@ public import ValuationIntegers.Cauchy.Bounded
 public import ValuationIntegers.Cauchy.Ultrametric
 public import ValuationIntegers.Completion
 public import ValuationIntegers.CompletionValuation
+public import ValuationIntegers.CompletionValuationTopology
 public import ValuationIntegers.Completeness
 public import ValuationIntegers.LaurentSeries
 public import ValuationIntegers.FiniteIntersections
