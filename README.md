@@ -7,6 +7,13 @@ proof methods, imports, examples and boundaries.
 
 ## Headline results
 
+- **Laurent polynomial approximation and density**
+  ([Laurent-series approximation](ValuationIntegers/LaurentPolynomial.lean)).
+  Over any type with zero, a Laurent series has finite support strictly below
+  every integer cutoff. Over a semiring its coefficients below any such cutoff
+  agree with a Laurent polynomial; negative cutoffs are included.
+  Over a field, the coefficient inclusion `p ↦ HahnSeries.ofFinsupp p.coeff`
+  has dense range in the existing `X`-adic Laurent-series topology.
 - **Power neighborhoods in Henselian valued fields**
   ([root estimate and open power range](ValuationIntegers/Power.lean)).
   Henselian valuation integers and `v (a - 1) < v (m : K) ^ 2` give `b ^ m = a`,

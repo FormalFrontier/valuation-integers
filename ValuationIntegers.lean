@@ -4,6 +4,7 @@ Authors: Formal Frontier Agents
 -/
 module
 
+public import ValuationIntegers.LaurentPolynomial
 public import ValuationIntegers.Uniformizer
 
 public import ValuationIntegers.Equivalence

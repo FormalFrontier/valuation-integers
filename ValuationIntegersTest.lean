@@ -4,6 +4,7 @@ Authors: Formal Frontier Agents
 -/
 module
 
+public import ValuationIntegersTest.LaurentPolynomialDensity
 import ValuationIntegersTest.Uniformizer
 
 import ValuationIntegersTest.Equivalence
