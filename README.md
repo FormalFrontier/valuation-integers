@@ -132,6 +132,13 @@ eventually equal to a positive constant
   valuation integer subring is complete for the inherited subtype uniformity.
   The value group is arbitrary; no commutativity, field, separation, rank or discreteness
   hypothesis is required.
+- **Extending compatible valuations to uniform completions**
+  ([completion valuation](ValuationIntegers/CompletionValuation.lean)).
+  A compatible valuation on a field extends to the completion of its given
+  valuative additive uniformity with the same arbitrary linearly ordered
+  commutative value group with zero. The extension agrees with the original
+  valuation on coercions and recovers Mathlib's extension for a supplied
+  `Valued` field.
 - **Canonical comparison with a dense exactly valued completion**
   ([`Valued.completionRingEquiv`](ValuationIntegers/Completion.lean)).
   A dense ring map from a valued field K to a complete separated valued ring L,
