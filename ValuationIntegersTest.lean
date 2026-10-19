@@ -30,6 +30,7 @@ import ValuationIntegersTest.DividedBernoulli
 import ValuationIntegersTest.DividedBernoulliFactorization
 import ValuationIntegersTest.Cauchy
 import ValuationIntegersTest.Cauchy.Bounded
+import ValuationIntegersTest.Cauchy.Ultrametric
 
 public import ValuationIntegers.IntegerTopology
 public import Mathlib.Algebra.Field.ZMod

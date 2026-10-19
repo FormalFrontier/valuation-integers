@@ -7,6 +7,13 @@ proof methods, imports, examples and boundaries.
 
 ## Headline results
 
+In an ultrametric `PseudoMetricSpace`, a Cauchy filter either converges to a fixed
+center or has eventually constant positive distance from it. A Cauchy sequence in
+a `SeminormedAddGroup` with nonarchimedean norm has norms tending to zero or
+eventually equal to a positive constant
+([theorems](ValuationIntegers/Cauchy/Ultrametric.lean),
+[examples](ValuationIntegersTest/Cauchy/Ultrametric.lean)).
+
 - **Laurent polynomial approximation and density**
   ([Laurent-series approximation](ValuationIntegers/LaurentPolynomial.lean)).
   Over any type with zero, a Laurent series has finite support strictly below
