@@ -20,6 +20,7 @@ import ValuationIntegersTest.CompletionValuation
 import ValuationIntegersTest.CompletionValuationTopology
 import ValuationIntegersTest.Completeness
 import ValuationIntegersTest.LaurentSeries
+import ValuationIntegersTest.LaurentSeriesResidueField
 import ValuationIntegersTest.CompletionComparison
 import ValuationIntegersTest.FiniteIntersections
 import ValuationIntegersTest.FiniteIntersectionsAdic

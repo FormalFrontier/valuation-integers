@@ -7,6 +7,13 @@ proof methods, imports, examples and boundaries.
 
 ## Headline results
 
+- **Laurent-series residue field**
+  ([residue equivalence](ValuationIntegers/LaurentSeries/ResidueField.lean)).
+  For any field `K`, the residue field of the standard `X`-adic valuation subring
+  of `LaurentSeries K` is ring-equivalent to `K`. Reduction is the coefficient
+  at zero; on the power-series presentation it is `PowerSeries.constantCoeff`.
+  Thus constants retain their coefficients and the parameter has zero residue.
+
 In an ultrametric `PseudoMetricSpace`, a Cauchy filter either converges to a fixed
 center or has eventually constant positive distance from it. A Cauchy sequence in
 a `SeminormedAddGroup` with nonarchimedean norm has norms tending to zero or
