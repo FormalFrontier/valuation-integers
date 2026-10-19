@@ -107,6 +107,11 @@ proof methods, imports, examples and boundaries.
   The [3-adic client](ValuationIntegersTest/Cauchy.lean) uses the alternative at center one;
   independent convergence to zero excludes the first branch, and one late term determines
   the eventual value.
+- **Eventual upper bounds for Cauchy filters**
+  ([valuation bound](ValuationIntegers/Cauchy/Bounded.lean)).
+  On any ring with a valuative additive uniformity, a Cauchy filter has eventually
+  upper-bounded values under any given compatible valuation into an arbitrary
+  linearly ordered commutative group with zero.
 - **Completeness of valued rings and their integer subrings**
   ([`Valued.completeSpace_iff_completeSpace_integer`](ValuationIntegers/Completeness.lean)).
   Any ring with a supplied `Valued R Γ₀` uniformity is complete if and only if its stock
