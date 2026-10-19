@@ -20,6 +20,7 @@ public import ValuationIntegers.IntegerTopology
 public import ValuationIntegers.Cauchy
 public import ValuationIntegers.Cauchy.Bounded
 public import ValuationIntegers.Cauchy.Ultrametric
+public import ValuationIntegers.Cauchy.Completion
 public import ValuationIntegers.Completion
 public import ValuationIntegers.CompletionValuation
 public import ValuationIntegers.CompletionValuationTopology
