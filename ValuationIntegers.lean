@@ -25,6 +25,7 @@ public import ValuationIntegers.CompletionValuation
 public import ValuationIntegers.CompletionValuationTopology
 public import ValuationIntegers.Completeness
 public import ValuationIntegers.LaurentSeries
+public import ValuationIntegers.LaurentSeries.LocalRing
 public import ValuationIntegers.LaurentSeries.ResidueField
 public import ValuationIntegers.FiniteIntersections
 public import ValuationIntegers.FiniteIntersections.PrimeIdeals

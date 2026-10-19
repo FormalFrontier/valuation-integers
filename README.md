@@ -7,6 +7,10 @@ proof methods, imports, examples and boundaries.
 
 ## Headline results
 
+- For a field `K`, units and maximal-ideal membership in its Laurent-series valuation
+  subring are characterized by the nonvanishing and vanishing, respectively, of the zeroth
+  coefficient ([module](ValuationIntegers/LaurentSeries/LocalRing.lean)).
+
 - **Laurent-series residue field**
   ([residue equivalence](ValuationIntegers/LaurentSeries/ResidueField.lean)).
   For any field `K`, the residue field of the standard `X`-adic valuation subring
