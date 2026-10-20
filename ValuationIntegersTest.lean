@@ -38,6 +38,7 @@ import ValuationIntegersTest.Cauchy
 import ValuationIntegersTest.Cauchy.Bounded
 import ValuationIntegersTest.Cauchy.Ultrametric
 import ValuationIntegersTest.Cauchy.Completion
+import ValuationIntegersTest.Cauchy.Topology
 
 public import ValuationIntegers.IntegerTopology
 public import Mathlib.Algebra.Field.ZMod
