@@ -22,6 +22,7 @@ import ValuationIntegersTest.CompletionValuationTopology
 import ValuationIntegersTest.Completeness
 import ValuationIntegersTest.LaurentSeries
 import ValuationIntegersTest.LaurentSeriesLocalRing
+import ValuationIntegersTest.LaurentSeriesIdealPowers
 import ValuationIntegersTest.LaurentSeriesResidueField
 import ValuationIntegersTest.CompletionComparison
 import ValuationIntegersTest.FiniteIntersections

@@ -7,6 +7,11 @@ proof methods, imports, examples and boundaries.
 
 ## Headline results
 
+- For a coefficient field K and every natural n, an element of the canonical Laurent-series
+  valuation subring lies in the nth power of its maximal ideal iff the underlying Laurent
+  coefficients at all natural indices i<n vanish
+  ([coefficient criterion](ValuationIntegers/LaurentSeries/IdealPowers.lean)).
+
 - For a field `K`, units and maximal-ideal membership in its Laurent-series valuation
   subring are characterized by the nonvanishing and vanishing, respectively, of the zeroth
   coefficient ([module](ValuationIntegers/LaurentSeries/LocalRing.lean)).
