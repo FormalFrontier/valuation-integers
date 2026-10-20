@@ -28,3 +28,4 @@ name = "ValuationIntegers"
 
 [[lean_lib]]
 name = "ValuationIntegersTest"
+roots = ["ValuationIntegersTest", "ValuationIntegersTest.Cauchy.UniformCompletion"]
