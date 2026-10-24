@@ -7,6 +7,14 @@ proof methods, imports, examples and boundaries.
 
 ## Headline results
 
+- **Prime-binomial valuation bounds**
+  ([module](ValuationIntegers/Binomial.lean)). For a valuation `v` on any ring `R`
+  with values in a linearly ordered commutative monoid with zero, a prime `p`
+  and every `x : R`,
+  `v ((1 + x)^p - 1) â‰¤ max (v (p : R) * v x) ((v x)^p)`.
+  Equality holds whenever the two values on the right differ. No integrality
+  hypothesis on `x` or cancellation in the value monoid is required.
+
 - For a coefficient field K and every natural n, an element of the canonical Laurent-series
   valuation subring lies in the nth power of its maximal ideal iff the underlying Laurent
   coefficients at all natural indices i<n vanish
@@ -318,7 +326,9 @@ completion-construction boundaries; these APIs do not assemble the full Fesenkoâ
   valuation subrings, full residue fields, discrete value groups, cyclic
   ordered-group classification, integer ordered-automorphism uniqueness,
   geometric-power convergence, valuation uniform equivalences and real
-  absolute-value weak approximation. The identity-homeomorphism API and
+  absolute-value weak approximation. Prime-binomial bounds reuse its binomial
+  expansion, prime binomial-coefficient divisibility, natural-cast bounds and
+  finite-sum valuation APIs. The identity-homeomorphism API and
   power-transfer argument follow Michael Stoll's absolute-value equivalence theorem.
   The completion comparison reuses Mathlib's `UniformSpace.Completion.extensionHom`
   and `IsDenseInducing.extendRingHom` machinery. Exact raw values use nonzero local

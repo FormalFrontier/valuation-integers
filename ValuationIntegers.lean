@@ -37,6 +37,7 @@ public import ValuationIntegers.FiniteIntersections.Spectrum
 public import ValuationIntegers.BoundedModule
 public import ValuationIntegers.NumberTheory.DenominatorSupport
 public import ValuationIntegers.NumberTheory.BernoulliIntegrality
+public import ValuationIntegers.Binomial
 public import ValuationIntegers.Power
 public import ValuationIntegers.NumberTheory.Bernoulli
 public import ValuationIntegers.NumberTheory.BernoulliFactorization

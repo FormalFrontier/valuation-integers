@@ -4,6 +4,7 @@ Authors: Formal Frontier Agents
 -/
 module
 
+import ValuationIntegers.Binomial
 import ValuationIntegers.Power
 import Mathlib.NumberTheory.Padics.PadicIntegers
 import Mathlib.RingTheory.AdicCompletion.Topology
@@ -70,6 +71,12 @@ private instance : HenselianLocalRing O₂ where
     HenselianRing.is_henselian f hf a₀ hzero
       (hunit.map (Ideal.Quotient.mk (IsLocalRing.maximalIdeal O₂)))
 
+/-- The standard two-adic normalization, shared by the numerical clients below. -/
+private theorem twoAdic_two : v₂ (2 : ℚ_[2]) = (1 / 2 : ℝ≥0) := by
+  apply NNReal.coe_injective
+  change ‖(2 : ℚ_[2])‖ = ((1 / 2 : ℝ≥0) : ℝ)
+  simpa using Padic.norm_p (p := 2)
+
 /-- Valuation-only numeric inputs, separate from either power-neighborhood statement. -/
 private theorem twoAdic_power_input :
     v₂ (17 - 1) = (1 / 16 : ℝ≥0) ∧
@@ -77,10 +84,7 @@ private theorem twoAdic_power_input :
       v₂ (17 - 1) < v₂ (2 : ℚ_[2]) ^ 2 ∧
       v₂ (17 - 1) / v₂ (2 : ℚ_[2]) = (1 / 8 : ℝ≥0) ∧
       ¬ IsUnit (2 : O₂) := by
-  have htwo : v₂ (2 : ℚ_[2]) = (1 / 2 : ℝ≥0) := by
-    apply NNReal.coe_injective
-    change ‖(2 : ℚ_[2])‖ = ((1 / 2 : ℝ≥0) : ℝ)
-    simpa using Padic.norm_p (p := 2)
+  have htwo := twoAdic_two
   have hvalue : (17 - 1 : ℚ_[2]) = 2 ^ 4 := by norm_num
   have herror : v₂ (17 - 1) = (1 / 16 : ℝ≥0) := by
     rw [hvalue, map_pow, htwo]
@@ -94,6 +98,56 @@ private theorem twoAdic_power_input :
     have h' : IsUnit (2 : ℤ_[2]) := by
       simpa only [map_ofNat] using h.map integerRingEquiv.toRingHom
     exact (PadicInt.not_isUnit_iff.mpr (Padic.norm_p_lt_one (p := 2))) h'
+
+/-- The prime-binomial bound also applies outside the valuation's unit ball. -/
+private theorem twoAdic_prime_bound_outside_unit_ball :
+    1 < v₂ (1 / 2 : ℚ_[2]) ∧
+      v₂ ((1 + (1 / 2 : ℚ_[2])) ^ 2 - 1) ≤ (4 : ℝ≥0) := by
+  have hhalf : v₂ (1 / 2 : ℚ_[2]) = (2 : ℝ≥0) := by
+    rw [map_div₀, map_one, twoAdic_two]
+    norm_num
+  refine ⟨by rw [hhalf]; norm_num, ?_⟩
+  calc
+    v₂ ((1 + (1 / 2 : ℚ_[2])) ^ 2 - 1) ≤
+        max (v₂ (2 : ℚ_[2]) * v₂ (1 / 2 : ℚ_[2]))
+          (v₂ (1 / 2 : ℚ_[2]) ^ 2) :=
+      Valuation.map_one_add_pow_prime_sub_one_le v₂ Nat.prime_two (1 / 2 : ℚ_[2])
+    _ = 4 := by rw [twoAdic_two, hhalf]; norm_num
+
+/-- Unequal endpoint values give the exact prime-binomial value at `x = 4`. -/
+private theorem twoAdic_prime_eq_off_tie :
+    v₂ ((1 + (4 : ℚ_[2])) ^ 2 - 1) = (1 / 8 : ℝ≥0) := by
+  have hfour : v₂ (4 : ℚ_[2]) = (1 / 4 : ℝ≥0) := by
+    have hfour_pow : (4 : ℚ_[2]) = 2 ^ 2 := by norm_num
+    rw [hfour_pow, map_pow, twoAdic_two]
+    norm_num
+  have hne : v₂ (2 : ℚ_[2]) * v₂ (4 : ℚ_[2]) ≠ v₂ (4 : ℚ_[2]) ^ 2 := by
+    rw [twoAdic_two, hfour]
+    norm_num
+  calc
+    v₂ ((1 + (4 : ℚ_[2])) ^ 2 - 1) =
+        max (v₂ (2 : ℚ_[2]) * v₂ (4 : ℚ_[2])) (v₂ (4 : ℚ_[2]) ^ 2) :=
+      Valuation.map_one_add_pow_prime_sub_one_of_ne v₂ Nat.prime_two (4 : ℚ_[2]) hne
+    _ = 1 / 8 := by
+      rw [twoAdic_two, hfour]
+      have hlinear : (1 / 2 : ℝ≥0) * (1 / 4) = 1 / 8 := by norm_num
+      have hpower : (1 / 4 : ℝ≥0) ^ 2 = 1 / 16 := by norm_num
+      have hle : (1 / 16 : ℝ≥0) ≤ 1 / 8 := by
+        exact_mod_cast (show (1 / 16 : ℝ) ≤ 1 / 8 by norm_num)
+      rw [hlinear, hpower, max_eq_left hle]
+
+/-- At the critical tie, cancellation lowers `1 / 4` to `1 / 8`;
+thus the prime-binomial equality cannot hold without its unequal-endpoint hypothesis. -/
+private theorem twoAdic_prime_tie_strict :
+    v₂ (2 : ℚ_[2]) * v₂ (2 : ℚ_[2]) = v₂ (2 : ℚ_[2]) ^ 2 ∧
+      v₂ ((1 + (2 : ℚ_[2])) ^ 2 - 1) <
+        max (v₂ (2 : ℚ_[2]) * v₂ (2 : ℚ_[2])) (v₂ (2 : ℚ_[2]) ^ 2) := by
+  have height : ((1 + (2 : ℚ_[2])) ^ 2 - 1) = 2 ^ 3 := by norm_num
+  constructor
+  · rw [twoAdic_two]
+    norm_num
+  · rw [height, map_pow, twoAdic_two]
+    norm_num
 
 /-- A root with nonzero correction at exactly `1 / 8`, using the public root API. -/
 private theorem twoAdic_square_root :
