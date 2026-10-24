@@ -15,12 +15,16 @@ proof methods, imports, examples and boundaries.
   Equality holds whenever the two values on the right differ. No integrality
   hypothesis on `x` or cancellation in the value monoid is required.
 
-- **Prime-power binomial valuation bound**
+- **Prime-power binomial valuation bound and strict scaling law**
   ([module](ValuationIntegers/Binomial.lean)). Let `R : Type u` be any ring,
   `Γ₀ : Type w` a linearly ordered commutative monoid with zero, and
   `v : Valuation R Γ₀`, with `u` and `w` independent. For every prime `p : ℕ`,
   every `x : R` and every `n : ℕ`,
   `v ((1 + x)^(p^n) - 1) ≤ max_{0 ≤ k ≤ n} (v (p : R)^(n-k) * (v x)^(p^k))`.
+  The maximum includes `k = 0` and `k = n`; powers use `0^0 = 1`.
+  Under the strict bound `(v x)^(p-1) < v (p : R)`,
+  `Valuation.map_one_add_pow_prime_pow_sub_one_of_pow_lt` gives
+  `v ((1 + x)^(p^n) - 1) = v (p : R)^n * v x` for every `n`, including `0`.
   No integrality hypothesis on `x`, commutativity of `R`, or cancellation in
   the value monoid is required.
 
@@ -298,7 +302,10 @@ completion-construction boundaries; these APIs do not assemble the full Fesenko�
   valuation theorem `Bernoulli.padicValRat_bernoulli` and its rational valuation
   and reduced-denominator APIs in `Mathlib.NumberTheory.Padics.PadicVal.Basic`.
 - I. B. Fesenko and S. V. Vostokov, *Local Fields and Their Extensions*, second
-  edition, Chapter I, (3.5)–(3.6), and Chapter II, §1, Corollary 4 and the
+  edition (2002): local-field valuation estimates motivating the prime-binomial
+  bounds and strict prime-power scaling law. Their formulations here allow
+  arbitrary rings and linearly ordered commutative monoids with zero.
+- The same work, Chapter I, (3.5)–(3.6), and Chapter II, §1, Corollary 4 and the
   subsequent Remark, and §2: normalized discrete valuation rigidity, geometric
   powers, power neighborhoods, topology recognition and finite-extension integer modules.
   Here algebraic rigidity is generalized to rings and cyclic-unit codomains, while topology recognizes

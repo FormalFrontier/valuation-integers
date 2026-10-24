@@ -220,3 +220,60 @@ private theorem twoAdic_first_power :
   simpa only [map_one] using
     (Valuation.map_eq_of_sub_lt v₂ (x := 1) (y := 17)
       (by simpa only [map_one] using hsmall))
+
+/-- At `p = 2`, `x = 4`, and `n = 1`, the strict threshold holds, and both
+sides of the prime-power identity have the positive value `1 / 8`. -/
+private theorem twoAdic_four_strict_square :
+    v₂ (4 : ℚ_[2]) ^ ((2 : ℕ) - 1) < v₂ (2 : ℚ_[2]) ∧
+      v₂ ((1 + (4 : ℚ_[2])) ^ ((2 : ℕ) ^ 1) - 1) =
+        v₂ (24 : ℚ_[2]) ∧
+      v₂ (24 : ℚ_[2]) = (1 / 8 : ℝ≥0) ∧
+      v₂ (2 : ℚ_[2]) ^ (1 : ℕ) * v₂ (4 : ℚ_[2]) =
+        (1 / 8 : ℝ≥0) := by
+  have hfour : v₂ (4 : ℚ_[2]) = (1 / 4 : ℝ≥0) := by
+    have hfour_pow : (4 : ℚ_[2]) = 2 ^ 2 := by norm_num
+    rw [hfour_pow, map_pow, twoAdic_two]
+    norm_num
+  have harg : ((1 + (4 : ℚ_[2])) ^ 2 - 1) = 24 := by norm_num
+  have h24 : v₂ (24 : ℚ_[2]) = (1 / 8 : ℝ≥0) := by
+    rw [← harg]
+    exact twoAdic_prime_eq_off_tie
+  have hthreshold : v₂ (4 : ℚ_[2]) ^ ((2 : ℕ) - 1) < v₂ (2 : ℚ_[2]) := by
+    rw [hfour, twoAdic_two]
+    norm_num
+  refine ⟨hthreshold, ?_, h24, ?_⟩
+  · calc
+      v₂ ((1 + (4 : ℚ_[2])) ^ ((2 : ℕ) ^ 1) - 1) =
+          v₂ (2 : ℚ_[2]) ^ (1 : ℕ) * v₂ (4 : ℚ_[2]) :=
+        Valuation.map_one_add_pow_prime_pow_sub_one_of_pow_lt
+          v₂ Nat.prime_two (4 : ℚ_[2]) 1 hthreshold
+      _ = v₂ (24 : ℚ_[2]) := by
+        rw [h24, twoAdic_two, hfour]
+        norm_num
+  · rw [twoAdic_two, hfour]
+    norm_num
+
+/-- At `x = -2`, the threshold is an equality, but the square error has
+valuation zero while the proposed right-hand side is `1 / 4`. -/
+private theorem twoAdic_neg_two_threshold_boundary :
+    v₂ (-2 : ℚ_[2]) ^ ((2 : ℕ) - 1) = v₂ (2 : ℚ_[2]) ∧
+      v₂ ((1 + (-2 : ℚ_[2])) ^ ((2 : ℕ) ^ 1) - 1) = 0 ∧
+      v₂ (2 : ℚ_[2]) ^ (1 : ℕ) * v₂ (-2 : ℚ_[2]) =
+        (1 / 4 : ℝ≥0) ∧
+      v₂ ((1 + (-2 : ℚ_[2])) ^ ((2 : ℕ) ^ 1) - 1) ≠
+        v₂ (2 : ℚ_[2]) ^ (1 : ℕ) * v₂ (-2 : ℚ_[2]) := by
+  have hneg : v₂ (-2 : ℚ_[2]) = (1 / 2 : ℝ≥0) := by
+    rw [Valuation.map_neg, twoAdic_two]
+  have harg : ((1 + (-2 : ℚ_[2])) ^ ((2 : ℕ) ^ 1) - 1) = 0 := by
+    norm_num
+  have hzero : v₂ ((1 + (-2 : ℚ_[2])) ^ ((2 : ℕ) ^ 1) - 1) = 0 := by
+    rw [harg, map_zero]
+  have hrhs : v₂ (2 : ℚ_[2]) ^ (1 : ℕ) * v₂ (-2 : ℚ_[2]) =
+      (1 / 4 : ℝ≥0) := by
+    rw [twoAdic_two, hneg]
+    norm_num
+  refine ⟨?_, hzero, hrhs, ?_⟩
+  · rw [hneg, twoAdic_two]
+    norm_num
+  · rw [hzero, hrhs]
+    norm_num

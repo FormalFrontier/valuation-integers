@@ -15,7 +15,7 @@ import Mathlib.Tactic.Abel
 import Lean.Elab.Tactic.Omega
 
 /-!
-# Prime-binomial valuation bounds
+# Prime-binomial valuation bounds and strict scaling
 
 For a prime exponent, the valuation of `(1 + x)^p - 1` is bounded by the
 maximum of the linear and final terms of its binomial expansion. If those
@@ -27,10 +27,23 @@ For a prime `p` and every natural `n`,
 `v (p : R) ^ (n - k) * v x ^ (p ^ k)` over `k = 0, …, n`.
 This maximum is represented by `Finset.sup` over `Finset.range (n + 1)`.
 
+Under the strict bound `v x ^ (p - 1) < v (p : R)`,
+`Valuation.map_one_add_pow_prime_pow_sub_one_of_pow_lt` gives the exact linear
+value `v (p : R) ^ n * v x` at every prime-power step, including `n = 0`.
+All powers are natural powers, with the convention `0 ^ 0 = 1`.
+
 These results apply to valuations on arbitrary rings with values in a linearly
 ordered commutative monoid with zero. Neither integrality of `x` nor cancellation
 in the value monoid is assumed. The ring `R : Type u` and value monoid
 `Γ₀ : Type w` may lie in independent universes.
+
+## References
+
+* I. B. Fesenko and S. V. Vostokov, *Local Fields and Their Extensions*,
+  second edition (2002): local-field valuation estimates motivating the
+  binomial bounds and strict prime-power scaling law.
+* Mathlib's valuation and natural-prime APIs supply the underlying algebraic
+  and binomial-coefficient results.
 -/
 
 @[expose] public section
@@ -367,5 +380,78 @@ theorem map_one_add_pow_prime_pow_sub_one_le
       exact hstep.trans
         ((max_le_max (mul_le_mul' le_rfl ih) (pow_le_pow_left' ih p)).trans
           (max_mul_sup_pow_le (v (p : R)) (v x) hpval hp.pos n))
+
+private theorem map_one_add_pow_prime_sub_one_eq_mul_of_pow_lt
+    (v : Valuation R Γ₀) {p : ℕ} (hp : p.Prime) (x : R)
+    (h : v x ^ (p - 1) < v (p : R)) :
+    v ((1 + x) ^ p - 1) = v (p : R) * v x := by
+  by_cases hx : v x = 0
+  · have hzero : v ((1 + x) ^ p - 1) ≤ 0 := by
+      simpa only [hx, mul_zero, zero_pow (Nat.ne_of_gt hp.pos), max_self] using
+        map_one_add_pow_prime_sub_one_le v hp x
+    simpa only [hx, mul_zero] using (le_antisymm hzero zero_le)
+  · have hxpos : 0 < v x := by
+      apply lt_of_not_ge
+      intro hle
+      exact hx (le_antisymm hle zero_le)
+    have hlt : v x ^ p < v (p : R) * v x := by
+      calc
+        v x ^ p = v x * v x ^ (p - 1) := by
+          rw [← pow_succ', Nat.sub_add_cancel hp.one_le]
+        _ < v x * v (p : R) := mul_lt_mul_of_pos_left h hxpos
+        _ = v (p : R) * v x := mul_comm _ _
+    simpa only [max_eq_left hlt.le] using
+      map_one_add_pow_prime_sub_one_of_ne v hp x (ne_of_gt hlt)
+
+/-- Under the strict bound `v x ^ (p - 1) < v (p : R)`, the valuation at every
+prime-power step is the value of its linear term:
+`v ((1 + x) ^ (p ^ n) - 1) = v (p : R) ^ n * v x`.
+
+This holds for every natural `n`, including `0`, and also when `v x = 0`.
+The ring need not be commutative, and the value monoid is only assumed to be a
+linearly ordered commutative monoid with zero; no cancellation is required.
+For the local-field setting, compare Fesenko and Vostokov,
+*Local Fields and Their Extensions*, second edition (2002). -/
+theorem map_one_add_pow_prime_pow_sub_one_of_pow_lt
+    (v : Valuation R Γ₀) {p : ℕ} (hp : p.Prime) (x : R) (n : ℕ)
+    (h : v x ^ (p - 1) < v (p : R)) :
+    v ((1 + x) ^ (p ^ n) - 1) = v (p : R) ^ n * v x := by
+  have hpval : v (p : R) ≤ 1 := by
+    apply IsNonarchimedean.apply_natCast_le_one
+    · simp
+    · simp
+    · exact v.map_add
+  have hpval_pow (k : ℕ) : v (p : R) ^ k ≤ 1 :=
+    pow_le_one₀ zero_le hpval
+  induction n with
+  | zero => simp
+  | succ n ih =>
+      have hval : v ((1 + x) ^ (p ^ n) - 1) ≤ v x := by
+        calc
+          v ((1 + x) ^ (p ^ n) - 1) = v (p : R) ^ n * v x := ih
+          _ ≤ 1 * v x := mul_le_mul' (hpval_pow n) le_rfl
+          _ = v x := one_mul _
+      have hsmall :
+          v ((1 + x) ^ (p ^ n) - 1) ^ (p - 1) < v (p : R) :=
+        lt_of_le_of_lt (pow_le_pow_left' hval (p - 1)) h
+      have hshift : 1 + ((1 + x) ^ (p ^ n) - 1) = (1 + x) ^ (p ^ n) := by
+        calc
+          1 + ((1 + x) ^ (p ^ n) - 1) =
+              ((1 + x) ^ (p ^ n) - 1) + 1 := add_comm _ _
+          _ = (1 + x) ^ (p ^ n) := sub_add_cancel _ _
+      have hstep :
+          v ((1 + x) ^ (p ^ (n + 1)) - 1) =
+            v (p : R) * v ((1 + x) ^ (p ^ n) - 1) := by
+        simpa only [hshift, Nat.pow_succ, pow_mul] using
+          map_one_add_pow_prime_sub_one_eq_mul_of_pow_lt
+            v hp ((1 + x) ^ (p ^ n) - 1) hsmall
+      calc
+        v ((1 + x) ^ (p ^ (n + 1)) - 1) =
+            v (p : R) * v ((1 + x) ^ (p ^ n) - 1) := hstep
+        _ = v (p : R) * (v (p : R) ^ n * v x) := by rw [ih]
+        _ = (v (p : R) * v (p : R) ^ n) * v x := (mul_assoc _ _ _).symm
+        _ = (v (p : R) ^ n * v (p : R)) * v x := by
+          rw [mul_comm (v (p : R)) (v (p : R) ^ n)]
+        _ = v (p : R) ^ (n + 1) * v x := by rw [pow_succ]
 
 end Valuation
