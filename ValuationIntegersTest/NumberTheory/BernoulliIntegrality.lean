@@ -21,7 +21,6 @@ but `4 - 1` does not divide `2`.
 -/
 
 -- This module exports no additional API; its examples are private.
-set_option linter.privateModule false
 
 private theorem bernoulli_integrality_two_two : ((2 : ℤ) : ℚ) ^ 2 * (((2 : ℤ) : ℚ) ^ 2 - 1) *
     (bernoulli 2 / (2 : ℚ)) = ((1 : ℤ) : ℚ) := by

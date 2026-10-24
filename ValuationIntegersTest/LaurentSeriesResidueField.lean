@@ -47,8 +47,7 @@ private theorem affinePowerSeriesInteger_residue :
   · intro h
     have hcoeff := congrArg (fun f : LaurentSeries ℚ => f.coeff (1 : ℤ))
       (hcoe.symm.trans h)
-    simpa [PowerSeries.coeff_coe, LinearMap.map_add, PowerSeries.coeff_C,
-      PowerSeries.coeff_X] using hcoeff
+    simp at hcoeff
   · have hconstant :
         PowerSeries.constantCoeff (PowerSeries.C (3 : ℚ) + PowerSeries.X) = 3 := by
       simp
@@ -81,7 +80,7 @@ private theorem parameterInteger_residue :
   · intro h
     have hcoeff := congrArg (fun f : LaurentSeries ℚ => f.coeff (1 : ℤ))
       (hcoe.symm.trans h)
-    simpa [PowerSeries.coeff_coe, PowerSeries.coeff_X, HahnSeries.coeff_zero] using hcoeff
+    simp [HahnSeries.coeff_zero] at hcoeff
   · simpa only [parameterInteger, PowerSeries.constantCoeff_X] using
       (residueFieldEquiv_residue_powerSeries ℚ (PowerSeries.X : PowerSeries ℚ))
 

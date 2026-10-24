@@ -36,7 +36,7 @@ variable (A : Type u) (K : Type v) [CommRing A] [IsDomain A]
 theorem maximalIdeal_valuation_integers : ((maximalIdeal A).valuation K).Integers A where
   hom_inj := IsFractionRing.injective A K
   map_le_one := IsDedekindDomain.HeightOneSpectrum.valuation_le_one (maximalIdeal A)
-  exists_of_le_one := fun {r} hr => exists_lift_of_le_one hr
+  exists_of_le_one := fun {_r} hr => exists_lift_of_le_one hr
 
 /-- The abstract fraction-field valuation of a DVR is equivalent to its maximal-ideal
 valuation. Their ordered value groups need not be the same. -/

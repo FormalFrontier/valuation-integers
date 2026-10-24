@@ -97,7 +97,7 @@ private theorem padic_uniformizer_boundaries (p : ℕ) [hp : Fact p.Prime] :
     change (0 : WithTop ℤ) < ((1 : ℤ) : WithTop ℤ)
     exact WithTop.coe_lt_coe.mpr (zero_lt_one : (0 : ℤ) < 1)
   have hd : w.IsRankOneDiscrete := ⟨⟨g, hgen, hlt⟩⟩
-  letI : w.IsRankOneDiscrete := hd
+  let : w.IsRankOneDiscrete := hd
   have hπ : Valuation.IsUniformizer (v := w) (hv := hd) π := by
     have hg : g = Valuation.IsRankOneDiscrete.generator w := by
       calc
@@ -141,6 +141,6 @@ example (p : ℕ) [Fact p.Prime] :
           ((Padic.addValuation (p := p)).toValuation.restrict (p : ℚ_[p])) ^
             (n - 1)} := by
   obtain ⟨hd, hπ, _⟩ := padic_uniformizer_boundaries p
-  letI : (Padic.addValuation (p := p)).toValuation.IsRankOneDiscrete := hd
+  let : (Padic.addValuation (p := p)).toValuation.IsRankOneDiscrete := hd
   exact fun n => Valuation.IsUniformizer.range_zpow_mul_integer
     (w := (Padic.addValuation (p := p)).toValuation) hπ n

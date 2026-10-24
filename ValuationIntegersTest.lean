@@ -68,7 +68,8 @@ private theorem canonicalValuedCopy_addValuation (x : HahnSeries ℤ (ZMod 2)) :
       (Valued.v : Valuation
         (WithVal (HahnSeries.addVal ℤ (ZMod 2)).toValuation)
         (Multiplicative ((WithTop ℤ)ᵒᵈ)))
-      (WithVal.toVal (HahnSeries.addVal ℤ (ZMod 2)).toValuation x) = HahnSeries.addVal ℤ (ZMod 2) x := by
+      (WithVal.toVal (HahnSeries.addVal ℤ (ZMod 2)).toValuation x) =
+        HahnSeries.addVal ℤ (ZMod 2) x := by
   rfl
 
 private theorem canonicalCompletion_complete_and_toValuation :
@@ -179,7 +180,7 @@ private theorem trivialValuation_int_threshold (m : ℤ)
       exact Valuation.one_apply_of_ne_zero hx'
     rw [AddValuation.ofValuation_apply, hv]
     change (m : WithTop ℤ) ≤ (0 : WithTop ℤ) ↔ m ≤ 0 ∨ x = 0
-    simpa [hx] using (WithTop.coe_le_coe (a := m) (b := (0 : ℤ)))
+    simp [hx]
 
 private theorem trivialValuation_not_surjective :
     ¬Function.Surjective (AddValuation.ofValuation
@@ -191,7 +192,7 @@ private theorem trivialValuation_not_surjective :
   have hthreshold := (trivialValuation_int_threshold 1 x).1 (by rw [hx]; exact le_rfl)
   have hxzero : x = 0 := hthreshold.resolve_left (by decide)
   subst x
-  simpa using hx
+  simp at hx
 
 -- These applications use the integer-threshold criteria.
 
@@ -288,3 +289,26 @@ theorem laurentCompletion_monomials_have_raw_limit :
   exact hN i hi j hj
 
 end ValuationIntegersTest.IntegerTopology
+
+example :
+    let : (1 : Valuation ℚ NNReal).RankLeOne :=
+      ⟨MonoidWithZeroHom.ValueGroup₀.embedding,
+        MonoidWithZeroHom.ValueGroup₀.embedding_strictMono⟩
+    ¬ 0 < (1 : Valuation ℚ NNReal).absoluteValue (0 : ℚ) := by
+  let : (1 : Valuation ℚ NNReal).RankLeOne :=
+    ⟨MonoidWithZeroHom.ValueGroup₀.embedding,
+      MonoidWithZeroHom.ValueGroup₀.embedding_strictMono⟩
+  change ¬ 0 < (1 : Valuation ℚ NNReal).absoluteValue (0 : ℚ)
+  rw [Valuation.absoluteValue_pos_iff]
+  simp
+
+example :
+    let : (1 : Valuation ℚ NNReal).RankLeOne :=
+      ⟨MonoidWithZeroHom.ValueGroup₀.embedding,
+        MonoidWithZeroHom.ValueGroup₀.embedding_strictMono⟩
+    0 < (1 : Valuation ℚ NNReal).absoluteValue (1 : ℚ) := by
+  let : (1 : Valuation ℚ NNReal).RankLeOne :=
+    ⟨MonoidWithZeroHom.ValueGroup₀.embedding,
+      MonoidWithZeroHom.ValueGroup₀.embedding_strictMono⟩
+  change 0 < (1 : Valuation ℚ NNReal).absoluteValue (1 : ℚ)
+  simpa only [AbsoluteValue.pos_iff] using (one_ne_zero : (1 : ℚ) ≠ 0)

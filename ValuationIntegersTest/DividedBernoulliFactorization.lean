@@ -29,7 +29,6 @@ prime two would instead be one.
 open scoped BigOperators
 
 -- This module exports no additional API; its examples are private.
-set_option linter.privateModule false
 
 namespace Bernoulli
 

@@ -71,6 +71,7 @@ private noncomputable def uniformCompletionLimitRingHom :
     simpa only [CauSeq.mul_apply, UniformSpace.Completion.coe_mul] using
       (tendsto_uniformCompletionLimit f).mul (tendsto_uniformCompletionLimit g)
 
+omit [IsAbsoluteValue (norm : β → ℝ)] in
 private theorem uniformCompletionLimit_eq_zero_iff (f : CauSeq β (norm : β → ℝ)) :
     uniformCompletionLimit f = 0 ↔ CauSeq.LimZero f := by
   rw [CauSeq.limZero_iff_tendsto_zero]

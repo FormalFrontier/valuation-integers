@@ -60,7 +60,7 @@ theorem residueFieldEquiv_residue_powerSeries (f : PowerSeries K) :
       (Valued.v : Valuation (LaurentSeries K) ℤᵐ⁰).valuationSubring :=
     (powerSeriesEquivSubring K).trans
       (RingEquiv.subringCongr (powerSeries_as_subring_eq_valuationSubring K))
-  letI : IsLocalHom h.toRingHom :=
+  let : IsLocalHom h.toRingHom :=
     isLocalHom_of_leftInverse h.symm.toRingHom h.symm_toRingHom_apply_toRingHom_apply
   change PowerSeries.residueFieldOfPowerSeries
     ((IsLocalRing.ResidueField.mapEquiv h).symm
@@ -98,7 +98,6 @@ theorem residueFieldEquiv_residue
     residueFieldEquiv K (IsLocalRing.residue _ (h f)) = PowerSeries.constantCoeff f :=
       residueFieldEquiv_residue_powerSeries K f
     _ = (h f : LaurentSeries K).coeff (0 : ℤ) := by
-      simpa [hcoe, PowerSeries.coeff_coe, if_neg (lt_irrefl (0 : ℤ))] using
-        (PowerSeries.coeff_zero_eq_constantCoeff_apply f).symm
+      simp [hcoe, PowerSeries.coeff_coe]
 
 end LaurentSeries

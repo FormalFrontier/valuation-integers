@@ -46,7 +46,7 @@ theorem range_zpow_mul_integer
     Set.range (fun a : w.integer => π ^ n * (a : D)) =
       {x : D | w.restrict x < (w.restrict π) ^ (n - 1)} := by
   ext x
-  rw [Set.mem_range, Set.mem_setOf_eq,
+  rw [Set.mem_range, Set.mem_ofPred_eq,
     ← map_zpow₀ w.restrict π (n - 1), w.restrict_lt_iff, map_zpow₀]
   constructor
   · rintro ⟨a, rfl⟩

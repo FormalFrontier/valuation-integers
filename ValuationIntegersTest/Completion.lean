@@ -22,7 +22,6 @@ valuation integers, belongs to their maximal ideal, and reduces to zero, whereas
 * Fesenko–Vostokov, *Local Fields and Their Extensions*, second edition, I (4.3), (4.5)(1).
 -/
 
-set_option linter.privateModule false
 
 open UniformSpace
 open scoped Valued WithZero

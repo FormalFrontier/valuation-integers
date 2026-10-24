@@ -37,8 +37,8 @@ theorem isValuativeTopology_ofValuation {R : Type u} [Ring R] {Γ₀ : Type v}
     [LinearOrderedCommGroupWithZero Γ₀] [hv : Valued R Γ₀] :
     @IsValuativeTopology R _ (ValuativeRel.ofValuation hv.v)
       hv.toUniformSpace.toTopologicalSpace := by
-  letI : ValuativeRel R := ValuativeRel.ofValuation hv.v
-  letI : hv.v.Compatible := Valuation.Compatible.ofValuation hv.v
+  let : ValuativeRel R := ValuativeRel.ofValuation hv.v
+  let : hv.v.Compatible := Valuation.Compatible.ofValuation hv.v
   exact IsValuativeTopology.of_mem_nhds_zero_iff_vle hv.v
     (fun {s} => Valued.mem_nhds_zero)
 
@@ -68,7 +68,7 @@ theorem extensionValuation_apply_coe (v : Valuation K Γ₀) [hcompat : v.Compat
     extensionValuation (U := U) v (@Completion.coe' K U x) = v x := by
   have hU : U = (Valued.mk' v).toUniformSpace := v.toUniformSpace_eq
   subst U
-  letI : Valued K Γ₀ := Valued.mk' v
+  let : Valued K Γ₀ := Valued.mk' v
   exact Valued.extensionValuation_apply_coe x
 
 end Field

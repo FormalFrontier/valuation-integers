@@ -46,7 +46,7 @@ theorem isUnit_valuationSubring_iff_coeff_zero_ne_zero
   have hcoe : ((e f :
       (Valued.v : Valuation (LaurentSeries K) ℤᵐ⁰).valuationSubring) : LaurentSeries K) =
       (f : LaurentSeries K) := by
-    simpa [e] using (powerSeriesEquivSubring_coe_apply K f)
+    simp [e]
   have hcoeff : (f : LaurentSeries K).coeff (0 : ℤ) =
       PowerSeries.constantCoeff f := by
     simpa [PowerSeries.coeff_zero_eq_constantCoeff_apply] using

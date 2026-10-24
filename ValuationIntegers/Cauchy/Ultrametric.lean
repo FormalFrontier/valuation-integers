@@ -66,7 +66,7 @@ theorem CauchySeq.tendsto_norm_zero_or_eventually_norm_eq
     (hnorm : IsNonarchimedean (norm : G → ℝ)) :
     Tendsto (fun n => ‖u n‖) atTop (𝓝 0) ∨
       ∃ r : ℝ, 0 < r ∧ ∀ᶠ n in atTop, ‖u n‖ = r := by
-  letI : IsUltrametricDist G :=
+  let : IsUltrametricDist G :=
     IsUltrametricDist.isUltrametricDist_of_isNonarchimedean_norm hnorm
   rcases IsUltrametricDist.cauchy_le_nhds_or_eventually_dist_eq
       (F := map u atTop) hu (0 : G) with h | ⟨r, hr, hrF⟩

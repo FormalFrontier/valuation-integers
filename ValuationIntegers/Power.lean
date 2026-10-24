@@ -167,7 +167,7 @@ theorem isOpen_powMonoidHom_range [HenselianLocalRing hv.v.valuationSubring]
     Valuation.exists_pow_eq_of_sub_one_lt_sq hv.v m (a : K) ha
   have hb₀ : b ≠ 0 := by
     intro h
-    simpa only [h, map_zero, zero_ne_one] using hvb
+    simp only [h, map_zero, zero_ne_one] at hvb
   refine ⟨Units.mk0 b hb₀, ?_⟩
   apply Units.ext
   simpa only [powMonoidHom_apply, Units.val_pow_eq_pow_val, Units.val_mk0] using hb

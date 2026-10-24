@@ -1,6 +1,7 @@
 name = "valuation-integers"
 version = "0.1.0"
 defaultTargets = ["ValuationIntegers", "ValuationIntegersTest"]
+lintDriver = "batteries/runLinter"
 
 [leanOptions]
 autoImplicit = false
@@ -29,3 +30,5 @@ name = "ValuationIntegers"
 [[lean_lib]]
 name = "ValuationIntegersTest"
 roots = ["ValuationIntegersTest", "ValuationIntegersTest.Cauchy.UniformCompletion"]
+# Test assertions are intentionally private.
+leanOptions = { linter.privateModule = false }

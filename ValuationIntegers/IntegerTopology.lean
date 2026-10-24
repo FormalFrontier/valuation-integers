@@ -143,7 +143,7 @@ theorem cauchySeq_iff_addValuation_int
   · rw [CauchySeq, cauchy_map_iff',
       (hasBasis_uniformity_addValuation_int (R := R)).tendsto_right_iff]
     simp only [true_implies, Filter.prod_atTop_atTop_eq,
-      Filter.eventually_atTop_prod_self', Set.mem_setOf_eq]
+      Filter.eventually_atTop_prod_self', Set.mem_ofPred_eq]
     -- The basis uses the second coordinate minus the first; exchange the tail indices.
     constructor <;> intro h m
     · obtain ⟨N, hN⟩ := h m
@@ -163,7 +163,7 @@ theorem tendsto_iff_addValuation_int
       ∀ m : ℤ, ∀ᶠ i in l,
         (m : WithTop ℤ) ≤ AddValuation.ofValuation
           (Valued.v : Valuation R (Multiplicative ((WithTop ℤ)ᵒᵈ))) (x i - a) := by
-  simpa only [true_implies, UniformSpace.ball, Set.mem_preimage, Set.mem_setOf_eq] using
+  simpa only [true_implies, UniformSpace.ball, Set.mem_preimage, Set.mem_ofPred_eq] using
     (nhds_basis_uniformity'
       (hasBasis_uniformity_addValuation_int (R := R)) (x := a)).tendsto_right_iff
         (f := x) (la := l)
@@ -185,7 +185,7 @@ theorem completeSpace_iff_addValuation_int
           (Valued.v : Valuation R (Multiplicative ((WithTop ℤ)ᵒᵈ))) (x i - a) := by
   constructor
   · intro h
-    letI : CompleteSpace R := h
+    let : CompleteSpace R := h
     intro x hx
     obtain ⟨a, ha⟩ := cauchySeq_tendsto_of_complete
       ((cauchySeq_iff_addValuation_int x).2 hx)
@@ -195,12 +195,12 @@ theorem completeSpace_iff_addValuation_int
   · intro h
     -- Count the stock generated-value-group unit radii, not ambient units or ring elements.
     let v := (Valued.v : Valuation R (Multiplicative ((WithTop ℤ)ᵒᵈ)))
-    letI : Countable (Multiplicative ((WithTop ℤ)ᵒᵈ)) :=
+    let : Countable (Multiplicative ((WithTop ℤ)ᵒᵈ)) :=
       Countable.of_equiv (WithTop ℤ) (OrderDual.ofDual.symm.trans Multiplicative.ofAdd)
-    letI : Countable ((MonoidWithZeroHom.ValueGroup₀ (.ofClass v))ˣ) :=
+    let : Countable ((MonoidWithZeroHom.ValueGroup₀ (.ofClass v))ˣ) :=
       ((MonoidWithZeroHom.ValueGroup₀.embedding_injective (f := .ofClass v)).comp
         Units.val_injective).countable
-    letI : Filter.IsCountablyGenerated (𝓤 R) :=
+    let : Filter.IsCountablyGenerated (𝓤 R) :=
       (Valued.hasBasis_uniformity R
         (Multiplicative ((WithTop ℤ)ᵒᵈ))).isCountablyGenerated
     apply UniformSpace.complete_of_cauchySeq_tendsto

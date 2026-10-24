@@ -34,7 +34,6 @@ and open-range clients, which use the public power-neighborhood APIs.
   No polynomial or Newton fixture is reproduced, and no root output is used as input.
 -/
 
-set_option linter.privateModule false
 
 open scoped NNReal
 

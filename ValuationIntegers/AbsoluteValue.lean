@@ -92,12 +92,12 @@ theorem absoluteValue_lt_coe_hom'_iff (x : K)
   simp only [absoluteValue_apply, NNReal.coe_lt_coe,
     (RankLeOne.strictMono' (v := v)).lt_iff_lt]
 
-/-- A restricted-value radius has positive real image exactly when it is positive. -/
+/-- A restricted-value radius has positive image exactly when it is positive. -/
 @[simp]
 theorem RankLeOne.coe_hom'_pos_iff
     (r : MonoidWithZeroHom.ValueGroup₀ (.ofClass v)) :
-    0 < (RankLeOne.hom' v r : ℝ) ↔ 0 < r := by
-  rw [← NNReal.coe_zero, NNReal.coe_lt_coe, ← map_zero (RankLeOne.hom' v),
+    0 < RankLeOne.hom' v r ↔ 0 < r := by
+  rw [← map_zero (RankLeOne.hom' v),
     (RankLeOne.strictMono' (v := v)).lt_iff_lt]
 
 /-- The absolute value reflects the valuation preorder. -/
@@ -123,7 +123,6 @@ theorem absoluteValue_lt_iff (x y : K) :
     (RankLeOne.strictMono' (v := v)).lt_iff_lt, restrict_lt_iff]
 
 /-- Positivity of the absolute value is positivity of the valuation. -/
-@[simp]
 theorem absoluteValue_pos_iff (x : K) :
     0 < v.absoluteValue x ↔ 0 < v x := by
   simpa only [map_zero] using absoluteValue_lt_iff v 0 x

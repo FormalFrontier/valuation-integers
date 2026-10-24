@@ -24,7 +24,6 @@ zero-value calculation and failure at `q = 1` are proved independently.
 set_option warningAsError true
 
 -- This module exports no additional API; its examples are private.
-set_option linter.privateModule false
 
 open scoped WithZero
 

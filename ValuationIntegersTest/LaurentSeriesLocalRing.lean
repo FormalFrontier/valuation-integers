@@ -40,22 +40,20 @@ private theorem parameterInteger_ne_zero_and_mem_maximalIdeal :
         ((Valued.v : Valuation (LaurentSeries ℚ) ℤᵐ⁰).valuationSubring) := by
   constructor
   · have hcoeff : (parameterInteger : LaurentSeries ℚ).coeff (1 : ℤ) = 1 := by
-      simp [parameterInteger, powerSeriesEquivSubring_coe_apply, PowerSeries.coeff_X]
+      simp [parameterInteger]
     intro h
-    simpa [h] using hcoeff
+    simp [h] at hcoeff
   · apply (mem_maximalIdeal_valuationSubring_iff_coeff_zero_eq_zero parameterInteger).2
-    simp [parameterInteger, powerSeriesEquivSubring_coe_apply, PowerSeries.coeff_X]
+    simp [parameterInteger]
 
 /-- The affine series is nonconstant, as detected at index one, and is a unit in the
 valuation subring. -/
 private theorem affineInteger_coeff_one_ne_zero_and_isUnit :
     (affineInteger : LaurentSeries ℚ).coeff (1 : ℤ) ≠ 0 ∧ IsUnit affineInteger := by
   constructor
-  · simp [affineInteger, powerSeriesEquivSubring_coe_apply, PowerSeries.coeff_C,
-      PowerSeries.coeff_X]
+  · simp [affineInteger]
   · apply (isUnit_valuationSubring_iff_coeff_zero_ne_zero affineInteger).2
-    simp [affineInteger, powerSeriesEquivSubring_coe_apply, PowerSeries.coeff_C,
-      PowerSeries.coeff_X]
+    simp [affineInteger]
 
 /-- Zero has vanishing zeroth coefficient, belongs to the maximal ideal, and is not a unit
 in the valuation subring. -/

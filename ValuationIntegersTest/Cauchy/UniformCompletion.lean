@@ -31,6 +31,6 @@ private theorem equivUniformCompletion_three_ne_zero :
     equivUniformCompletion
         (CauSeq.Completion.ofRat (abv := (norm : ℚ → ℝ)) (3 : ℚ)) ≠
       (0 : UniformSpace.Completion ℚ) := by
-  simpa [zeroImage, threeImage] using zeroImage_ne_threeImage.symm
+  simp
 
 end CauSeq.Completion

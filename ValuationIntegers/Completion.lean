@@ -225,7 +225,7 @@ noncomputable def completionRingEquiv : Completion K ≃+* L :=
 /-- The underlying ring homomorphism of the comparison is the canonical completion extension. -/
 @[simp]
 theorem completionRingEquiv_toRingHom :
-    (completionRingEquiv f hValue hDense).toRingHom =
+    (↑(completionRingEquiv f hValue hDense) : Completion K →+* L) =
       Completion.extensionHom f
         (uniformContinuous_of_denseRange_of_map_eq f.toAddMonoidHom hValue hDense).continuous := by
   rfl
@@ -362,7 +362,7 @@ noncomputable def residueFieldCompletionEquiv : 𝓀[K] ≃+* 𝓀[Completion K]
 /-- The underlying homomorphism of the residue equivalence is the induced residue map. -/
 @[simp]
 theorem residueFieldCompletionEquiv_toRingHom :
-    (residueFieldCompletionEquiv (K := K)).toRingHom =
+    (↑(residueFieldCompletionEquiv (K := K)) : 𝓀[K] →+* 𝓀[Completion K]) =
       IsLocalRing.ResidueField.map (algebraMap 𝒪[K] 𝒪[Completion K]) := by
   rfl
 
@@ -371,8 +371,9 @@ theorem residueFieldCompletionEquiv_toRingHom :
 theorem residueFieldCompletionEquiv_residue (x : 𝒪[K]) :
     residueFieldCompletionEquiv (IsLocalRing.residue 𝒪[K] x) =
       IsLocalRing.residue 𝒪[Completion K] (algebraMap 𝒪[K] 𝒪[Completion K] x) := by
-  change (residueFieldCompletionEquiv (K := K)).toRingHom (IsLocalRing.residue 𝒪[K] x) = _
-  rw [residueFieldCompletionEquiv_toRingHom]
-  exact IsLocalRing.ResidueField.map_residue _ x
+  exact (congrArg (fun f : 𝓀[K] →+* 𝓀[Completion K] =>
+      f (IsLocalRing.residue 𝒪[K] x))
+    (residueFieldCompletionEquiv_toRingHom (K := K))).trans
+    (IsLocalRing.ResidueField.map_residue _ x)
 
 end Valued

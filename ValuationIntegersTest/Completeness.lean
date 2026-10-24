@@ -25,7 +25,6 @@ are complete by finite compactness, for the uniformity supplied by `Valued.mk'`.
 -/
 
 set_option warningAsError true
-set_option linter.privateModule false
 
 @[expose] public section
 

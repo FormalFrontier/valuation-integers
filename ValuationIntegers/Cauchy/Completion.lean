@@ -66,7 +66,6 @@ theorem mkRingHom_surjective : Function.Surjective (mkRingHom abv) := by
   exact ⟨f, (mk_eq_mk f).symm.trans hf⟩
 
 /-- A Cauchy sequence is in the projection's kernel exactly when it tends to zero. -/
-@[simp]
 theorem mem_ker_mkRingHom (f : CauSeq β abv) :
     f ∈ RingHom.ker (mkRingHom abv) ↔ CauSeq.LimZero f := by
   rw [RingHom.mem_ker, mkRingHom_apply]
