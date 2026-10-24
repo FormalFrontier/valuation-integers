@@ -15,6 +15,15 @@ proof methods, imports, examples and boundaries.
   Equality holds whenever the two values on the right differ. No integrality
   hypothesis on `x` or cancellation in the value monoid is required.
 
+- **Prime-power binomial valuation bound**
+  ([module](ValuationIntegers/Binomial.lean)). Let `R : Type u` be any ring,
+  `Γ₀ : Type w` a linearly ordered commutative monoid with zero, and
+  `v : Valuation R Γ₀`, with `u` and `w` independent. For every prime `p : ℕ`,
+  every `x : R` and every `n : ℕ`,
+  `v ((1 + x)^(p^n) - 1) ≤ max_{0 ≤ k ≤ n} (v (p : R)^(n-k) * (v x)^(p^k))`.
+  No integrality hypothesis on `x`, commutativity of `R`, or cancellation in
+  the value monoid is required.
+
 - For a coefficient field K and every natural n, an element of the canonical Laurent-series
   valuation subring lies in the nth power of its maximal ideal iff the underlying Laurent
   coefficients at all natural indices i<n vanish

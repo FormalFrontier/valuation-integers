@@ -31,4 +31,4 @@ name = "ValuationIntegers"
 name = "ValuationIntegersTest"
 roots = ["ValuationIntegersTest", "ValuationIntegersTest.Cauchy.UniformCompletion"]
 # Test assertions are intentionally private.
-leanOptions = { linter.privateModule = false }
+leanOptions = { weak.linter.privateModule = false }

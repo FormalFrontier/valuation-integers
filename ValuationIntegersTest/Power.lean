@@ -10,6 +10,7 @@ import Mathlib.NumberTheory.Padics.PadicIntegers
 import Mathlib.RingTheory.AdicCompletion.Topology
 import Mathlib.Topology.Algebra.Valued.NormedValued
 import Mathlib.Tactic.NormNum
+import Lean.Elab.Tactic.Omega
 
 /-!
 # Power neighborhoods over the two-adic field
@@ -76,6 +77,45 @@ private theorem twoAdic_two : v₂ (2 : ℚ_[2]) = (1 / 2 : ℝ≥0) := by
   apply NNReal.coe_injective
   change ‖(2 : ℚ_[2])‖ = ((1 / 2 : ℝ≥0) : ℝ)
   simpa using Padic.norm_p (p := 2)
+
+/-- The prime-power bound gives `1 / 16` as an upper bound for `x = 4`, `n = 2`. -/
+private theorem twoAdic_prime_pow_n2 :
+    v₂ ((1 + (4 : ℚ_[2])) ^ (2 ^ 2) - 1) ≤ (1 / 16 : ℝ≥0) := by
+  have hfour : v₂ (4 : ℚ_[2]) = (1 / 4 : ℝ≥0) := by
+    have hfour_pow : (4 : ℚ_[2]) = 2 ^ 2 := by norm_num
+    rw [hfour_pow, map_pow, twoAdic_two]
+    norm_num
+  calc
+    v₂ ((1 + (4 : ℚ_[2])) ^ (2 ^ 2) - 1) ≤
+        (Finset.range (2 + 1)).sup
+          (fun k => v₂ (2 : ℚ_[2]) ^ (2 - k) *
+            v₂ (4 : ℚ_[2]) ^ (2 ^ k)) :=
+      Valuation.map_one_add_pow_prime_pow_sub_one_le
+        v₂ Nat.prime_two (4 : ℚ_[2]) 2
+    _ = 1 / 16 := by
+      rw [twoAdic_two, hfour]
+      apply le_antisymm
+      · refine Finset.sup_le ?_
+        intro k hk
+        have hk3 : k < 3 := Finset.mem_range.mp hk
+        have hk_cases : k = 0 ∨ k = 1 ∨ k = 2 := by omega
+        rcases hk_cases with rfl | rfl | rfl
+        · norm_num
+        · norm_num
+          exact_mod_cast (show (1 / 32 : ℝ) ≤ 1 / 16 by norm_num)
+        · norm_num
+          exact_mod_cast (show (1 / 256 : ℝ) ≤ 1 / 16 by norm_num)
+      · calc
+          (1 / 16 : ℝ≥0) =
+              (1 / 2 : ℝ≥0) ^ (2 - 0) * (1 / 4 : ℝ≥0) ^ (2 ^ 0) := by
+            norm_num
+          _ ≤ (Finset.range (2 + 1)).sup
+              (fun k : ℕ => (1 / 2 : ℝ≥0) ^ (2 - k) *
+                (1 / 4 : ℝ≥0) ^ (2 ^ k)) :=
+            Finset.le_sup
+              (f := fun k : ℕ => (1 / 2 : ℝ≥0) ^ (2 - k) *
+                (1 / 4 : ℝ≥0) ^ (2 ^ k))
+              (by norm_num : 0 ∈ Finset.range (2 + 1))
 
 /-- Valuation-only numeric inputs, separate from either power-neighborhood statement. -/
 private theorem twoAdic_power_input :
