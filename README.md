@@ -36,6 +36,34 @@ proof methods, imports, examples and boundaries.
   No commutation hypothesis on `x` and `z` or cancellation in the value monoid
   is needed; zero valued distances are included.
 
+- **Strict two-point power differences at every natural exponent**
+  ([module](ValuationIntegers/Binomial.lean)). Let `R : Type u` be any ring,
+  `Γ₀ : Type w` a linearly ordered commutative monoid with zero, and
+  `v : Valuation R Γ₀`, with `u` and `w` independent. For a prime `p`, assume
+  `v (p : R) < 1`, `v (x - 1)^(p-1) < v (p : R)` and
+  `v (z - 1)^(p-1) < v (p : R)`. Then
+  `Valuation.map_pow_sub_pow_of_sub_one_pow_lt` gives
+  `v (x^m - z^m) = v (m : R) * v (x - z)` for every natural `m`, including `0`.
+  The endpoints lie in the same strict ball around `1`; no commutation hypothesis
+  or cancellation in the value monoid is needed, and zero valued distances are included.
+  The [scalar-value API](ValuationIntegers/Coprime.lean) gives value at most one for
+  natural and integer scalars. It also gives `v (q : R) = 1` whenever `n` and `q`
+  are coprime natural numbers and `v (n : R) < 1`.
+- **Integer powers of units in a strict ball**
+  ([module](ValuationIntegers/Binomial.lean)). Under the same arbitrary-ring and
+  value-monoid hypotheses, let `x z : Units R` and let `p` be prime with
+  `v (p : R) < 1`. Assume both
+  `v ((x : R) - 1)^(p-1) < v (p : R)` and
+  `v ((z : R) - 1)^(p-1) < v (p : R)`. Then
+  `Valuation.map_units_zpow_sub_units_zpow_of_sub_one_pow_lt` gives
+  `v (((x ^ m : Units R) : R) - ((z ^ m : Units R) : R)) =
+  v (m : R) * v ((x : R) - (z : R))`
+  for every integer `m`, including `0` and negative exponents. Powers are taken
+  in `Units R` before coercion to `R` and subtraction, so no inverse on `R` is
+  required. As in the natural formula, no commutation hypothesis or cancellation
+  in the value monoid is needed, and zero valued distances are included.
+
+
 - For a coefficient field K and every natural n, an element of the canonical Laurent-series
   valuation subring lies in the nth power of its maximal ideal iff the underlying Laurent
   coefficients at all natural indices i<n vanish

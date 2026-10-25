@@ -32,6 +32,7 @@ import ValuationIntegersTest.GenericForkMixed
 import ValuationIntegersTest.BoundedModule
 import ValuationIntegersTest.NumberTheory.BernoulliIntegrality
 import ValuationIntegersTest.Power
+import ValuationIntegersTest.StrictPower
 import ValuationIntegersTest.DividedBernoulli
 import ValuationIntegersTest.DividedBernoulliFactorization
 import ValuationIntegersTest.Cauchy

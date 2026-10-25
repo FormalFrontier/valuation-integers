@@ -479,3 +479,194 @@ example {R : Type*} [Ring R] {Γ₀ : Type*} [LinearOrderedCommMonoidWithZero Γ
     (v : Valuation R Γ₀) (x : R) (hx : v (x - 1) < 1)
     (m : ℕ) (hm : v (m : R) = 1) : v (x ^ m - x ^ m) = v (x - x) :=
   Valuation.map_pow_sub_pow_of_map_natCast_eq_one v x x hx hx m hm
+
+/-! Two-adic values at the mixed index `6 = 2 * 3`. -/
+
+private theorem twoAdic_nat_value_le_one (n : ℕ) :
+    v₂ (n : ℚ_[2]) ≤ 1 :=
+  Valuation.map_natCast_le_one v₂ n
+
+private theorem twoAdic_odd_nat_value (k : ℕ) :
+    v₂ ((2 * k + 1 : ℕ) : ℚ_[2]) = 1 := by
+  have heven : v₂ ((2 * k : ℕ) : ℚ_[2]) < 1 := by
+    calc
+      v₂ ((2 * k : ℕ) : ℚ_[2]) =
+          (1 / 2 : ℝ≥0) * v₂ (k : ℚ_[2]) := by
+        simp only [Nat.cast_mul, Nat.cast_ofNat, map_mul, twoAdic_two]
+      _ ≤ (1 / 2 : ℝ≥0) * 1 :=
+        mul_le_mul_of_nonneg_left (twoAdic_nat_value_le_one k) zero_le
+      _ < 1 := by norm_num
+  have hone : (1 : ℝ≥0) ≤
+      max (v₂ ((2 * k + 1 : ℕ) : ℚ_[2]))
+        (v₂ ((2 * k : ℕ) : ℚ_[2])) := by
+    have hsum := Valuation.map_add v₂ ((2 * k + 1 : ℕ) : ℚ_[2])
+      (-((2 * k : ℕ) : ℚ_[2]))
+    have hidentity : ((2 * k + 1 : ℕ) : ℚ_[2]) +
+        (-((2 * k : ℕ) : ℚ_[2])) = 1 := by
+      rw [Nat.cast_add, Nat.cast_one]
+      ring
+    simpa only [hidentity, map_one, Valuation.map_neg] using hsum
+  apply le_antisymm (twoAdic_nat_value_le_one (2 * k + 1))
+  rcases le_max_iff.mp hone with h | h
+  · exact h
+  · exact False.elim ((not_le_of_gt heven) h)
+
+/-- Strict endpoint bounds and the two-adic power-difference value at `5, 9, 6`. -/
+theorem twoAdic_strict_power_six :
+    Nat.Prime 2 ∧
+    v₂ (2 : ℚ_[2]) < 1 ∧
+    v₂ ((5 : ℚ_[2]) - 1) = (1 / 4 : ℝ≥0) ∧
+    v₂ ((9 : ℚ_[2]) - 1) = (1 / 8 : ℝ≥0) ∧
+    (v₂ ((5 : ℚ_[2]) - 1)) ^ ((2 : ℕ) - 1) < v₂ (2 : ℚ_[2]) ∧
+    (v₂ ((9 : ℚ_[2]) - 1)) ^ ((2 : ℕ) - 1) < v₂ (2 : ℚ_[2]) ∧
+    v₂ (6 : ℚ_[2]) = (1 / 2 : ℝ≥0) ∧
+    v₂ ((5 : ℚ_[2]) - 9) = (1 / 4 : ℝ≥0) ∧
+    v₂ ((5 : ℚ_[2]) ^ 6 - (9 : ℚ_[2]) ^ 6) = (1 / 8 : ℝ≥0) ∧
+    v₂ ((5 : ℚ_[2]) ^ 6 - (9 : ℚ_[2]) ^ 6) =
+      v₂ (6 : ℚ_[2]) * v₂ ((5 : ℚ_[2]) - 9) := by
+  have h3 : v₂ (3 : ℚ_[2]) = 1 := by
+    simpa only [show (2 * 1 + 1 : ℕ) = 3 by norm_num, Nat.cast_ofNat] using
+      twoAdic_odd_nat_value 1
+  have h64477 : v₂ (64477 : ℚ_[2]) = 1 := by
+    simpa only [show (2 * 32238 + 1 : ℕ) = 64477 by norm_num, Nat.cast_ofNat] using
+      twoAdic_odd_nat_value 32238
+  have h4 : v₂ (4 : ℚ_[2]) = (1 / 4 : ℝ≥0) := by
+    rw [show (4 : ℚ_[2]) = (2 : ℚ_[2]) ^ 2 by norm_num,
+      map_pow, twoAdic_two]
+    norm_num
+  have h8 : v₂ (8 : ℚ_[2]) = (1 / 8 : ℝ≥0) := by
+    rw [show (8 : ℚ_[2]) = (2 : ℚ_[2]) ^ 3 by norm_num,
+      map_pow, twoAdic_two]
+    norm_num
+  have hleft : v₂ ((5 : ℚ_[2]) - 1) = (1 / 4 : ℝ≥0) := by
+    rw [show (5 : ℚ_[2]) - 1 = 4 by norm_num, h4]
+  have hright : v₂ ((9 : ℚ_[2]) - 1) = (1 / 8 : ℝ≥0) := by
+    rw [show (9 : ℚ_[2]) - 1 = 8 by norm_num, h8]
+  have h6 : v₂ (6 : ℚ_[2]) = (1 / 2 : ℝ≥0) := by
+    rw [show (6 : ℚ_[2]) = 2 * 3 by norm_num,
+      map_mul, twoAdic_two, h3]
+    norm_num
+  have hdistance : v₂ ((5 : ℚ_[2]) - 9) = (1 / 4 : ℝ≥0) := by
+    rw [show (5 : ℚ_[2]) - 9 = -(4 : ℚ_[2]) by norm_num,
+      Valuation.map_neg, h4]
+  have houtput : v₂ ((5 : ℚ_[2]) ^ 6 - (9 : ℚ_[2]) ^ 6) =
+      (1 / 8 : ℝ≥0) := by
+    rw [show (5 : ℚ_[2]) ^ 6 - (9 : ℚ_[2]) ^ 6 =
+        -((2 : ℚ_[2]) ^ 3 * (64477 : ℚ_[2])) by norm_num,
+      Valuation.map_neg, map_mul, map_pow, twoAdic_two, h64477]
+    norm_num
+  refine ⟨Nat.prime_two, ?_, hleft, hright, ?_, ?_, h6, hdistance, houtput, ?_⟩
+  · rw [twoAdic_two]
+    norm_num
+  · rw [hleft, twoAdic_two]
+    norm_num
+  · rw [hright, twoAdic_two]
+    norm_num
+  · exact Valuation.map_pow_sub_pow_of_sub_one_pow_lt v₂ 2 Nat.prime_two
+      (by rw [Nat.cast_ofNat, twoAdic_two]; norm_num) 5 9
+      (by rw [hleft, Nat.cast_ofNat, twoAdic_two]; norm_num)
+      (by rw [hright, Nat.cast_ofNat, twoAdic_two]; norm_num) 6
+
+
+private noncomputable def twoAdic_five_unit : Units ℚ_[2] :=
+  Units.mk0 5 (by norm_num)
+
+private noncomputable def twoAdic_nine_unit : Units ℚ_[2] :=
+  Units.mk0 9 (by norm_num)
+
+/-- A strict two-adic unit model with a negative exponent. The output is
+computed from a rational identity, independently of a power-difference law. -/
+private theorem twoAdic_strict_unit_power_neg_six :
+    v₂ (2 : ℚ_[2]) < 1 ∧
+    v₂ ((twoAdic_five_unit : ℚ_[2]) - 1) < v₂ (2 : ℚ_[2]) ∧
+    v₂ ((twoAdic_nine_unit : ℚ_[2]) - 1) < v₂ (2 : ℚ_[2]) ∧
+    v₂ (twoAdic_five_unit : ℚ_[2]) = 1 ∧
+    v₂ (twoAdic_nine_unit : ℚ_[2]) = 1 ∧
+    v₂ ((-6 : ℤ) : ℚ_[2]) = (1 / 2 : ℝ≥0) ∧
+    v₂ ((twoAdic_five_unit : ℚ_[2]) - (twoAdic_nine_unit : ℚ_[2])) =
+      (1 / 4 : ℝ≥0) ∧
+    v₂ (((twoAdic_five_unit ^ (-6 : ℤ) : Units ℚ_[2]) : ℚ_[2]) -
+      ((twoAdic_nine_unit ^ (-6 : ℤ) : Units ℚ_[2]) : ℚ_[2])) =
+      (1 / 8 : ℝ≥0) ∧
+    v₂ (((twoAdic_five_unit ^ (-6 : ℤ) : Units ℚ_[2]) : ℚ_[2]) -
+      ((twoAdic_nine_unit ^ (-6 : ℤ) : Units ℚ_[2]) : ℚ_[2])) =
+      v₂ ((-6 : ℤ) : ℚ_[2]) *
+        v₂ ((twoAdic_five_unit : ℚ_[2]) - (twoAdic_nine_unit : ℚ_[2])) := by
+  have htwo_lt : v₂ (2 : ℚ_[2]) < 1 := by
+    rw [twoAdic_two]
+    norm_num
+  have hthree : v₂ (3 : ℚ_[2]) = 1 :=
+    Valuation.map_natCast_eq_one_of_coprime v₂ 2 3 htwo_lt (by decide)
+  have hfive : v₂ (5 : ℚ_[2]) = 1 :=
+    Valuation.map_natCast_eq_one_of_coprime v₂ 2 5 htwo_lt (by decide)
+  have hnine : v₂ (9 : ℚ_[2]) = 1 :=
+    Valuation.map_natCast_eq_one_of_coprime v₂ 2 9 htwo_lt (by decide)
+  have hodd : v₂ (64477 : ℚ_[2]) = 1 :=
+    Valuation.map_natCast_eq_one_of_coprime v₂ 2 64477 htwo_lt (by decide)
+  have hfour : v₂ (4 : ℚ_[2]) = (1 / 4 : ℝ≥0) := by
+    calc
+      v₂ (4 : ℚ_[2]) = v₂ ((2 : ℚ_[2]) * 2) := by norm_num
+      _ = v₂ (2 : ℚ_[2]) * v₂ (2 : ℚ_[2]) := Valuation.map_mul v₂ _ _
+      _ = (1 / 4 : ℝ≥0) := by rw [twoAdic_two]; norm_num
+  have height : v₂ (8 : ℚ_[2]) = (1 / 8 : ℝ≥0) := by
+    calc
+      v₂ (8 : ℚ_[2]) = v₂ ((2 : ℚ_[2]) * 4) := by norm_num
+      _ = v₂ (2 : ℚ_[2]) * v₂ (4 : ℚ_[2]) := Valuation.map_mul v₂ _ _
+      _ = (1 / 8 : ℝ≥0) := by rw [twoAdic_two, hfour]; norm_num
+  have hnegative_six : v₂ ((-6 : ℤ) : ℚ_[2]) = (1 / 2 : ℝ≥0) := by
+    calc
+      v₂ ((-6 : ℤ) : ℚ_[2]) = v₂ (-((2 : ℚ_[2]) * 3)) := by norm_num
+      _ = v₂ ((2 : ℚ_[2]) * 3) := Valuation.map_neg v₂ _
+      _ = v₂ (2 : ℚ_[2]) * v₂ (3 : ℚ_[2]) := Valuation.map_mul v₂ _ _
+      _ = (1 / 2 : ℝ≥0) := by rw [twoAdic_two, hthree]; norm_num
+  have hleft : v₂ ((twoAdic_five_unit : ℚ_[2]) - 1) = (1 / 4 : ℝ≥0) := by
+    change v₂ ((5 : ℚ_[2]) - 1) = _
+    rw [show (5 : ℚ_[2]) - 1 = 4 by norm_num]
+    exact hfour
+  have hright : v₂ ((twoAdic_nine_unit : ℚ_[2]) - 1) = (1 / 8 : ℝ≥0) := by
+    change v₂ ((9 : ℚ_[2]) - 1) = _
+    rw [show (9 : ℚ_[2]) - 1 = 8 by norm_num]
+    exact height
+  have hdistance :
+      v₂ ((twoAdic_five_unit : ℚ_[2]) - (twoAdic_nine_unit : ℚ_[2])) =
+        (1 / 4 : ℝ≥0) := by
+    change v₂ ((5 : ℚ_[2]) - 9) = _
+    rw [show (5 : ℚ_[2]) - 9 = -(4 : ℚ_[2]) by norm_num, Valuation.map_neg]
+    exact hfour
+  have hdenominator : v₂ ((5 : ℚ_[2]) ^ 6 * 9 ^ 6) = 1 := by
+    rw [Valuation.map_mul, Valuation.map_pow, Valuation.map_pow, hfive, hnine]
+    norm_num
+  have hrational :
+      ((twoAdic_five_unit ^ (-6 : ℤ) : Units ℚ_[2]) : ℚ_[2]) -
+        ((twoAdic_nine_unit ^ (-6 : ℤ) : Units ℚ_[2]) : ℚ_[2]) =
+      ((8 : ℚ_[2]) * 64477) / ((5 : ℚ_[2]) ^ 6 * 9 ^ 6) := by
+    rw [Units.val_zpow_eq_zpow_val, Units.val_zpow_eq_zpow_val]
+    norm_num [twoAdic_five_unit, twoAdic_nine_unit, zpow_neg]
+  have hactual :
+      v₂ (((twoAdic_five_unit ^ (-6 : ℤ) : Units ℚ_[2]) : ℚ_[2]) -
+        ((twoAdic_nine_unit ^ (-6 : ℤ) : Units ℚ_[2]) : ℚ_[2])) =
+          (1 / 8 : ℝ≥0) := by
+    have hproduct :
+        ((5 : ℚ_[2]) ^ 6 * 9 ^ 6) *
+          (((twoAdic_five_unit ^ (-6 : ℤ) : Units ℚ_[2]) : ℚ_[2]) -
+            ((twoAdic_nine_unit ^ (-6 : ℤ) : Units ℚ_[2]) : ℚ_[2])) =
+        (8 : ℚ_[2]) * 64477 := by
+      rw [hrational]
+      norm_num
+    have hvalues := congrArg v₂ hproduct
+    rw [Valuation.map_mul, hdenominator, one_mul, Valuation.map_mul, height, hodd] at hvalues
+    simpa using hvalues
+  refine ⟨htwo_lt, ?_, ?_, ?_, ?_, hnegative_six, hdistance, hactual, ?_⟩
+  · rw [hleft, twoAdic_two]
+    norm_num
+  · rw [hright, twoAdic_two]
+    norm_num
+  · change v₂ (5 : ℚ_[2]) = 1
+    exact hfive
+  · change v₂ (9 : ℚ_[2]) = 1
+    exact hnine
+  · exact Valuation.map_units_zpow_sub_units_zpow_of_sub_one_pow_lt
+      v₂ 2 (by decide) (by norm_num [Nat.cast_ofNat, twoAdic_two])
+      twoAdic_five_unit twoAdic_nine_unit
+      (by norm_num [Nat.cast_ofNat, hleft, twoAdic_two])
+      (by norm_num [Nat.cast_ofNat, hright, twoAdic_two]) (-6)

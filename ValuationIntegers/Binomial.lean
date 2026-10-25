@@ -5,12 +5,14 @@ Authors: Formal Frontier Agents
 module
 
 public import Mathlib.RingTheory.Valuation.Basic
+public import ValuationIntegers.Coprime
 public import Mathlib.Data.Nat.Prime.Defs
 public import Mathlib.Data.Finset.Lattice.Fold
 import Mathlib.Algebra.Ring.Commute
 import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Data.Nat.Choose.Dvd
 import Mathlib.Data.Nat.Prime.Basic
+import Mathlib.Data.Nat.Factorization.Basic
 import Mathlib.Algebra.Order.Ring.IsNonarchimedean
 import Mathlib.Tactic.Abel
 import Lean.Elab.Tactic.Omega
@@ -740,5 +742,119 @@ theorem map_pow_sub_pow_of_map_natCast_eq_one
           map_pow_prime_pow_sub_pow_prime_pow_of_sub_one_pow_lt v p hp (x ^ k) (z ^ k)
             (hprime _ (hnear_pow x hx k)) (hprime _ (hnear_pow z hz k)) 1
       _ = v (x - z) := ih k hklt hkval
+
+end Valuation
+
+namespace Valuation
+
+variable {R : Type u} [Ring R] {Γ₀ : Type w}
+  [LinearOrderedCommMonoidWithZero Γ₀]
+
+/-- The valuation of a power difference in the strict near-one ball is the
+valuation of the exponent times the valuation of the original difference.
+
+The bound `v (p : R) < 1` forces natural-number cofactors prime to `p` to have
+valuation `1`. The strict endpoint bounds make the linear term dominate in each
+`p`-power step. -/
+theorem map_pow_sub_pow_of_sub_one_pow_lt
+    (v : Valuation R Γ₀) (p : ℕ) (hp : p.Prime) (hvp : v (p : R) < 1)
+    (x z : R) (hx : v (x - 1) ^ (p - 1) < v (p : R))
+    (hz : v (z - 1) ^ (p - 1) < v (p : R)) (m : ℕ) :
+    v (x ^ m - z ^ m) = v (m : R) * v (x - z) := by
+  have hnear (a : Γ₀) (ha : a ^ (p - 1) < v (p : R)) : a < 1 := by
+    apply lt_of_not_ge
+    intro h
+    exact not_lt_of_ge (one_le_pow₀ h) (ha.trans hvp)
+  have hx1 : v (x - 1) < 1 := hnear _ hx
+  have hz1 : v (z - 1) < 1 := hnear _ hz
+  have h11 : v ((1 : R) - 1) < 1 := by
+    simpa only [sub_self, map_zero] using (lt_of_le_of_lt zero_le hvp)
+  rcases eq_or_ne m 0 with rfl | hm
+  · simp only [pow_zero, sub_self, Nat.cast_zero, map_zero, zero_mul]
+  obtain ⟨e, q, hpq, hmq⟩ := Nat.exists_eq_pow_mul_and_not_dvd hm p hp.ne_one
+  have hq : v (q : R) = 1 :=
+    v.map_natCast_eq_one_of_coprime p q hvp (hp.coprime_iff_not_dvd.mpr hpq)
+  have hxq : v (x ^ q - 1) = v (x - 1) := by
+    simpa only [one_pow] using
+      v.map_pow_sub_pow_of_map_natCast_eq_one x 1 hx1 h11 q hq
+  have hzq : v (z ^ q - 1) = v (z - 1) := by
+    simpa only [one_pow] using
+      v.map_pow_sub_pow_of_map_natCast_eq_one z 1 hz1 h11 q hq
+  have hmval : v (m : R) = v (p : R) ^ e := by
+    rw [hmq, Nat.cast_mul, Nat.cast_pow, v.map_mul, v.map_pow, hq, mul_one]
+  calc
+    v (x ^ m - z ^ m) = v ((x ^ q) ^ (p ^ e) - (z ^ q) ^ (p ^ e)) := by
+      rw [hmq, Nat.mul_comm (p ^ e) q]
+      simp only [pow_mul]
+    _ = v (p : R) ^ e * v (x ^ q - z ^ q) :=
+      v.map_pow_prime_pow_sub_pow_prime_pow_of_sub_one_pow_lt p hp (x ^ q) (z ^ q)
+        (by simpa only [hxq] using hx) (by simpa only [hzq] using hz) e
+    _ = v (m : R) * v (x - z) := by
+      rw [v.map_pow_sub_pow_of_map_natCast_eq_one x z hx1 hz1 q hq, hmval]
+
+end Valuation
+
+
+namespace Valuation
+
+/-- The lifting-the-exponent formula for integer powers of units close to `1`.
+The powers are taken in the unit group and then coerced into the ring before
+subtracting. No commutativity of the ring or cancellation in the value monoid
+is required. -/
+theorem map_units_zpow_sub_units_zpow_of_sub_one_pow_lt
+    {R : Type u} [Ring R] {Γ₀ : Type w} [LinearOrderedCommMonoidWithZero Γ₀]
+    (v : Valuation R Γ₀) (p : ℕ) (hp : p.Prime) (hvp : v (p : R) < 1)
+    (x z : Units R)
+    (hx : v ((x : R) - 1) ^ (p - 1) < v (p : R))
+    (hz : v ((z : R) - 1) ^ (p - 1) < v (p : R)) (m : ℤ) :
+    v (((x ^ m : Units R) : R) - ((z ^ m : Units R) : R)) =
+      v (m : R) * v ((x : R) - (z : R)) := by
+  let : PosMulMono Γ₀ := PosMulStrictMono.toPosMulMono
+  have hnear (a : R) (ha : v (a - 1) ^ (p - 1) < v (p : R)) : v a = 1 := by
+    have hlt : v (a - 1) < 1 := by
+      by_contra h
+      have hle : 1 ≤ v (a - 1) ^ (p - 1) := one_le_pow₀ (le_of_not_gt h)
+      exact (not_le_of_gt (ha.trans hvp)) hle
+    apply le_antisymm
+    · simpa only [sub_add_cancel, v.map_one, max_eq_right hlt.le] using
+        v.map_add (a - 1) 1
+    · have h := v.map_sub a (a - 1)
+      rw [sub_sub_cancel, v.map_one] at h
+      exact (le_max_iff.mp h).resolve_right (not_le_of_gt hlt)
+  have hinv (a : Units R) (ha : v (a : R) = 1) :
+      v ((a⁻¹ : Units R) : R) = 1 := by
+    change v a.inv = 1
+    simpa only [v.map_mul, ha, one_mul, v.map_one] using
+      congrArg v (Units.val_inv a)
+  have hdiff (a b : Units R) :
+      ((a⁻¹ : Units R) : R) - ((b⁻¹ : Units R) : R) =
+        ((a⁻¹ : Units R) : R) * ((b : R) - (a : R)) * ((b⁻¹ : Units R) : R) := by
+    simp only [mul_sub, sub_mul, mul_assoc]
+    simp
+  cases m with
+  | ofNat n =>
+      change v (((x ^ (n : ℤ) : Units R) : R) - ((z ^ (n : ℤ) : Units R) : R)) =
+        v ((n : ℤ) : R) * v ((x : R) - (z : R))
+      simpa only [zpow_natCast, Units.val_pow_eq_pow_val, Int.cast_natCast] using
+        v.map_pow_sub_pow_of_sub_one_pow_lt p hp hvp (x : R) (z : R) hx hz n
+  | negSucc n =>
+      have hxpow : v ((x ^ (n + 1) : Units R) : R) = 1 := by
+        rw [Units.val_pow_eq_pow_val, v.map_pow, hnear (x : R) hx, one_pow]
+      have hzpow : v ((z ^ (n + 1) : Units R) : R) = 1 := by
+        rw [Units.val_pow_eq_pow_val, v.map_pow, hnear (z : R) hz, one_pow]
+      rw [zpow_negSucc, zpow_negSucc]
+      calc
+        v ((((x ^ (n + 1))⁻¹ : Units R) : R) -
+            (((z ^ (n + 1))⁻¹ : Units R) : R)) =
+            v (((z ^ (n + 1) : Units R) : R) - ((x ^ (n + 1) : Units R) : R)) := by
+              rw [hdiff, v.map_mul, v.map_mul, hinv _ hxpow, hinv _ hzpow,
+                one_mul, mul_one]
+        _ = v (((x ^ (n + 1) : Units R) : R) - ((z ^ (n + 1) : Units R) : R)) :=
+          v.map_sub_swap _ _
+        _ = v ((n + 1 : ℕ) : R) * v ((x : R) - (z : R)) := by
+          simpa only [Units.val_pow_eq_pow_val] using
+            v.map_pow_sub_pow_of_sub_one_pow_lt p hp hvp (x : R) (z : R) hx hz (n + 1)
+        _ = v ((Int.negSucc n : ℤ) : R) * v ((x : R) - (z : R)) := by
+          rw [Int.cast_negSucc, v.map_neg]
 
 end Valuation
