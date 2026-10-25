@@ -28,6 +28,14 @@ proof methods, imports, examples and boundaries.
   No integrality hypothesis on `x`, commutativity of `R`, or cancellation in
   the value monoid is required.
 
+- **Natural powers of value one preserve near-one distances**
+  ([module](ValuationIntegers/Binomial.lean)). For a valuation `v` on any ring `R`,
+  valued in a linearly ordered commutative monoid with zero, if
+  `v (x - 1) < 1`, `v (z - 1) < 1` and `v (m : R) = 1`, then
+  `v (x ^ m - z ^ m) = v (x - z)` for every natural `m`.
+  No commutation hypothesis on `x` and `z` or cancellation in the value monoid
+  is needed; zero valued distances are included.
+
 - For a coefficient field K and every natural n, an element of the canonical Laurent-series
   valuation subring lies in the nth power of its maximal ideal iff the underlying Laurent
   coefficients at all natural indices i<n vanish

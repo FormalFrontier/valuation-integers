@@ -10,12 +10,13 @@ public import Mathlib.Data.Finset.Lattice.Fold
 import Mathlib.Algebra.Ring.Commute
 import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Data.Nat.Choose.Dvd
+import Mathlib.Data.Nat.Prime.Basic
 import Mathlib.Algebra.Order.Ring.IsNonarchimedean
 import Mathlib.Tactic.Abel
 import Lean.Elab.Tactic.Omega
 
 /-!
-# Prime-binomial valuation bounds and strict scaling
+# Binomial valuation bounds and power-difference identities
 
 For a prime exponent, the valuation of `(1 + x)^p - 1` is bounded by the
 maximum of the linear and final terms of its binomial expansion. If those
@@ -31,6 +32,11 @@ Under the strict bound `v x ^ (p - 1) < v (p : R)`,
 `Valuation.map_one_add_pow_prime_pow_sub_one_of_pow_lt` gives the exact linear
 value `v (p : R) ^ n * v x` at every prime-power step, including `n = 0`.
 All powers are natural powers, with the convention `0 ^ 0 = 1`.
+
+If `v (x - 1) < 1` and `v (z - 1) < 1`, then
+`Valuation.map_pow_sub_pow_of_map_natCast_eq_one` gives
+`v (x ^ m - z ^ m) = v (x - z)` for every natural `m` with
+`v (m : R) = 1`, without a commutation assumption on `x` and `z`.
 
 These results apply to valuations on arbitrary rings with values in a linearly
 ordered commutative monoid with zero. Neither integrality of `x` nor cancellation
@@ -667,5 +673,72 @@ theorem map_pow_prime_pow_sub_one_of_sub_one_pow_lt
     simpa only [sub_self, map_zero, zero_pow hp1] using hpos
   simpa only [one_pow] using
     map_pow_prime_pow_sub_pow_prime_pow_of_sub_one_pow_lt v p hp u 1 hu hone n
+
+/-- A natural exponent of value one preserves the valued distance between two elements
+whose differences from `1` have value less than one. -/
+theorem map_pow_sub_pow_of_map_natCast_eq_one
+    (v : Valuation R Γ₀) (x z : R) (hx : v (x - 1) < 1)
+    (hz : v (z - 1) < 1) (m : ℕ) (hm : v (m : R) = 1) :
+    v (x ^ m - z ^ m) = v (x - z) := by
+  have hnat (n : ℕ) : v (n : R) ≤ 1 := by
+    apply IsNonarchimedean.apply_natCast_le_one
+    · simp
+    · simp
+    · exact v.map_add
+  have hnear_pow (t : R) (ht : v (t - 1) < 1) (k : ℕ) :
+      v (t ^ k - 1) < 1 := by
+    have htval : v t ≤ 1 := by
+      have h := v.map_add (t - 1) 1
+      simpa only [sub_add_cancel, map_one, max_eq_right ht.le] using h
+    apply lt_of_le_of_lt _ ht
+    simpa only [one_pow, map_one, max_eq_right htval, one_mul] using
+      map_pow_sub_pow_le v t 1 k
+  revert hm
+  induction m using Nat.strong_induction_on with
+  | h m ih =>
+    intro hm
+    by_cases hmzero : m = 0
+    · subst m
+      simpa only [Nat.cast_zero, pow_zero, sub_self, map_zero, zero_mul, one_mul] using
+        congrArg (fun a : Γ₀ => a * v (x - z)) hm
+    by_cases hmone : m = 1
+    · subst m
+      simp
+    obtain ⟨p, hp, hpm⟩ := Nat.exists_prime_and_dvd hmone
+    obtain ⟨k, rfl⟩ := hpm
+    have hkpos : 0 < k := by
+      apply Nat.pos_of_ne_zero
+      intro hkzero
+      exact hmzero (by simp only [hkzero, mul_zero])
+    have hklt : k < p * k := by
+      have h := Nat.mul_le_mul_right k hp.two_le
+      omega
+    rw [Nat.cast_mul, map_mul] at hm
+    have hpval : v (p : R) = 1 := by
+      apply le_antisymm (hnat p)
+      calc
+        1 = v (p : R) * v (k : R) := hm.symm
+        _ ≤ v (p : R) * 1 := mul_le_mul' le_rfl (hnat k)
+        _ = v (p : R) := mul_one _
+    have hkval : v (k : R) = 1 := by
+      apply le_antisymm (hnat k)
+      calc
+        1 = v (p : R) * v (k : R) := hm.symm
+        _ ≤ 1 * v (k : R) := mul_le_mul' (hnat p) le_rfl
+        _ = v (k : R) := one_mul _
+    have hprime (t : R) (ht : v (t - 1) < 1) :
+        v (t - 1) ^ (p - 1) < v (p : R) := by
+      rw [hpval]
+      apply pow_lt_one₀ zero_le ht
+      have h := hp.two_le
+      omega
+    calc
+      v (x ^ (p * k) - z ^ (p * k)) = v ((x ^ k) ^ p - (z ^ k) ^ p) := by
+        simp only [← pow_mul, Nat.mul_comm k p]
+      _ = v (x ^ k - z ^ k) := by
+        simpa only [pow_one, hpval, one_mul] using
+          map_pow_prime_pow_sub_pow_prime_pow_of_sub_one_pow_lt v p hp (x ^ k) (z ^ k)
+            (hprime _ (hnear_pow x hx k)) (hprime _ (hnear_pow z hz k)) 1
+      _ = v (x - z) := ih k hklt hkval
 
 end Valuation
