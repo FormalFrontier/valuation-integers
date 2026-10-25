@@ -277,3 +277,107 @@ private theorem twoAdic_neg_two_threshold_boundary :
     norm_num
   · rw [hzero, hrhs]
     norm_num
+
+
+/-! ## Two-point prime-power scaling over the two-adic field
+
+For `u = 5`, `z = 9`, `p = 2`, and `n = 1`, both strict thresholds hold.
+The input values and the positive output and right-hand side are calculated
+independently of the two-point identity, before applying it. The output
+calculation uses `24 - 80 = -56`.
+-/
+example :
+    Nat.Prime 2 ∧
+      v₂ ((5 : ℚ_[2]) - 1) = (1 / 4 : ℝ≥0) ∧
+      v₂ ((9 : ℚ_[2]) - 1) = (1 / 8 : ℝ≥0) ∧
+      v₂ (2 : ℚ_[2]) = (1 / 2 : ℝ≥0) ∧
+      v₂ ((5 : ℚ_[2]) - 9) = (1 / 4 : ℝ≥0) ∧
+      v₂ ((5 : ℚ_[2]) - 1) ^ ((2 : ℕ) - 1) < v₂ (2 : ℚ_[2]) ∧
+      v₂ ((9 : ℚ_[2]) - 1) ^ ((2 : ℕ) - 1) < v₂ (2 : ℚ_[2]) ∧
+      v₂ ((5 : ℚ_[2]) ^ ((2 : ℕ) ^ 1) - 9 ^ ((2 : ℕ) ^ 1)) =
+        (1 / 8 : ℝ≥0) ∧
+      v₂ (2 : ℚ_[2]) ^ (1 : ℕ) * v₂ ((5 : ℚ_[2]) - 9) =
+        (1 / 8 : ℝ≥0) ∧
+      v₂ ((5 : ℚ_[2]) ^ ((2 : ℕ) ^ 1) - 9 ^ ((2 : ℕ) ^ 1)) =
+        v₂ (2 : ℚ_[2]) ^ (1 : ℕ) * v₂ ((5 : ℚ_[2]) - 9) := by
+  have hfour : v₂ (4 : ℚ_[2]) = (1 / 4 : ℝ≥0) := by
+    have harg : (4 : ℚ_[2]) = 2 ^ 2 := by norm_num
+    rw [harg, map_pow, twoAdic_two]
+    norm_num
+  have height : v₂ (8 : ℚ_[2]) = (1 / 8 : ℝ≥0) := by
+    have harg : (8 : ℚ_[2]) = 2 ^ 3 := by norm_num
+    rw [harg, map_pow, twoAdic_two]
+    norm_num
+  have h5 : v₂ ((5 : ℚ_[2]) - 1) = (1 / 4 : ℝ≥0) := by
+    have harg : (5 : ℚ_[2]) - 1 = 4 := by norm_num
+    rw [harg, hfour]
+  have h9 : v₂ ((9 : ℚ_[2]) - 1) = (1 / 8 : ℝ≥0) := by
+    have harg : (9 : ℚ_[2]) - 1 = 8 := by norm_num
+    rw [harg, height]
+  have hdiff : v₂ ((5 : ℚ_[2]) - 9) = (1 / 4 : ℝ≥0) := by
+    have harg : (5 : ℚ_[2]) - 9 = -4 := by norm_num
+    rw [harg, Valuation.map_neg, hfour]
+  have hthreshold5 :
+      v₂ ((5 : ℚ_[2]) - 1) ^ ((2 : ℕ) - 1) < v₂ (2 : ℚ_[2]) := by
+    rw [h5, twoAdic_two]
+    norm_num
+  have hthreshold9 :
+      v₂ ((9 : ℚ_[2]) - 1) ^ ((2 : ℕ) - 1) < v₂ (2 : ℚ_[2]) := by
+    rw [h9, twoAdic_two]
+    norm_num
+  -- Reuse only the earlier prime-exponent, off-tie calculation, not strict scaling.
+  have h24 : v₂ (24 : ℚ_[2]) = (1 / 8 : ℝ≥0) := by
+    have harg : (1 + (4 : ℚ_[2])) ^ 2 - 1 = 24 := by norm_num
+    rw [← harg]
+    exact twoAdic_prime_eq_off_tie
+  have h80 : v₂ (80 : ℚ_[2]) = (1 / 16 : ℝ≥0) := by
+    have harg : (1 + (8 : ℚ_[2])) ^ 2 - 1 = 80 := by norm_num
+    have hne : v₂ (2 : ℚ_[2]) * v₂ (8 : ℚ_[2]) ≠ v₂ (8 : ℚ_[2]) ^ 2 := by
+      rw [twoAdic_two, height]
+      norm_num
+    calc
+      v₂ (80 : ℚ_[2]) =
+          max (v₂ (2 : ℚ_[2]) * v₂ (8 : ℚ_[2])) (v₂ (8 : ℚ_[2]) ^ 2) := by
+        rw [← harg]
+        exact Valuation.map_one_add_pow_prime_sub_one_of_ne
+          v₂ Nat.prime_two (8 : ℚ_[2]) hne
+      _ = 1 / 16 := by
+        rw [twoAdic_two, height]
+        have hlinear : (1 / 2 : ℝ≥0) * (1 / 8) = 1 / 16 := by norm_num
+        have hpower : (1 / 8 : ℝ≥0) ^ 2 = 1 / 64 := by norm_num
+        have hle : (1 / 64 : ℝ≥0) ≤ 1 / 16 := by
+          exact_mod_cast (show (1 / 64 : ℝ) ≤ 1 / 16 by norm_num)
+        rw [hlinear, hpower, max_eq_left hle]
+  have h168 : (1 / 16 : ℝ≥0) < 1 / 8 := by
+    exact_mod_cast (show (1 / 16 : ℝ) < 1 / 8 by norm_num)
+  -- Two applications of the stock valuation inequality calculate the unequal sum.
+  have hsub : v₂ ((24 : ℚ_[2]) - 80) = (1 / 8 : ℝ≥0) := by
+    have hupper : v₂ ((24 : ℚ_[2]) - 80) ≤ (1 / 8 : ℝ≥0) := by
+      have h := (v₂).map_add (24 : ℚ_[2]) (-(80 : ℚ_[2]))
+      simpa only [← sub_eq_add_neg, Valuation.map_neg, h24, h80,
+        max_eq_left (le_of_lt h168)] using h
+    have hlower : (1 / 8 : ℝ≥0) ≤ max (v₂ ((24 : ℚ_[2]) - 80)) (1 / 16) := by
+      calc
+        (1 / 8 : ℝ≥0) = v₂ (24 : ℚ_[2]) := h24.symm
+        _ = v₂ (((24 : ℚ_[2]) - 80) + 80) := by congr 1; norm_num
+        _ ≤ max (v₂ ((24 : ℚ_[2]) - 80)) (v₂ (80 : ℚ_[2])) :=
+          (v₂).map_add _ _
+        _ = max (v₂ ((24 : ℚ_[2]) - 80)) (1 / 16) := by rw [h80]
+    rcases le_max_iff.mp hlower with hbound | hbad
+    · exact le_antisymm hupper hbound
+    · exact (not_le_of_gt h168 hbad).elim
+  have houtput :
+      v₂ ((5 : ℚ_[2]) ^ ((2 : ℕ) ^ 1) - 9 ^ ((2 : ℕ) ^ 1)) =
+        (1 / 8 : ℝ≥0) := by
+    calc
+      v₂ ((5 : ℚ_[2]) ^ ((2 : ℕ) ^ 1) - 9 ^ ((2 : ℕ) ^ 1)) =
+          v₂ ((24 : ℚ_[2]) - 80) := by congr 1; norm_num
+      _ = 1 / 8 := hsub
+  have hrhs : v₂ (2 : ℚ_[2]) ^ (1 : ℕ) * v₂ ((5 : ℚ_[2]) - 9) =
+      (1 / 8 : ℝ≥0) := by
+    rw [twoAdic_two, hdiff]
+    norm_num
+  exact ⟨Nat.prime_two, h5, h9, twoAdic_two, hdiff,
+    hthreshold5, hthreshold9, houtput, hrhs,
+    (v₂).map_pow_prime_pow_sub_pow_prime_pow_of_sub_one_pow_lt
+      2 Nat.prime_two 5 9 hthreshold5 hthreshold9 1⟩

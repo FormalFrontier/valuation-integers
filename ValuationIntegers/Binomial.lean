@@ -455,3 +455,217 @@ theorem map_one_add_pow_prime_pow_sub_one_of_pow_lt
         _ = v (p : R) ^ (n + 1) * v x := by rw [pow_succ]
 
 end Valuation
+
+namespace Valuation
+
+variable {R : Type u} [Ring R] {Γ₀ : Type w}
+  [LinearOrderedCommMonoidWithZero Γ₀]
+
+/-- The valuation of a difference of natural powers is bounded by the valuation of
+the difference times a power of the maximum endpoint value. The ring elements need
+not commute. -/
+theorem map_pow_sub_pow_le (v : Valuation R Γ₀) (x y : R) (n : ℕ) :
+    v (x ^ n - y ^ n) ≤ max (v x) (v y) ^ (n - 1) * v (x - y) := by
+  have hpos (m : ℕ) :
+      v (x ^ (m + 1) - y ^ (m + 1)) ≤
+        max (v x) (v y) ^ m * v (x - y) := by
+    induction m with
+    | zero => simp
+    | succ m ih =>
+      have hid : x ^ (m + 1 + 1) - y ^ (m + 1 + 1) =
+          x ^ (m + 1) * (x - y) +
+            (x ^ (m + 1) - y ^ (m + 1)) * y := by
+        simp only [pow_succ, mul_sub, sub_mul]
+        abel
+      rw [hid]
+      refine (v.map_add _ _).trans (max_le ?_ ?_)
+      · rw [map_mul, map_pow]
+        exact mul_le_mul'
+          (pow_le_pow_left' (le_max_left _ _) (m + 1)) le_rfl
+      · rw [map_mul]
+        calc
+          v (x ^ (m + 1) - y ^ (m + 1)) * v y ≤
+              (max (v x) (v y) ^ m * v (x - y)) * max (v x) (v y) :=
+            mul_le_mul' ih (le_max_right _ _)
+          _ = max (v x) (v y) ^ (m + 1) * v (x - y) := by
+            rw [pow_succ]
+            ac_rfl
+  cases n with
+  | zero => simp
+  | succ m =>
+    simpa only [Nat.succ_eq_add_one, Nat.add_sub_cancel] using hpos m
+
+end Valuation
+
+namespace Valuation
+
+variable {R : Type u} [Ring R] {Γ₀ : Type w}
+  [LinearOrderedCommMonoidWithZero Γ₀]
+
+/-- Strict prime scaling for two elements in the neighborhood of one. The two
+binomial expansions require commutation with one, not with each other. -/
+private theorem map_pow_prime_sub_pow_prime_eq_mul_of_sub_one_pow_lt
+    (v : Valuation R Γ₀) (p : ℕ) (hp : p.Prime) (u z : R)
+    (hu : v (u - 1) ^ (p - 1) < v (p : R))
+    (hz : v (z - 1) ^ (p - 1) < v (p : R)) :
+    v (u ^ p - z ^ p) = v (p : R) * v (u - z) := by
+  by_cases hd : v (u - z) = 0
+  · have hzero : v (u ^ p - z ^ p) ≤ 0 := by
+      simpa only [hd, mul_zero] using map_pow_sub_pow_le v u z p
+    simpa only [hd, mul_zero] using le_antisymm hzero zero_le
+  · let a : R := u - 1
+    let b : R := z - 1
+    let c : Γ₀ := max (v a) (v b)
+    have hdpos : 0 < v (u - z) := by
+      apply lt_of_not_ge
+      intro hle
+      exact hd (le_antisymm hle zero_le)
+    have hq : v (p : R) ≤ 1 := by
+      apply IsNonarchimedean.apply_natCast_le_one
+      · simp
+      · simp
+      · exact v.map_add
+    have hc : c ^ (p - 1) < v (p : R) := by
+      rcases le_total (v a) (v b) with hab | hba
+      · simpa only [c, max_eq_right hab] using hz
+      · simpa only [c, max_eq_left hba] using hu
+    have hc_one : c < 1 := by
+      apply lt_of_not_ge
+      intro hge
+      exact (not_lt_of_ge (one_le_pow₀ hge)) (hc.trans_le hq)
+    have hqpos : 0 < v (p : R) :=
+      (zero_le : 0 ≤ c ^ (p - 1)).trans_lt hc
+    have hlinearpos : 0 < v (p : R) * v (u - z) := mul_pos hqpos hdpos
+    have hdifference : a - b = u - z := by
+      dsimp [a, b]
+      abel
+    have hbound (k : ℕ) :
+        v (a ^ k - b ^ k) ≤ c ^ (k - 1) * v (u - z) := by
+      simpa only [c, hdifference] using map_pow_sub_pow_le v a b k
+    have hsum :
+        v (∑ k ∈ Finset.Ico 2 p, (a ^ k - b ^ k) * (p.choose k : R)) <
+          v (p : R) * v (u - z) := by
+      apply v.map_sum_lt (ne_of_gt hlinearpos)
+      intro k hk
+      obtain ⟨hklo, hkhi⟩ := Finset.mem_Ico.mp hk
+      have hkm : k - 1 = k - 2 + 1 := by omega
+      have hck : c ^ (k - 1) < 1 := by
+        calc
+          c ^ (k - 1) = c ^ (k - 2) * c := by rw [hkm, pow_succ]
+          _ ≤ 1 * c := mul_le_mul' (pow_le_one₀ zero_le hc_one.le) le_rfl
+          _ = c := one_mul _
+          _ < 1 := hc_one
+      calc
+        v ((a ^ k - b ^ k) * (p.choose k : R)) =
+            v (a ^ k - b ^ k) * v (p.choose k : R) := by rw [map_mul]
+        _ ≤ (c ^ (k - 1) * v (u - z)) * v (p : R) :=
+          mul_le_mul' (hbound k) (map_choose_le v hp (by omega) hkhi)
+        _ = c ^ (k - 1) * (v (p : R) * v (u - z)) := by ac_rfl
+        _ < 1 * (v (p : R) * v (u - z)) := by
+          simpa only [mul_comm] using mul_lt_mul_of_pos_left hck hlinearpos
+        _ = v (p : R) * v (u - z) := one_mul _
+    have hfinal : v (a ^ p - b ^ p) < v (p : R) * v (u - z) :=
+      (hbound p).trans_lt (by
+        simpa only [mul_comm] using mul_lt_mul_of_pos_left hc hdpos)
+    have hshift_a : 1 + a = u := by
+      dsimp [a]
+      abel
+    have hshift_b : 1 + b = z := by
+      dsimp [b]
+      abel
+    have ha : u ^ p - 1 = a * (p : R) +
+        (∑ k ∈ Finset.Ico 2 p, a ^ k * (p.choose k : R)) + a ^ p := by
+      simpa only [hshift_a] using prime_binomial_expansion p hp.two_le a
+    have hb : z ^ p - 1 = b * (p : R) +
+        (∑ k ∈ Finset.Ico 2 p, b ^ k * (p.choose k : R)) + b ^ p := by
+      simpa only [hshift_b] using prime_binomial_expansion p hp.two_le b
+    have hexpand : (u ^ p - z ^ p) - (u - z) * (p : R) =
+        (∑ k ∈ Finset.Ico 2 p, (a ^ k - b ^ k) * (p.choose k : R)) +
+          (a ^ p - b ^ p) := by
+      rw [← hdifference, sub_mul]
+      calc
+        (u ^ p - z ^ p) - (a * (p : R) - b * (p : R)) =
+            ((u ^ p - 1) - a * (p : R)) -
+              ((z ^ p - 1) - b * (p : R)) := by abel
+        _ = ((∑ k ∈ Finset.Ico 2 p, a ^ k * (p.choose k : R)) + a ^ p) -
+            ((∑ k ∈ Finset.Ico 2 p, b ^ k * (p.choose k : R)) + b ^ p) := by
+          rw [ha, hb]
+          abel
+        _ = (∑ k ∈ Finset.Ico 2 p, (a ^ k - b ^ k) * (p.choose k : R)) +
+            (a ^ p - b ^ p) := by
+          simp only [sub_mul, Finset.sum_sub_distrib]
+          abel
+    have hlinear : v ((u - z) * (p : R)) = v (p : R) * v (u - z) := by
+      rw [map_mul, mul_comm]
+    have heq := v.map_eq_of_sub_lt (x := (u - z) * (p : R))
+      (y := u ^ p - z ^ p) (by
+        rw [hexpand, hlinear]
+        exact (v.map_add _ _).trans_lt (max_lt hsum hfinal))
+    simpa only [hlinear] using heq
+
+end Valuation
+
+namespace Valuation
+
+variable {R : Type u} [Ring R] {Γ₀ : Type w}
+  [LinearOrderedCommMonoidWithZero Γ₀]
+
+/-- Two elements in the strict neighborhood of one satisfy the exact valuation
+scaling law at every prime-power exponent. No commutation of the elements is
+required. -/
+theorem map_pow_prime_pow_sub_pow_prime_pow_of_sub_one_pow_lt
+    (v : Valuation R Γ₀) (p : ℕ) (hp : p.Prime) (u z : R)
+    (hu : v (u - 1) ^ (p - 1) < v (p : R))
+    (hz : v (z - 1) ^ (p - 1) < v (p : R)) (n : ℕ) :
+    v (u ^ (p ^ n) - z ^ (p ^ n)) = v (p : R) ^ n * v (u - z) := by
+  have hpval : v (p : R) ≤ 1 := by
+    apply IsNonarchimedean.apply_natCast_le_one
+    · simp
+    · simp
+    · exact v.map_add
+  have hbound (t : R) (ht : v (t - 1) ^ (p - 1) < v (p : R)) (k : ℕ) :
+      v (t ^ (p ^ k) - 1) ≤ v (t - 1) := by
+    have hshift : 1 + (t - 1) = t := by
+      rw [add_comm, sub_add_cancel]
+    calc
+      v (t ^ (p ^ k) - 1) = v (p : R) ^ k * v (t - 1) := by
+        simpa only [hshift] using
+          map_one_add_pow_prime_pow_sub_one_of_pow_lt v hp (t - 1) k ht
+      _ ≤ 1 * v (t - 1) := mul_le_mul' (pow_le_one₀ zero_le hpval) le_rfl
+      _ = v (t - 1) := one_mul _
+  induction n with
+  | zero => simp
+  | succ n ih =>
+      have hu' : v (u ^ (p ^ n) - 1) ^ (p - 1) < v (p : R) :=
+        lt_of_le_of_lt (pow_le_pow_left' (hbound u hu n) (p - 1)) hu
+      have hz' : v (z ^ (p ^ n) - 1) ^ (p - 1) < v (p : R) :=
+        lt_of_le_of_lt (pow_le_pow_left' (hbound z hz n) (p - 1)) hz
+      calc
+        v (u ^ (p ^ (n + 1)) - z ^ (p ^ (n + 1))) =
+            v (p : R) * v (u ^ (p ^ n) - z ^ (p ^ n)) := by
+          simpa only [Nat.pow_succ, pow_mul] using
+            map_pow_prime_sub_pow_prime_eq_mul_of_sub_one_pow_lt
+              v p hp (u ^ (p ^ n)) (z ^ (p ^ n)) hu' hz'
+        _ = v (p : R) * (v (p : R) ^ n * v (u - z)) := by rw [ih]
+        _ = (v (p : R) * v (p : R) ^ n) * v (u - z) :=
+          (mul_assoc _ _ _).symm
+        _ = (v (p : R) ^ n * v (p : R)) * v (u - z) := by
+          rw [mul_comm (v (p : R)) (v (p : R) ^ n)]
+        _ = v (p : R) ^ (n + 1) * v (u - z) := by rw [pow_succ]
+
+/-- The one-point strict scaling law follows by taking the second endpoint to
+be one in the two-point prime-power scaling law. -/
+theorem map_pow_prime_pow_sub_one_of_sub_one_pow_lt
+    (v : Valuation R Γ₀) (p : ℕ) (hp : p.Prime) (u : R)
+    (hu : v (u - 1) ^ (p - 1) < v (p : R)) (n : ℕ) :
+    v (u ^ (p ^ n) - 1) = v (p : R) ^ n * v (u - 1) := by
+  have hp1 : p - 1 ≠ 0 := by
+    have := hp.two_le
+    omega
+  have hpos : 0 < v (p : R) := lt_of_le_of_lt zero_le hu
+  have hone : v ((1 : R) - 1) ^ (p - 1) < v (p : R) := by
+    simpa only [sub_self, map_zero, zero_pow hp1] using hpos
+  simpa only [one_pow] using
+    map_pow_prime_pow_sub_pow_prime_pow_of_sub_one_pow_lt v p hp u 1 hu hone n
+
+end Valuation
