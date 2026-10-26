@@ -40,6 +40,17 @@ project:
     For Henselian valuation integers, a sharp power-root neighborhood has an exact
     correction value, and the stock power range in the canonical units topology is
     open when the exponent has nonzero image in the field.
+    For a valuation v on a field with any linearly ordered commutative value
+    group with zero, assume v.valuationSubring is Henselian at its maximal ideal m.
+    For a polynomial f over that subring and a in it, a strict squared-derivative
+    value inequality gives a root b, the exact error/displacement identity,
+    derivative-value equality and uniqueness throughout the original derivative ball.
+    For every natural s, f(a) in m^(2*s+1) and f'(a) not in
+    m^(s+1) give all these conclusions and b-a in m^(s+1), without completeness,
+    rank, discreteness, Noetherianity, monicity or unit-derivative assumptions.
+    For e, d, z in that subring, two algebraic comparisons require no Henselianity:
+    e in m^(2*s+1) and d not in m^(s+1) imply v(e) < v(d)^2, and under the same
+    hypotheses the identity v(e) = v(d) * v(z) implies z in m^(s+1).
   authors:
     - Formal Frontier Agents
   responsible_maintainers:
@@ -84,6 +95,25 @@ sources:
       characteristic-zero discrete corollary and its Henselian discrete Remark
       to arbitrary valuation rank and positive characteristic with nonzero
       exponent cast, with an exact correction value under the strict inequality.
+  - title: Local Fields and Their Extensions
+    authors:
+      - I. B. Fesenko
+      - S. V. Vostokov
+    type: book
+    location: Second edition (2002), Chapter II, §1, Corollary 3, p. 37
+    relationship: adapts
+    note: >-
+      The printed result assumes a complete discrete valuation field, a monic
+      polynomial and an integer s >= 0 with f(a) in m^(2*s+1) and f'(a) not in
+      m^(s+1), and gives a root with b-a in m^(s+1). The derivative order is at
+      most s, not necessarily exactly s. Here Henselianity of the original
+      valuation subring replaces the complete and discrete hypotheses, and
+      monicity is unnecessary. Algebraic power/value comparisons give the strict
+      inequality v(f(a)) < v(f'(a))^2 and recover b-a in m^(s+1) from the sharp
+      error/displacement identity. The root also has derivative-value equality
+      and uniqueness throughout the original derivative ball at arbitrary rank.
+      Establishing Henselianity from completeness in the printed setting remains
+      a separate specialization.
   - title: Vector Bundles and K-Theory
     authors:
       - Allen Hatcher
@@ -135,6 +165,14 @@ related_formalizations:
       denominator support uses integer witnesses for integral rational numbers,
       reduced numerator-denominator coprimality and the exponent and cardinality
       of the cyclic group of units of a finite field.
+      The strong polynomial-root criterion uses valuation-integer strict
+      divisibility, nonunit membership in the maximal ideal, mutual
+      divisibility for equality of original values and linear root factorization.
+      The power comparisons use Submodule.mul_induction_on and
+      ValuationRing.dvd_total to show that each x in m^n is divisible by t^n
+      for some t in m; strict divisibility also supplies the power/value lower
+      bound. These are APIs of Mathlib at revision
+      83abb3e776bdefcbc447a1e44d0debe4010039e5.
   - id: https://github.com/FormalFrontier/spectral-stone-duality
     relationship: builds-on
     note: >-
@@ -146,6 +184,14 @@ related_formalizations:
       The Power module applies its generic Henselian-pair root-lifting API over
       the canonical valuation integers. The association's integral unit witness
       supplies the exact correction value for the original valuation.
+      The polynomial Hensel criterion reuses
+      HenselianRing.exists_root_of_eval_mem_span_derivative_sq_mul for root,
+      displacement and error association, and
+      Polynomial.associated_eval_of_sub_mem_span_mul for derivative association
+      and uniqueness through the remaining linear-root factor, from Adic Modules
+      at revision 4e50b3b03c0c3ce11498774d72e111654ff35d08. The power-ideal root
+      theorem combines this strict criterion with the algebraic power/value
+      comparisons.
 automation:
   methods:
     - method: agent
@@ -260,6 +306,23 @@ status:
     integer ring and proves the valuation inputs for m = 2 and a = 17, including
     the nonunit derivative. Its root and openness clients then apply the public
     APIs. No new Newton theorem is introduced.
+    For a valuation on a field with an arbitrary independently universed
+    linearly ordered commutative value group with zero, the polynomial Hensel
+    criteria use the original valuation subring, its maximal ideal m and the
+    original valuation. For a polynomial f over that subring and a in it,
+    Henselianity at that ideal and v(f(a)) < v(f'(a))^2 give a root b in the
+    subring with v(b-a) < v(f'(a)), the identity
+    v(f(a)) = v(f'(a)) * v(b-a), and v(f'(b)) = v(f'(a)). Every root c in the
+    entire original ball v(c-a) < v(f'(a)) equals b. For every natural s,
+    f(a) in m^(2*s+1) and f'(a) not in m^(s+1) give the same conclusions and
+    b-a in m^(s+1). For e, d, z in that subring, the two algebraic comparisons
+    do not assume Henselianity: e in m^(2*s+1) and d not in m^(s+1) imply
+    v(e) < v(d)^2; under the same ideal hypotheses, v(e) = v(d) * v(z) implies
+    z in m^(s+1). They include zero errors without an additional nonzero
+    hypothesis. The root theorem combines these comparisons with the strict
+    criterion. No completeness, rank, discreteness, Noetherianity, monicity,
+    unit-derivative, residue-field or cofinality hypothesis is imposed, and no
+    uniformizer or normalization is chosen.
     No source-specific coverage is asserted.
 review:
   status: partially-agent-reviewed
@@ -277,6 +340,14 @@ alignment:
     Selected public library API inventory, not a source-passage or coverage mapping.
     Private client fixtures and imported mathlib declarations are excluded.
   statements:
+    - lean: Valuation.exists_root_of_map_eval_lt_map_derivative_sq
+      module: ValuationIntegers/Polynomial/Hensel.lean
+    - lean: Valuation.map_lt_sq_of_mem_maximalIdeal_pow
+      module: ValuationIntegers/Polynomial/Hensel.lean
+    - lean: Valuation.mem_maximalIdeal_pow_of_map_eq_mul
+      module: ValuationIntegers/Polynomial/Hensel.lean
+    - lean: Valuation.exists_root_of_eval_mem_maximalIdeal_pow
+      module: ValuationIntegers/Polynomial/Hensel.lean
     - lean: Valuation.exists_pow_eq_of_sub_one_lt_sq
       module: ValuationIntegers/Power.lean
     - lean: Valued.isOpen_powMonoidHom_range

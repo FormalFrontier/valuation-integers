@@ -39,6 +39,7 @@ public import ValuationIntegers.NumberTheory.DenominatorSupport
 public import ValuationIntegers.NumberTheory.BernoulliIntegrality
 public import ValuationIntegers.Binomial
 public import ValuationIntegers.Power
+public import ValuationIntegers.Polynomial.Hensel
 public import ValuationIntegers.NumberTheory.Bernoulli
 public import ValuationIntegers.NumberTheory.BernoulliFactorization
 
@@ -50,4 +51,6 @@ integer-presentation comparisons for valuations and DVRs, valuation topology, co
 comparisons and finite intersections with residue maps.
 It also provides bounded-module finiteness, Henselian power neighborhoods, Bernoulli
 integrality and rational denominator-support results.
+The polynomial Hensel criteria give strong roots with maximal-ideal power precision,
+sharp original-valuation identities and uniqueness throughout the original derivative ball.
 -/

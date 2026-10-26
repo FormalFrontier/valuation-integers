@@ -100,6 +100,19 @@ eventually equal to a positive constant
   `v b = 1` and exact correction `v (b - 1) = v (a - 1) / v (m : K) < v (m : K)`.
   The stock power range in `Kˣ` is open when `(m : K) ≠ 0`; no completeness,
   rank, discreteness, characteristic-zero or unit-derivative assumption is needed.
+- **Strong polynomial roots with maximal-ideal power precision**
+  ([criteria](ValuationIntegers/Polynomial/Hensel.lean)). For a valuation `v` on a field
+  with any linearly ordered commutative value group with zero, let `O = v.valuationSubring`
+  be Henselian at its maximal ideal `m`. For every `f : O[X]` and `a : O`,
+  `v (f(a)) < v (f′(a)) ^ 2` gives a root `b : O` with
+  `v (b-a) < v (f′(a))`, the exact identity
+  `v (f(a)) = v (f′(a)) * v (b-a)` and `v (f′(b)) = v (f′(a))`.
+  Every root `c : O` with `v (c-a) < v (f′(a))` equals `b`.
+  For every `s : ℕ`, the hypotheses `f(a) ∈ m^(2*s+1)` and `f′(a) ∉ m^(s+1)`
+  give all these conclusions and `b-a ∈ m^(s+1)`.
+  All values use the original valuation after inclusion into the original field.
+  No completeness, rank, discreteness, Noetherianity, monicity or unit-derivative
+  assumption is needed.
 - **Prime valuations of divided Bernoulli numbers.**
   [`Bernoulli.padicValRat_bernoulli_div`](ValuationIntegers/NumberTheory/Bernoulli.lean) and
   [`Bernoulli.padicValNat_den_bernoulli_div`](ValuationIntegers/NumberTheory/Bernoulli.lean):
@@ -346,6 +359,17 @@ completion-construction boundaries; these APIs do not assemble the full Fesenko�
   powers, power neighborhoods, topology recognition and finite-extension integer modules.
   Here algebraic rigidity is generalized to rings and cyclic-unit codomains, while topology recognizes
   equivalence of rank-at-most-one valuations on division rings.
+- The same work, second edition (2002), Chapter II, §1, Corollary 3, p. 37:
+  the strong polynomial-root and power-ideal criteria are valuation-form generalizations.
+  The printed result assumes a complete discrete valuation field, a monic polynomial
+  and an integer `s ≥ 0` with `f(a) ∈ m^(2*s+1)` and `f′(a) ∉ m^(s+1)`,
+  and gives `b-a ∈ m^(s+1)`. The derivative order is at most `s`, not necessarily exactly `s`.
+  Here Henselianity of the original valuation integers replaces the complete and
+  discrete hypotheses, and monicity is unnecessary. Algebraic power/value comparisons
+  give the strict squared-derivative inequality and recover `b-a ∈ m^(s+1)` from
+  the sharp identity, together with derivative-value stability and uniqueness in the
+  entire original derivative ball at arbitrary rank. Establishing Henselianity from
+  completeness in the printed setting remains a separate specialization.
 - The same work, second edition (2002), Chapter I, (4.2)–(4.4) and (4.5)(1):
   completion of a valued field, integer density and its induced residue-field
   identification, with the rational/p-adic example. The dense-extension residue
@@ -370,6 +394,17 @@ completion-construction boundaries; these APIs do not assemble the full Fesenko�
   Its complete-zero-neighborhood criterion proves the reverse implication of
   completeness for a valued ring and its integer subring, following the right-uniform
   group argument of Patrick Massot and Johannes Hölzl in Mathlib.
+- The strict polynomial-root criterion uses the
+  [Adic Modules Henselian-pair root estimate](https://github.com/FormalFrontier/adic-modules/blob/4e50b3b03c0c3ce11498774d72e111654ff35d08/AdicModules/Polynomial/Hensel.lean)
+  and [polynomial-value association theorem](https://github.com/FormalFrontier/adic-modules/blob/4e50b3b03c0c3ce11498774d72e111654ff35d08/AdicModules/Polynomial/Evaluation.lean).
+  [Mathlib's valuation-integer divisibility API](https://github.com/leanprover-community/mathlib4/blob/83abb3e776bdefcbc447a1e44d0debe4010039e5/Mathlib/RingTheory/Valuation/Integers.lean)
+  translates strict value inequalities into principal-ideal times maximal-ideal
+  membership and association into equality of original values. Uniqueness uses its
+  linear root factorization and the association theorem on the remaining factor.
+  For the power comparisons, Mathlib's `Submodule.mul_induction_on` and
+  `ValuationRing.dvd_total` show that each `x ∈ m^n` is divisible by `t^n` for some
+  `t ∈ m`; strict divisibility also gives the power/value lower bound.
+  The power-ideal root theorem combines these comparisons with the strict criterion.
 - [Polynomial Root Stability](https://github.com/FormalFrontier/polynomial-root-stability):
   its `Polynomial.sq_sub_seventeen_padic_two_data` input motivates the same
   `m = 2`, `a = 17` input in the valuation model; no polynomial or Newton
