@@ -4,7 +4,9 @@ Authors: Formal Frontier Agents
 -/
 module
 
+public import ValuationIntegers.NNReal.Power
 public import ValuationIntegers.AbsoluteValue.Comap
+public import ValuationIntegers.AbsoluteValue.Power
 public import ValuationIntegers.AbsoluteValue.Rat
 public import ValuationIntegers.Valuation.AbsoluteValue
 
