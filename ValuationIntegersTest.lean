@@ -4,6 +4,8 @@ Authors: Formal Frontier Agents
 -/
 module
 
+import ValuationIntegersTest.Algebra.CharP.Finite
+
 import ValuationIntegersTest.HeightOnePolynomial
 
 import ValuationIntegersTest.HeightOneScalarTower
