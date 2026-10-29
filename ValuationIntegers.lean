@@ -49,6 +49,7 @@ public import ValuationIntegers.Power
 public import ValuationIntegers.Polynomial.Hensel
 public import ValuationIntegers.NumberTheory.Bernoulli
 public import ValuationIntegers.NumberTheory.BernoulliFactorization
+public import ValuationIntegers.Valuation.AbsoluteValueEquiv
 
 /-!
 # Valuation integers and their arithmetic and topology
