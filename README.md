@@ -1,11 +1,27 @@
 # Valuation Integers
 
-A Lean library for valuation integers, rank and dimension, valuation topologies,
-completions and finite intersections, with bounded-module and arithmetic applications.
+A Lean library for absolute values and valuations, valuation integers, rank and dimension,
+valuation topologies, completions and finite intersections, with bounded-module and
+arithmetic applications.
 The [mathematical and client guide](docs/Guide.md) gives detailed statements,
 proof methods, imports, examples and boundaries.
 
+The [absolute-value layer](docs/AbsoluteValues.md) provides generic pullbacks,
+rational restriction and conversions between nonarchimedean real-valued absolute
+values and zero-reflecting `NNReal`-valued valuations, with both round-trip laws.
+These modules are independent of the arithmetic applications and impose no Dedekind
+or discreteness hypotheses.
+
 ## Headline results
+
+- **Absolute values and valuations**
+  ([module](ValuationIntegers/Valuation/AbsoluteValue.lean)). A real-valued absolute
+  value satisfying the strong triangle inequality on a nontrivial ring defines an
+  `NNReal`-valued valuation. Conversely, an `NNReal`-valued valuation on any ring
+  that reflects zero defines a real-valued absolute value satisfying the strong
+  triangle inequality, with no extra nontriviality assumption. Both conversions
+  recover the original bundled structure when composed. The ring need not be
+  commutative.
 
 - **Prime-binomial valuation bounds**
   ([module](ValuationIntegers/Binomial.lean)). For a valuation `v` on any ring `R`

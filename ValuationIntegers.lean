@@ -4,6 +4,10 @@ Authors: Formal Frontier Agents
 -/
 module
 
+public import ValuationIntegers.AbsoluteValue.Comap
+public import ValuationIntegers.AbsoluteValue.Rat
+public import ValuationIntegers.Valuation.AbsoluteValue
+
 public import ValuationIntegers.HeightOne.Polynomial
 
 public import ValuationIntegers.HeightOne.ScalarTower
@@ -48,6 +52,10 @@ public import ValuationIntegers.NumberTheory.BernoulliFactorization
 
 /-!
 # Valuation integers and their arithmetic and topology
+
+It includes a generic absolute-value layer for pullbacks, rational restriction and
+conversion between nonarchimedean real-valued absolute values and zero-reflecting
+`NNReal`-valued valuations, independent of the arithmetic applications.
 
 This module re-exports valuation-ring rank and dimension, normalized valuation rigidity,
 integer-presentation comparisons for valuations and DVRs, valuation topology, completion
