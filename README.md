@@ -23,6 +23,27 @@ or discreteness hypotheses.
   recover the original bundled structure when composed. The ring need not be
   commutative.
 
+- **Bounded real absolute values**
+  ([module](ValuationIntegers/AbsoluteValue/Bounded.lean)). For any semiring `R`
+  and `a : AbsoluteValue R ℝ`, `¬ a.IsNontrivial` holds if and only if both
+  `Set.range a` and `Set.range (fun x => (a x)⁻¹)` are bounded above.
+  If `R` is a division semiring, boundedness above of `Set.range a` alone is
+  equivalent to `¬ a.IsNontrivial`.
+
+- **Natural prime-power values of multiplicative maps**
+  ([module](ValuationIntegers/AbsoluteValue/NatPrimePower.lean)). Let `R` be a
+  `NonAssocRing`, and let `Γ` have `MulOneClass`, `Pow Γ ℕ`, `NatPowAssoc`,
+  `Zero`, `LinearOrder`, `PosMulMono` and `MulPosMono` instances. Let
+  `f : R → Γ` preserve multiplication, without assuming it preserves `1`,
+  and satisfy `0 ≤ f x` and `f (x + y) ≤ max (f x) (f y)` for all `x, y`.
+  If `p : ℕ` is prime and `f (p : R) < f 1`, then
+  `f (((p ^ k * m : ℕ) : R)) = f 1 * f (p : R) ^ k`
+  for all `k, m : ℕ` with `¬ p ∣ m`, including `k = 0`. For every natural
+  `n ≠ 0`,
+  `f (n : R) = f 1 * f (p : R) ^ (padicValNat p n)`.
+  The leading factor `f 1` is retained; neither `f 0 = 0` nor `f 1 = 1`
+  is assumed, and the value at natural zero is separate.
+
 - **Prime-binomial valuation bounds**
   ([module](ValuationIntegers/Binomial.lean)). For a valuation `v` on any ring `R`
   with values in a linearly ordered commutative monoid with zero, a prime `p`

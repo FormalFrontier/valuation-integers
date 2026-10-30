@@ -26,9 +26,19 @@ rev = "4e50b3b03c0c3ce11498774d72e111654ff35d08"
 
 [[lean_lib]]
 name = "ValuationIntegers"
+roots = [
+  "ValuationIntegers",
+  "ValuationIntegers.AbsoluteValue.Bounded",
+  "ValuationIntegers.AbsoluteValue.NatPrimePower"
+]
 
 [[lean_lib]]
 name = "ValuationIntegersTest"
 roots = ["ValuationIntegersTest", "ValuationIntegersTest.Cauchy.UniformCompletion", "ValuationIntegersTest.Valuation.AbsoluteValueEquiv"]
 # Test assertions are intentionally private.
 leanOptions = { weak.linter.privateModule = false }
+
+[[require]]
+name = "groupTheory"
+git = "https://github.com/FormalFrontier/group-theory.git"
+rev = "f616d041632bad2e5605cccf1d4b4502b5c02853"
