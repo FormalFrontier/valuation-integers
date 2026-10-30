@@ -9,6 +9,7 @@ import ValuationIntegersTest.Algebra.CharP.Finite
 import ValuationIntegersTest.HeightOnePolynomial
 
 import ValuationIntegersTest.HeightOneScalarTower
+import ValuationIntegersTest.Valuation.Integral
 
 import ValuationIntegersTest.LaurentSeriesDiscreteValuationRing
 public import ValuationIntegersTest.LaurentPolynomialDensity
