@@ -15,6 +15,7 @@ public import ValuationIntegers.AbsoluteValue.Rat
 public import ValuationIntegers.Valuation.AbsoluteValue
 public import ValuationIntegers.Valuation.Algebraic
 public import ValuationIntegers.Valuation.Integral
+public import ValuationIntegers.Valuation.Polynomial
 
 public import ValuationIntegers.HeightOne.Generator
 public import ValuationIntegers.HeightOne.Polynomial
