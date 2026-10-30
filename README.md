@@ -14,6 +14,16 @@ or discreteness hypotheses.
 
 ## Headline results
 
+- **Values of integral elements under scalar-trivial valuations**
+  ([module](ValuationIntegers/Valuation/Integral.lean)). For any commutative ring
+  `R`, any possibly noncommutative `R`-algebra `A` and any valuation into a
+  linearly ordered commutative monoid with zero, triviality on every nonzero
+  source scalar implies that each element integral over `R` has value zero or
+  one. No field, domain or nontriviality hypothesis is required. The
+  [algebraic specialization](ValuationIntegers/Valuation/Algebraic.lean) gives
+  the same conclusion for elements algebraic over a field when all scalar
+  values are at most one.
+
 - **Absolute values and valuations**
   ([module](ValuationIntegers/Valuation/AbsoluteValue.lean)). A real-valued absolute
   value satisfying the strong triangle inequality on a nontrivial ring defines an
