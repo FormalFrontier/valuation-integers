@@ -14,6 +14,7 @@ public import ValuationIntegers.AbsoluteValue.PowerRigidity
 public import ValuationIntegers.AbsoluteValue.Rat
 public import ValuationIntegers.Valuation.AbsoluteValue
 
+public import ValuationIntegers.HeightOne.Generator
 public import ValuationIntegers.HeightOne.Polynomial
 
 public import ValuationIntegers.HeightOne.ScalarTower
