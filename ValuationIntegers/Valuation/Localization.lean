@@ -172,3 +172,37 @@ theorem extendToLocalizationOfIsUnit_eq_extendToLocalization :
 end Group
 
 end Valuation
+
+universe u₁ v₁ w₁
+
+namespace Valuation.IsTrivialOn
+
+variable {R : Type u₁} [CommSemiring R] {A : Type v₁} [CommRing A] [Algebra R A]
+    {G : Type w₁} [LinearOrderedCommMonoidWithZero G] {t : Valuation A G}
+
+/-- A valuation on a localization is trivial if it is trivial on the base scalars. -/
+theorem of_isLocalization (S : Submonoid R) [IsLocalization S A]
+    (h : Valuation.IsTrivialOn R t) : Valuation.IsTrivialOn A t := by
+  constructor
+  intro a ha
+  let : Nontrivial A := ⟨⟨a, 0, ha⟩⟩
+  obtain ⟨r, s, hfrac⟩ := IsLocalization.exists_mk'_eq (M := S) (S := A) (z := a)
+  have hspec : a * algebraMap R A (s : R) = algebraMap R A r := by
+    rw [← hfrac]
+    exact IsLocalization.mk'_spec (M := S) (S := A) (x := r) (y := s)
+  have hsunit : IsUnit (algebraMap R A (s : R)) :=
+    (IsLocalization.algebraMap_isUnit_iff (M := S) (S := A) (x := (s : R))).2
+      ⟨(s : R), s.property, dvd_rfl⟩
+  have hs : (s : R) ≠ 0 := by
+    intro hs
+    exact hsunit.ne_zero (by rw [hs, map_zero])
+  have hr : r ≠ 0 := by
+    intro hr
+    have hzero : a * algebraMap R A (s : R) = 0 * algebraMap R A (s : R) := by
+      simpa [hr] using hspec
+    exact ha (hsunit.mul_right_cancel hzero)
+  have ht := congrArg t hspec
+  rw [map_mul, h.eq_one (s : R) hs, h.eq_one r hr, mul_one] at ht
+  simpa using ht
+
+end Valuation.IsTrivialOn

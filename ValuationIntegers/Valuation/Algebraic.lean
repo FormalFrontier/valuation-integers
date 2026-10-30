@@ -6,7 +6,7 @@ module
 public import Mathlib.RingTheory.Algebraic.Defs
 public import ValuationIntegers.Valuation.Integral
 import ValuationIntegers.Valuation.IsTrivialOn
-import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
+import Mathlib.Algebra.Order.GroupWithZero.Canonical
 import Mathlib.RingTheory.Algebraic.Integral
 
 /-!
@@ -28,22 +28,20 @@ theorem Valuation.map_eq_one_of_isAlgebraic
     [Algebra.IsAlgebraic F E] [LinearOrderedCommMonoidWithZero G]
     (v : Valuation E G) (h : Valuation.IsTrivialOn F v)
     (x : E) (hx : x ≠ 0) : v x = 1 := by
-  classical
-  have hbase (r : F) : v (algebraMap F E r) ≤ 1 := by
-    by_cases hr : r = 0
-    · subst r
-      rw [(algebraMap F E).map_zero, v.map_zero]
-      exact zero_le_one
-    · exact (h.eq_one r hr).le
-  have hbound (y : E) : v y ≤ 1 :=
-    Valuation.map_le_one_of_isIntegral (R := F) v hbase y
-      (Algebra.IsIntegral.isIntegral y)
-  apply le_antisymm (hbound x)
-  calc
-    1 = v (x * x⁻¹) := by rw [mul_inv_cancel₀ hx, v.map_one]
-    _ = v x * v x⁻¹ := v.map_mul x x⁻¹
-    _ ≤ v x * 1 := mul_le_mul_right (hbound x⁻¹) (v x)
-    _ = v x := mul_one (v x)
+  let : Valuation.IsTrivialOn F v := h
+  have hxalg : IsAlgebraic F x := Algebra.IsAlgebraic.isAlgebraic (R := F) x
+  obtain ⟨p, hp, hpx⟩ := hxalg
+  rcases Valuation.map_eq_zero_or_exists_pow_eq_of_eval₂_eq_zero
+      (algebraMap F E) v p x hp hpx with hzero | ⟨n, hn, _, a, ha, hpow⟩
+  · have hmul : v (x⁻¹) * v x = 1 := by
+      rw [← v.map_mul, inv_mul_cancel₀ hx, v.map_one]
+    have h01 : (0 : G) = 1 := by
+      simpa only [hzero, mul_zero] using hmul
+    exact hzero.trans h01
+  · have hscalar : v (algebraMap F E a) = 1 :=
+      Valuation.IsTrivialOn.eq_one (A := F) (v := v) a ha
+    exact (_root_.pow_eq_one_iff_of_nonneg
+      (show 0 ≤ v x from zero_le) (Nat.ne_of_gt hn)).mp (hpow.trans hscalar)
 
 /-- A valuation bounded by one on a field takes only the values zero and one on elements
 algebraic over that field. The zero alternative is necessary for rings with zero divisors. -/
