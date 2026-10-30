@@ -29,7 +29,8 @@ name = "ValuationIntegers"
 roots = [
   "ValuationIntegers",
   "ValuationIntegers.AbsoluteValue.Bounded",
-  "ValuationIntegers.AbsoluteValue.NatPrimePower"
+  "ValuationIntegers.AbsoluteValue.NatPrimePower",
+  "ValuationIntegers.AbsoluteValue.UnitBound"
 ]
 
 [[lean_lib]]

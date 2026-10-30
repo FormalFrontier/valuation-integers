@@ -23,6 +23,15 @@ or discreteness hypotheses.
   recover the original bundled structure when composed. The ring need not be
   commutative.
 
+- **Unit bounds for absolute values**
+  ([module](ValuationIntegers/AbsoluteValue/UnitBound.lean)). For a division
+  semiring `R` and a semiring `Γ` with `LinearOrder` and `PosMulStrictMono`,
+  `a : AbsoluteValue R Γ` is canonically nontrivial exactly when some value
+  is greater than `1`; equivalently, `¬ a.IsNontrivial` holds exactly when
+  every value is at most `1`. Source and target universes are independent;
+  target inverses, completeness, commutativity and ordered-ring structure
+  are not assumed.
+
 - **Bounded real absolute values**
   ([module](ValuationIntegers/AbsoluteValue/Bounded.lean)). For any semiring `R`
   and `a : AbsoluteValue R ℝ`, `¬ a.IsNontrivial` holds if and only if both
