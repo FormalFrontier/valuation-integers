@@ -3,6 +3,7 @@ SPDX-License-Identifier: Apache-2.0
 Authors: Formal Frontier Agents
 -/
 module
+import ValuationIntegersTest.Valuation.IsTrivialOn
 
 import ValuationIntegersTest.Algebra.CharP.Finite
 

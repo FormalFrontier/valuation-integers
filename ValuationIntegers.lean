@@ -3,6 +3,7 @@ SPDX-License-Identifier: Apache-2.0
 Authors: Formal Frontier Agents
 -/
 module
+public import ValuationIntegers.Valuation.IsTrivialOn
 
 public import ValuationIntegers.Algebra.CharP.Finite
 
@@ -15,6 +16,7 @@ public import ValuationIntegers.AbsoluteValue.Rat
 public import ValuationIntegers.Valuation.AbsoluteValue
 public import ValuationIntegers.Valuation.Algebraic
 public import ValuationIntegers.Valuation.Integral
+public import ValuationIntegers.Valuation.Localization
 public import ValuationIntegers.Valuation.Polynomial
 
 public import ValuationIntegers.HeightOne.Generator
