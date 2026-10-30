@@ -8,6 +8,7 @@ public import ValuationIntegers.Algebra.CharP.Finite
 
 public import ValuationIntegers.NNReal.Power
 public import ValuationIntegers.AbsoluteValue.Comap
+public import ValuationIntegers.AbsoluteValue.Coprime
 public import ValuationIntegers.AbsoluteValue.Power
 public import ValuationIntegers.AbsoluteValue.PowerRigidity
 public import ValuationIntegers.AbsoluteValue.Rat
