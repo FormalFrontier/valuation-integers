@@ -13,6 +13,7 @@ public import ValuationIntegers.AbsoluteValue.Power
 public import ValuationIntegers.AbsoluteValue.PowerRigidity
 public import ValuationIntegers.AbsoluteValue.Rat
 public import ValuationIntegers.Valuation.AbsoluteValue
+public import ValuationIntegers.Valuation.Algebraic
 public import ValuationIntegers.Valuation.Integral
 
 public import ValuationIntegers.HeightOne.Generator

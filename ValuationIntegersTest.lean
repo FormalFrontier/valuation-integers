@@ -53,6 +53,7 @@ public import Mathlib.Algebra.Field.ZMod
 public import Mathlib.RingTheory.HahnSeries.Summable
 public import Mathlib.RingTheory.HahnSeries.Valuation
 public import Mathlib.Topology.Algebra.Valued.WithVal
+import ValuationIntegersTest.Valuation.Algebraic
 
 /-!
 # Valuation-integer examples and boundary cases
