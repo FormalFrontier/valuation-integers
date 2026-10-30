@@ -4,6 +4,10 @@ Authors: Formal Frontier Agents
 -/
 module
 
+public import Mathlib.Algebra.Ring.Regular
+import Mathlib.FieldTheory.Minpoly.Basic
+public import Mathlib.RingTheory.IntegralClosure.Algebra.Defs
+
 public import Mathlib.RingTheory.IntegralClosure.IsIntegral.Defs
 public import ValuationIntegers.Valuation.Polynomial
 import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
@@ -127,6 +131,72 @@ theorem map_eq_zero_or_one_of_isIntegral (ν : Valuation A G) [ν.IsTrivialOn R]
   have hpx' : Polynomial.aeval x p = 0 := hpx
   exact le_antisymm hupper (hlower p.natDegree p rfl hp.ne_zero (by rw [hpx', ν.map_zero]))
 
+/-- An integral element on which right multiplication is injective has valuation one
+when the valuation is trivial on the base ring. -/
+theorem map_eq_one_of_isIntegral_of_isRightRegular (ν : Valuation A G) [ν.IsTrivialOn R]
+    (x : A) (hx : IsIntegral R x) (hreg : IsRightRegular x) : ν x = 1 := by
+  rcases ν.map_eq_zero_or_one_of_isIntegral x hx with hzero | hone
+  · by_cases h01 : (0 : G) = 1
+    · exact hzero.trans h01
+    · have hR : (0 : R) ≠ 1 := by
+        intro h
+        apply h01
+        simpa using congrArg (fun r : R => ν (algebraMap R A r)) h
+      let : Nontrivial R := ⟨⟨0, 1, hR⟩⟩
+      have hcoeff : (minpoly R x).coeff 0 ≠ 0 := by
+        intro hc
+        obtain ⟨q, hq⟩ := Polynomial.X_dvd_iff.mpr hc
+        have hqmonic : q.Monic :=
+          Polynomial.Monic.of_mul_monic_left Polynomial.monic_X
+            (by rw [← hq]; exact minpoly.monic hx)
+        have hqeval : Polynomial.aeval x q = 0 := by
+          apply hreg
+          calc
+            Polynomial.aeval x q * x = Polynomial.aeval x (q * Polynomial.X) := by
+              rw [Polynomial.aeval_mul, Polynomial.aeval_X]
+            _ = Polynomial.aeval x (minpoly R x) := by rw [hq, Polynomial.X_mul]
+            _ = 0 * x := by rw [minpoly.aeval, zero_mul]
+        have hqne : q ≠ 0 := by
+          intro hqzero
+          apply minpoly.ne_zero hx
+          rw [hq, hqzero, mul_zero]
+        have hlt : q.degree < (minpoly R x).degree := by
+          rw [hq, Polynomial.X_mul]
+          exact Polynomial.degree_lt_degree_mul_X hqne
+        exact (not_lt_of_ge (minpoly.min R x hqmonic hqeval)) hlt
+      obtain ⟨q, hq⟩ := Polynomial.X_dvd_iff.mpr
+        (show (minpoly R x - Polynomial.C ((minpoly R x).coeff 0)).coeff 0 = 0 by simp)
+      have heval :
+          -algebraMap R A ((minpoly R x).coeff 0) = Polynomial.aeval x q * x := by
+        calc
+          _ = Polynomial.aeval x
+              (minpoly R x - Polynomial.C ((minpoly R x).coeff 0)) := by
+            rw [Polynomial.aeval_sub, minpoly.aeval, Polynomial.aeval_C, zero_sub]
+          _ = Polynomial.aeval x q * x := by
+            rw [hq, Polynomial.X_mul, Polynomial.aeval_mul, Polynomial.aeval_X]
+      have hc0 : ν (algebraMap R A ((minpoly R x).coeff 0)) = 0 := by
+        calc
+          _ = ν (-algebraMap R A ((minpoly R x).coeff 0)) := (ν.map_neg _).symm
+          _ = ν (Polynomial.aeval x q * x) := congrArg ν heval
+          _ = 0 := by rw [ν.map_mul, hzero, mul_zero]
+      rcases ‹ν.IsTrivialOn R› with ⟨htriv⟩
+      exact (h01 (hc0.symm.trans (htriv _ hcoeff))).elim
+  · exact hone
+
 end Monoid
+
+/-- A valuation trivial on the base of an integral algebra with no zero divisors is
+trivial on the algebra itself. -/
+theorem IsTrivialOn.of_isIntegral
+    {R : Type u} {A : Type v} {G : Type w}
+    [CommRing R] [CommRing A] [Algebra R A] [Algebra.IsIntegral R A]
+    [NoZeroDivisors A] [LinearOrderedCommMonoidWithZero G]
+    (ν : Valuation A G) [ν.IsTrivialOn R] : ν.IsTrivialOn A := by
+  constructor
+  intro x hx
+  simpa using
+    (ν.map_eq_one_of_isIntegral_of_isRightRegular (R := R) x
+      ((Algebra.isIntegral_def.mp ‹Algebra.IsIntegral R A›) x)
+      ((isRegular_iff.mp (IsRegular.of_ne_zero' hx)).2))
 
 end Valuation
