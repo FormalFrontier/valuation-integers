@@ -24,6 +24,11 @@ or discreteness hypotheses.
   the same conclusion for elements algebraic over a field when all scalar
   values are at most one.
 
+- **Linear independence from valuation separation**
+  ([module](ValuationIntegers/Valuation/LinearIndependent.lean)). Nonzero
+  family values in distinct scalar-weighted valuation classes imply linear
+  independence over a field, and hence a finite-dimensional cardinality bound.
+
 - **Absolute values and valuations**
   ([module](ValuationIntegers/Valuation/AbsoluteValue.lean)). A real-valued absolute
   value satisfying the strong triangle inequality on a nontrivial ring defines an

@@ -4,6 +4,7 @@ Authors: Formal Frontier Agents
 -/
 module
 public import ValuationIntegers.Valuation.IsTrivialOn
+public import ValuationIntegers.Valuation.LinearIndependent
 
 public import ValuationIntegers.Algebra.CharP.Finite
 
