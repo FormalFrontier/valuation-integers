@@ -14,13 +14,19 @@ or discreteness hypotheses.
 
 ## Headline results
 
-- **Canonical valuation-subring extensions**
-  ([module](ValuationIntegers/ValuationSubring/PurelyInseparable.lean)). For an arbitrary
-  purely inseparable extension of fields `E/F`, `ValuationSubring.integralClosure`
-  bundles the existing integral closure of a valuation subring `A` of `F`. Its
-  restriction along `algebraMap F E` is exactly `A`, and every valuation subring of
-  `E` with that restriction equals it. Membership is integrality over `A`; no
-  characteristic or finite-degree hypothesis is imposed.
+- **Canonical valuation-subring extensions under positive scalar powers**
+  ([module](ValuationIntegers/ValuationSubring/PowerImage.lean)). Let `F` and `E` be
+  fields with an `F`-algebra structure on `E`. Assume that **every** `x : E` has
+  a positive power `x ^ n` in the range of `algebraMap F E`. For any valuation
+  subring `A` of `F`, `ValuationSubring.integralClosureOfPowerImage` bundles the
+  existing integral closure of `A` in `E`. Its restriction is exactly `A`, and
+  it is the unique valuation subring of `E` with that restriction. Membership
+  is integrality over `A`; for any specified `0 < n` and
+  `x ^ n = algebraMap F E a`, membership of `x` is equivalent to `a ∈ A`.
+  The hypothesis concerns all elements, not just radical generators; no
+  characteristic or finite-degree assumption is imposed. The
+  [purely inseparable specialization](ValuationIntegers/ValuationSubring/PurelyInseparable.lean)
+  supplies these witnesses and provides `ValuationSubring.integralClosure`.
 
 - **Valuation equivalence from unit cuts**
   ([module](ValuationIntegers/Valuation/Equivalence.lean)).
