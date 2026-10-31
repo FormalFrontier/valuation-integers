@@ -424,9 +424,6 @@ and records the commit in `lake-manifest.json`; use a release commit to pin expl
 import ValuationIntegers
 ```
 
-The root also exports the selected-prime divided Bernoulli formulas; import
-`ValuationIntegers.NumberTheory.Bernoulli` for these formulas alone.
-
 The root also exports the selected-prime divided Bernoulli formulas and the
 complete reduced-denominator factorization and finite-product formulas. Import
 `ValuationIntegers.NumberTheory.Bernoulli` for the selected-prime formulas alone, or
@@ -463,8 +460,10 @@ Plan for a cache download and local build storage.
 
 ## Conventions and limitations
 
-The selected-prime divided Bernoulli formulas do not cover nonselected primes,
-denominator products, congruences or K-theory; see the [detailed boundaries](docs/Guide.md#conventions-and-limitations).
+The selected-prime divided Bernoulli formulas concern only the selected primes;
+the separate complete-denominator API gives the factorization and finite-product
+formulas described above. The selected-prime formulas do not assert congruences
+or K-theory results; see the [detailed boundaries](docs/Guide.md#conventions-and-limitations).
 
 Dimension is at most one, not exactly one. Repeated places can have equal contracted
 ideals and nonsurjective residue-product maps; a trivial place in a mixed family can

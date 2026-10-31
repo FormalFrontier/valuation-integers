@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 module
 public import ValuationIntegers.Valuation.PolynomialValues
 public import ValuationIntegers.Valuation.IsTrivialOn
+public import ValuationIntegers.Valuation.LinearCombination
 public import ValuationIntegers.Valuation.LinearIndependent
 public import ValuationIntegers.Valuation.Equivalence
 
