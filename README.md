@@ -39,6 +39,15 @@ or discreteness hypotheses.
   the same conclusion for elements algebraic over a field when all scalar
   values are at most one.
 
+  Root rigidity also has a coefficient-local form
+  ([module](ValuationIntegers/Valuation/Polynomial.lean)). Let `D` be a semiring,
+  `A` a ring (neither assumed commutative), `f : D →+* A` a semiring homomorphism,
+  and `v : Valuation A G` a valuation into a linearly ordered commutative monoid
+  with zero. If a nonzero `p : Polynomial D` has root `x : A` after mapping
+  coefficients by `f`, and `v (f (p.coeff i)) = 1` for every `i ∈ p.support`,
+  then `v x = 0` or `v x = 1`. Only this polynomial's supported coefficients
+  need have value one.
+
 - **Linear independence from valuation separation**
   ([module](ValuationIntegers/Valuation/LinearIndependent.lean)). Nonzero
   family values in distinct scalar-weighted valuation classes imply linear

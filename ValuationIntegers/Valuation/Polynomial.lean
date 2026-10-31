@@ -97,32 +97,28 @@ theorem map_eval₂_eq_pow_of_monic (v : Valuation A G) (f : R →+* A)
 
 
 private lemma exists_lt_support_weight_eq_of_eval₂_eq_zero
-    {D : Type u} {A : Type v} {G : Type w} [DivisionSemiring D] [Ring A]
+    {D : Type u} {A : Type v} {G : Type w} [Semiring D] [Ring A]
     [LinearOrderedCommMonoidWithZero G] (f : D →+* A) (v : Valuation A G)
-    (p : Polynomial D) (x : A) (hp : p ≠ 0) (hx : p.eval₂ f x = 0)
-    (hγ : v x ≠ 0) :
+    (p : Polynomial D) (x : A) (hx : p.eval₂ f x = 0)
+    (hw : ∃ i ∈ p.support, v (f (p.coeff i)) * v x ^ i ≠ 0) :
     ∃ i ∈ p.support, ∃ j ∈ p.support, i < j ∧
       v (f (p.coeff i)) * v x ^ i = v (f (p.coeff j)) * v x ^ j := by
   classical
-  let : Nontrivial G := nontrivial_of_ne (v x) 0 hγ
+  obtain ⟨k, hk, hkw⟩ := hw
   let g : ℕ → A := fun i => f (p.coeff i) * x ^ i
   have hsum : p.support.sum g = 0 := by
     simpa only [Polynomial.eval₂_eq_sum, Polynomial.sum, g] using hx
-  have hcoeff : ∀ i ∈ p.support, v (f (p.coeff i)) ≠ 0 := by
-    intro i hi hzero
-    have hc : p.coeff i ≠ 0 := Polynomial.mem_support_iff.mp hi
-    have hunit : p.coeff i * (p.coeff i)⁻¹ = 1 := mul_inv_cancel₀ hc
-    have hvalue := congrArg (fun a : D => v (f a)) hunit
-    have hzero_one : (0 : G) = 1 := by
-      simpa only [map_mul, map_one, hzero, zero_mul] using hvalue
-    exact zero_ne_one hzero_one
-  have hterm : ∀ i ∈ p.support, v (g i) ≠ 0 := by
-    intro i hi
-    simp only [g, map_mul, map_pow]
-    exact mul_ne_zero (hcoeff i hi) (pow_ne_zero i hγ)
-  have hs : p.support.Nonempty := Polynomial.support_nonempty.mpr hp
+  have hkw' : v (g k) ≠ 0 := by
+    simpa only [g, map_mul, map_pow] using hkw
+  have hs : p.support.Nonempty := ⟨k, hk⟩
   obtain ⟨m, hm, hmax⟩ :=
     Finset.exists_max_image p.support (fun i => v (g i)) hs
+  have hmax_ne : v (g m) ≠ 0 := by
+    intro hzero
+    apply hkw'
+    apply le_antisymm
+    · simpa only [hzero] using hmax k hk
+    · exact zero_le
   have hother : ∃ j ∈ p.support, j ≠ m ∧ v (g j) = v (g m) := by
     by_contra hnone
     have hstrict : ∀ j ∈ p.support, j ≠ m → v (g j) < v (g m) := by
@@ -134,13 +130,40 @@ private lemma exists_lt_support_weight_eq_of_eval₂_eq_zero
       apply v.map_sum_eq_of_lt hm
       simpa only [Finset.mem_sdiff, Finset.mem_singleton, and_imp] using hstrict
     rw [hsum, map_zero] at hdom
-    exact hterm m hm hdom.symm
+    exact hmax_ne hdom.symm
   obtain ⟨j, hj, hjm, heq⟩ := hother
   rcases lt_or_gt_of_ne hjm with hjm_lt | hmj_lt
   · refine ⟨j, hj, m, hm, hjm_lt, ?_⟩
     simpa only [g, map_mul, map_pow] using heq
   · refine ⟨m, hm, j, hj, hmj_lt, ?_⟩
     simpa only [g, map_mul, map_pow] using heq.symm
+
+
+/-- If a nonzero polynomial vanishes at `x` and the images of its supported coefficients
+have valuation one, then `v x` is zero or one. Only the coefficients occurring in this
+polynomial are required to have valuation one. -/
+theorem map_eq_zero_or_one_of_eval₂_eq_zero
+    {D : Type u} {A : Type v} {G : Type w} [Semiring D] [Ring A]
+    [LinearOrderedCommMonoidWithZero G] (f : D →+* A) (v : Valuation A G)
+    (p : Polynomial D) (x : A) (hp : p ≠ 0) (hx : p.eval₂ f x = 0)
+    (hc : ∀ i ∈ p.support, v (f (p.coeff i)) = 1) :
+    v x = 0 ∨ v x = 1 := by
+  classical
+  by_cases hγ : v x = 0
+  · exact Or.inl hγ
+  right
+  have : Nontrivial G := ⟨⟨v x, 0, hγ⟩⟩
+  by_contra hγ₁
+  obtain ⟨k, hk⟩ := Polynomial.support_nonempty.mpr hp
+  have hw : ∃ i ∈ p.support, v (f (p.coeff i)) * v x ^ i ≠ 0 := by
+    refine ⟨k, hk, ?_⟩
+    simpa only [hc k hk, one_mul] using pow_ne_zero k hγ
+  obtain ⟨i, hi, j, hj, hij, heq⟩ :=
+    exists_lt_support_weight_eq_of_eval₂_eq_zero f v p x hx hw
+  have hpowers : v x ^ i = v x ^ j := by
+    simpa only [hc i hi, hc j hj, one_mul] using heq
+  have hpos : 0 < v x := lt_of_le_of_ne zero_le (Ne.symm hγ)
+  exact (Nat.ne_of_lt hij) ((pow_right_inj₀ hpos hγ₁).mp hpowers)
 
 
 /-- The value of a root of a nonzero polynomial over a division semiring is either zero,
@@ -157,8 +180,19 @@ theorem map_eq_zero_or_exists_pow_eq_of_eval₂_eq_zero
   · exact Or.inl hγ
   right
   let : Nontrivial G := nontrivial_of_ne (v x) 0 hγ
+  have hw : ∃ i ∈ p.support, v (f (p.coeff i)) * v x ^ i ≠ 0 := by
+    obtain ⟨k, hk⟩ := Polynomial.support_nonempty.mpr hp
+    have hc : p.coeff k ≠ 0 := Polynomial.mem_support_iff.mp hk
+    have hcoeff : v (f (p.coeff k)) ≠ 0 := by
+      intro hzero
+      have hunit : p.coeff k * (p.coeff k)⁻¹ = 1 := mul_inv_cancel₀ hc
+      have hvalue := congrArg (fun a : D => v (f a)) hunit
+      have hzero_one : (0 : G) = 1 := by
+        simpa only [map_mul, map_one, hzero, zero_mul] using hvalue
+      exact zero_ne_one hzero_one
+    exact ⟨k, hk, mul_ne_zero hcoeff (pow_ne_zero k hγ)⟩
   obtain ⟨i, hi, j, hj, hij, h⟩ :=
-    exists_lt_support_weight_eq_of_eval₂_eq_zero f v p x hp hx hγ
+    exists_lt_support_weight_eq_of_eval₂_eq_zero f v p x hx hw
   have hai : p.coeff i ≠ 0 := Polynomial.mem_support_iff.mp hi
   have hbj : p.coeff j ≠ 0 := Polynomial.mem_support_iff.mp hj
   refine ⟨j - i, Nat.sub_pos_of_lt hij,

@@ -50,5 +50,29 @@ theorem Valuation.map_eq_zero_or_one_of_isAlgebraic
     [Field F] [Ring A] [Algebra F A] [LinearOrderedCommMonoidWithZero G]
     (v : Valuation A G) (h : ∀ r : F, v (algebraMap F A r) ≤ 1)
     (x : A) (hx : IsAlgebraic F x) : v x = 0 ∨ v x = 1 := by
-  let : v.IsTrivialOn F := Valuation.IsTrivialOn.of_algebraMap_le_one v h
-  exact v.map_eq_zero_or_one_of_isIntegral x hx.isIntegral
+  classical
+  have hroot : ∃ p : Polynomial F, p ≠ 0 ∧ Polynomial.aeval x p = 0 := by
+    by_contra hn
+    apply (isAlgebraic_iff_not_injective.mp hx)
+    intro p q hpq
+    by_contra hne
+    apply hn
+    refine ⟨p - q, sub_ne_zero.mpr hne, ?_⟩
+    rw [_root_.map_sub, hpq, sub_self]
+  obtain ⟨p, hp, hpx⟩ := hroot
+  refine Valuation.map_eq_zero_or_one_of_eval₂_eq_zero
+    (algebraMap F A) v p x hp ?_ ?_
+  · simpa only [Polynomial.aeval_def] using hpx
+  · intro i hi
+    have hci : p.coeff i ≠ 0 := Polynomial.mem_support_iff.mp hi
+    have hprod :
+        v (algebraMap F A (p.coeff i)) *
+            v (algebraMap F A ((p.coeff i)⁻¹)) = 1 := by
+      rw [← v.map_mul, ← _root_.map_mul, mul_inv_cancel₀ hci, _root_.map_one, v.map_one]
+    apply le_antisymm (h (p.coeff i))
+    calc
+      1 = v (algebraMap F A (p.coeff i)) *
+          v (algebraMap F A ((p.coeff i)⁻¹)) := hprod.symm
+      _ ≤ v (algebraMap F A (p.coeff i)) * 1 :=
+        mul_le_mul' le_rfl (h ((p.coeff i)⁻¹))
+      _ = v (algebraMap F A (p.coeff i)) := mul_one _
