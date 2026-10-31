@@ -14,20 +14,28 @@ or discreteness hypotheses.
 
 ## Headline results
 
-**Value-one polynomial roots and unit images.**
+**Polynomial root-value bounds and unit images.**
 [PolynomialValueBounds](ValuationIntegers/Valuation/PolynomialValueBounds.lean) treats independent,
 possibly noncommutative semirings $D,E$, a semiring homomorphism $f:D\to E$, and a linearly
 ordered commutative monoid with zero $\Gamma$. Suppose $\nu:E\to\Gamma$ preserves multiplication,
-zero and one and satisfies $\nu(a+b)\le\max(\nu(a),\nu(b))$. For $p\in D[X]$, if
-$\nu(f(p_i))\le1$ on the source support and the mapped constant and leading coefficients
-have value one, every $x\in E$ with $p.\mathrm{eval}_2(f,x)=0$ satisfies $\nu(x)=1$.
-No injectivity of $f$, coefficient–root commutation, group-with-zero structure on $\Gamma$,
-nontriviality or nonzero-root hypothesis is needed.
+zero and one and satisfies $\nu(a+b)\le\max(\nu(a),\nu(b))$. All coefficient bounds below
+refer to the source support of $p\in D[X]$, and roots satisfy $p.\mathrm{eval}_2(f,x)=0$.
+If the coefficient values $\nu(f(p_i))$ are bounded by the nonzero mapped leading value,
+then $\nu(x)\le1$. If they are bounded by the nonzero mapped constant value, then $1\le\nu(x)$.
+Neither relative criterion needs inverses or division in $\Gamma$.
+
+In particular, with coefficient values at most one, leading value one gives $\nu(x)\le1$
+without a constant condition; constant value one gives $1\le\nu(x)$ without a leading condition.
+Both endpoint values one give $\nu(x)=1$. These normalized criteria include the collapsed
+zero-equals-one target. No injectivity of $f$, coefficient–root commutation, group-with-zero
+structure on $\Gamma$, nontriviality or nonzero-root hypothesis is required; the upper
+criteria allow zero root value.
 
 Separately, for any $p\in D[X]$ and monoid homomorphism $\varphi:E\to T$ to a commutative
 monoid, a unit $\varphi(f(p_0))$ forces $\varphi(x)$ to be a unit at every evaluation root.
 Neither addition nor zero preservation by $\varphi$, nor commutativity of $E$, is required.
-A unit image need not equal one.
+A nonzero image need not be a unit, and a unit image need not equal one.
+
 
 - **Finite values of polynomial roots.** For semirings `D`, `A`, a ring homomorphism
   `f : D →+* A`, and a multiplicative map with zero `ν : A →*₀ Γ` with
