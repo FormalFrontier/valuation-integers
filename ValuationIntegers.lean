@@ -20,6 +20,7 @@ public import ValuationIntegers.Valuation.Algebraic
 public import ValuationIntegers.Valuation.Integral
 public import ValuationIntegers.Valuation.Localization
 public import ValuationIntegers.Valuation.Polynomial
+public import ValuationIntegers.Valuation.Restriction
 public import ValuationIntegers.Valuation.PurelyInseparable
 
 public import ValuationIntegers.HeightOne.Generator
@@ -72,6 +73,10 @@ public import ValuationIntegers.Valuation.AbsoluteValueEquiv
 It includes a generic absolute-value layer for pullbacks, rational restriction and
 conversion between nonarchimedean real-valued absolute values and zero-reflecting
 `NNReal`-valued valuations, independent of the arithmetic applications.
+
+Restriction along ring homomorphisms whose ranges contain a positive power of each
+element determines valuations: it is injective for a fixed target and reflects
+strict-comparison equivalence for independent ordered targets.
 
 This module re-exports unit-cut and zero-fiber criteria for valuation equivalence,
 valuation-ring rank and dimension, normalized valuation rigidity,

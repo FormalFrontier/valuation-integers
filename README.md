@@ -23,6 +23,17 @@ or discreteness hypotheses.
   monoids need only be linearly ordered commutative monoids with zero, not groups
   with zero; no commutativity of the source or target nontriviality is assumed.
 
+- **Restriction through positive powers in the range**
+  ([module](ValuationIntegers/Valuation/Restriction.lean)). For arbitrary rings
+  and a ring homomorphism `f : R →+* S`, assume each `x : S` has some positive
+  power `x ^ n` in the range of `f`; the exponent may depend on `x`.
+  Restriction is injective for valuations with one fixed linearly ordered
+  commutative value monoid with zero. For independent such targets, restriction
+  reflects equivalence of strict comparisons, including zero values. Neither
+  injectivity nor surjectivity of `f`, source commutativity, nor target group
+  structure is required. Proper purely inseparable inclusions and noninjective
+  surjections, including maps involving zero-divisor rings, are covered.
+
 - **Valuations over purely inseparable extensions**
   ([module](ValuationIntegers/Valuation/PurelyInseparable.lean)). For a field `F`
   and a purely inseparable `F`-algebra `E` that is a ring and a domain, two
@@ -30,6 +41,8 @@ or discreteness hypotheses.
   equivalent. Their linearly ordered commutative value monoids with zero may
   differ; no value-group or characteristic hypothesis is needed. With a fixed
   value monoid, restriction is injective: equal restrictions imply equal valuations.
+  Both results use the generic positive-power-range theorems via the existing
+  purely inseparable power witnesses.
 
 - **Values of integral elements under scalar-trivial valuations**
   ([module](ValuationIntegers/Valuation/Integral.lean)). For any commutative ring
