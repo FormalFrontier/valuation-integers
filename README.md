@@ -14,6 +14,13 @@ or discreteness hypotheses.
 
 ## Headline results
 
+- **Valuation equivalence from strict unit cuts**
+  ([module](ValuationIntegers/Valuation/Equivalence.lean)).
+  `Valuation.isEquiv_iff_lt_one` characterizes equivalence of two valuations on an
+  arbitrary division ring by agreement of their strict unit cuts. Their independent
+  value monoids need only be linearly ordered commutative monoids with zero, not
+  groups with zero; no commutativity of the source or target nontriviality is assumed.
+
 - **Valuations over purely inseparable extensions**
   ([module](ValuationIntegers/Valuation/PurelyInseparable.lean)). For a field `F`
   and a purely inseparable `F`-algebra `E` that is a ring and a domain, two

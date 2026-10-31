@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 module
 public import ValuationIntegers.Valuation.IsTrivialOn
 public import ValuationIntegers.Valuation.LinearIndependent
+public import ValuationIntegers.Valuation.Equivalence
 
 public import ValuationIntegers.Algebra.CharP.Finite
 
@@ -72,7 +73,8 @@ It includes a generic absolute-value layer for pullbacks, rational restriction a
 conversion between nonarchimedean real-valued absolute values and zero-reflecting
 `NNReal`-valued valuations, independent of the arithmetic applications.
 
-This module re-exports valuation-ring rank and dimension, normalized valuation rigidity,
+This module re-exports strict-unit-cut characterizations of valuation equivalence,
+valuation-ring rank and dimension, normalized valuation rigidity,
 integer-presentation comparisons for valuations and DVRs, valuation topology, completion
 comparisons and finite intersections with residue maps.
 It also provides bounded-module finiteness, Henselian power neighborhoods, Bernoulli
