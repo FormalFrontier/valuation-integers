@@ -73,7 +73,7 @@ It includes a generic absolute-value layer for pullbacks, rational restriction a
 conversion between nonarchimedean real-valued absolute values and zero-reflecting
 `NNReal`-valued valuations, independent of the arithmetic applications.
 
-This module re-exports strict-unit-cut characterizations of valuation equivalence,
+This module re-exports unit-cut and zero-fiber criteria for valuation equivalence,
 valuation-ring rank and dimension, normalized valuation rigidity,
 integer-presentation comparisons for valuations and DVRs, valuation topology, completion
 comparisons and finite intersections with residue maps.
