@@ -19,6 +19,7 @@ public import ValuationIntegers.Valuation.Algebraic
 public import ValuationIntegers.Valuation.Integral
 public import ValuationIntegers.Valuation.Localization
 public import ValuationIntegers.Valuation.Polynomial
+public import ValuationIntegers.Valuation.PurelyInseparable
 
 public import ValuationIntegers.HeightOne.Generator
 public import ValuationIntegers.HeightOne.Polynomial
