@@ -12,12 +12,13 @@ import Mathlib.Algebra.Group.Units.Defs
 # One-sided values, left inverses and unit images of polynomial roots
 
 A multiplicative map to an arbitrary monoid sends a polynomial root to an element
-with a left inverse if the mapped constant coefficient is a unit. For a commutative
-target monoid this gives the unit-image corollary. Specializing the map to the
-identity gives a left inverse for the root itself, without coefficient centrality.
-In this raw specialization, the hypotheses force the evaluation semiring to admit
-a ring structure, even though no `Ring` instance is required; the generic mapped-unit
-result allows genuinely nonring evaluation semirings.
+with a left inverse if the mapped constant coefficient has a supplied left inverse.
+In particular, a unit mapped constant coefficient suffices. For a commutative target
+monoid, the unit-constant corollary gives a unit image. Specializing the unit-constant
+result to the identity map gives a left inverse for the root itself, without
+coefficient centrality. In this raw specialization, the hypotheses force the
+evaluation semiring to admit a ring structure, even though no `Ring` instance is
+required; the generic mapped result allows genuinely nonring evaluation semirings.
 
 For an ultrametric multiplicative map to a linearly ordered commutative monoid with
 zero, a nonzero dominant leading coefficient bounds the root value above by one,
@@ -71,6 +72,34 @@ private theorem eval₂_apply_ne_zero
 
 namespace MonoidHom
 
+/-- A multiplicative image of an evaluation root has a left inverse if a left
+inverse is supplied for the image of the mapped constant coefficient. The target
+need only be a monoid. The map need not preserve addition or zero, and neither
+semiring needs to be commutative. No coefficient centrality is required. -/
+theorem exists_mul_apply_eq_one_of_eval₂_eq_zero_of_mul_coeff_zero_eq_one
+    {R : Type u} {E : Type v} {T : Type w}
+    [Semiring R] [Semiring E] [Monoid T]
+    (μ : E →* T) (φ : R →+* E) (p : Polynomial R) (x : E)
+    (l : T) (hleft : l * μ (φ (p.coeff 0)) = 1)
+    (hroot : p.eval₂ φ x = 0) :
+    ∃ y : T, y * μ x = 1 := by
+  let b := p.divX.eval₂ φ x
+  let A := μ (φ (p.coeff 0))
+  let B := μ b
+  let X := μ x
+  have hsquare : A * A = (B * X) * (B * X) := by
+    simpa only [map_mul] using
+      congrArg μ (eval₂_constant_square_eq φ p x hroot)
+  -- Use the supplied left inverse twice without commuting factors.
+  refine ⟨(l * l) * ((B * X) * B), ?_⟩
+  calc
+    ((l * l) * ((B * X) * B)) * X =
+        (l * l) * ((B * X) * (B * X)) := by
+      simp only [mul_assoc]
+    _ = (l * l) * (A * A) := by rw [← hsquare]
+    _ = l * (l * A) * A := by simp only [mul_assoc]
+    _ = 1 := by rw [hleft, mul_one, hleft]
+
 /-- A multiplicative image of an evaluation root has a left inverse if the image
 of the mapped constant coefficient is a unit. The target need only be a monoid:
 neither addition nor zero preservation is required of the map, and neither semiring
@@ -83,22 +112,11 @@ theorem exists_mul_apply_eq_one_of_eval₂_eq_zero
     (hroot : p.eval₂ f x = 0) :
     ∃ y : T, y * μ x = 1 := by
   obtain ⟨u, hu⟩ := hconstant
-  let b := p.divX.eval₂ f x
-  have hsquare : (u : T) * (u : T) =
-      (μ b * μ x) * (μ b * μ x) := by
-    simpa only [map_mul, ← hu] using
-      congrArg μ (eval₂_constant_square_eq f p x hroot)
-  let v : T := ↑(u⁻¹)
-  have hv : v * (u : T) = 1 := u.inv_val
-  -- Cancel the constant unit on the left of the square without commuting factors.
-  refine ⟨(v * v) * ((μ b * μ x) * μ b), ?_⟩
-  calc
-    ((v * v) * ((μ b * μ x) * μ b)) * μ x =
-        (v * v) * ((μ b * μ x) * (μ b * μ x)) := by
-      simp only [mul_assoc]
-    _ = (v * v) * ((u : T) * (u : T)) := by rw [← hsquare]
-    _ = v * (v * (u : T)) * (u : T) := by simp only [mul_assoc]
-    _ = 1 := by rw [hv, mul_one, hv]
+  let v : T := u.inv
+  have hv : v * μ (f (p.coeff 0)) = 1 := by
+    simpa only [v, ← hu] using u.inv_val
+  exact exists_mul_apply_eq_one_of_eval₂_eq_zero_of_mul_coeff_zero_eq_one
+    μ f p x v hv hroot
 
 /-- A multiplicative map to a commutative monoid sends an evaluation root to a unit
 when the image of the mapped constant coefficient is a unit. Neither the evaluation
