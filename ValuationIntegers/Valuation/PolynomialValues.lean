@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 module
 
 public import ValuationIntegers.Valuation.Polynomial
+public import ValuationIntegers.Valuation.PolynomialValueBounds
 public import Mathlib.Algebra.Order.GroupWithZero.Basic
 public import Mathlib.Data.Set.Finite.Lattice
 
