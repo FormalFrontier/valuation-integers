@@ -3,6 +3,7 @@ SPDX-License-Identifier: Apache-2.0
 Authors: Formal Frontier Agents
 -/
 module
+public import ValuationIntegers.Valuation.PolynomialValues
 public import ValuationIntegers.Valuation.IsTrivialOn
 public import ValuationIntegers.Valuation.LinearIndependent
 public import ValuationIntegers.Valuation.Equivalence

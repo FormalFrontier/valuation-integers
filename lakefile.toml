@@ -42,4 +42,4 @@ leanOptions = { weak.linter.privateModule = false }
 [[require]]
 name = "groupTheory"
 git = "https://github.com/FormalFrontier/group-theory.git"
-rev = "f616d041632bad2e5605cccf1d4b4502b5c02853"
+rev = "cf4d26b5a4540755d233bde02ae6826121357264"

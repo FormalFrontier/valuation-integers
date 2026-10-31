@@ -6,15 +6,17 @@ module
 
 public import Mathlib.RingTheory.Valuation.Basic
 
+import GroupTheory.MonoidHom.PositivePower
 import Mathlib.Algebra.Order.GroupWithZero.Basic
 
 /-!
 # Valuations determined by positive powers in a ring-homomorphism range
 
 Suppose every element of a ring has a positive power in the range of a ring
-homomorphism. Restriction along that homomorphism is injective for valuations with
-one fixed value monoid. For valuations with independent ordered value monoids,
-restriction reflects equivalence, meaning agreement of all strict comparisons.
+homomorphism. For valuations with one fixed value monoid, restriction reflects
+pointwise comparison and is injective. For valuations with independent ordered
+value monoids, restriction reflects equivalence, meaning agreement of all strict
+comparisons.
 
 The exponent may depend on the element. For a pair of elements, raising their
 range witnesses to the other exponent synchronizes the comparison at the positive
@@ -22,6 +24,12 @@ product of the two exponents. Positive powers reflect strict order separately in
 each target, including zero values. Fixed-target equality instead uses injectivity
 of positive powers. No injectivity or surjectivity of the homomorphism, source
 commutativity, or group structure on either target is required.
+
+## References
+
+- [Group Theory](https://github.com/FormalFrontier/group-theory) supplies the generic
+  positive-power comparison API for monoid homomorphisms used here,
+  `MonoidHom.forall_comp_le_iff_of_forall_pow_mem_range`.
 -/
 
 @[expose] public section
@@ -29,6 +37,21 @@ commutativity, or group structure on either target is required.
 universe u v w z
 
 namespace Valuation
+
+/-- Pointwise comparison of valuations is reflected by restriction along a ring
+homomorphism whose range contains a positive power of every element. The exponent
+may depend on the element. -/
+theorem forall_comap_le_iff_of_forall_pow_mem_range
+    {R : Type u} {S : Type v} {Γ : Type w}
+    [Ring R] [Ring S] [LinearOrderedCommMonoidWithZero Γ]
+    (f : R →+* S)
+    (hf : ∀ x : S, ∃ n : ℕ, 0 < n ∧ x ^ n ∈ Set.range f)
+    (ν ω : Valuation S Γ) :
+    (∀ a : R, ν.comap f a ≤ ω.comap f a) ↔ ∀ x : S, ν x ≤ ω x := by
+  simpa using
+    MonoidHom.forall_comp_le_iff_of_forall_pow_mem_range
+      f.toMonoidHom hf ν.toMonoidWithZeroHom.toMonoidHom
+      ω.toMonoidWithZeroHom.toMonoidHom
 
 /-- Restriction is injective for valuations with a fixed value monoid if every
 element has a positive power in the range of the ring homomorphism. The exponent

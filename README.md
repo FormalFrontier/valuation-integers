@@ -13,6 +13,23 @@ These modules are independent of the arithmetic applications and impose no Dedek
 or discreteness hypotheses.
 
 ## Headline results
+- **Finite values of polynomial roots.** For semirings `D`, `A`, a ring homomorphism
+  `f : D →+* A`, and a multiplicative map with zero `ν : A →*₀ Γ` with
+  `[LinearOrderedCommMonoidWithZero Γ]` and `ν (a + b) ≤ max (ν a) (ν b)`, the set
+  `ν '' {x | p.eval₂ f x = 0}` is finite whenever one supported coefficient of `p` has
+  nonzero image value. For a nonzero polynomial over a division semiring `D`, that
+  coefficient condition is unnecessary. Neither semiring need be commutative, and no
+  domain or noncollapsed-value hypothesis is imposed. `Valuation` specializations for
+  a ring evaluation space are included. This is finiteness of values, not of roots.
+  See [PolynomialValues](ValuationIntegers/Valuation/PolynomialValues.lean).
+
+- **Degree bound for polynomial-root values.** Under the supported nonzero-valued-coefficient
+  hypothesis above, the image `ν '' {x | p.eval₂ f x = 0}` has `encard` at most
+  `p.natDegree`; its finite cardinality satisfies the same bound. The coefficient and
+  evaluation semirings need not be commutative or domains, and the value monoid need not
+  have inverses. Zero is counted when it occurs. The hypothesis concerns coefficient
+  image values, not merely `p ≠ 0`.
+  See [PolynomialValues](ValuationIntegers/Valuation/PolynomialValues.lean).
 
 - **Canonical valuation-subring extensions under positive scalar powers**
   ([module](ValuationIntegers/ValuationSubring/PowerImage.lean)). Let `F` and `E` be
@@ -499,6 +516,10 @@ completion-construction boundaries; these APIs do not assemble the full Fesenko�
   follows Schröer's presentation; Ershov's original text was not consulted.
 - [Norm-forms quadratic 5-adic model](https://github.com/FormalFrontier/norm-forms/blob/2d4f3696c4f104cb0b79c8cca70002e04862e8e4/NormFormsTests/SpectralNorm.lean):
   the polynomial and valuation-parity construction used by the quadratic client.
+- [Group Theory](https://github.com/FormalFrontier/group-theory): its generic
+  positive-power comparison API for monoid homomorphisms,
+  `MonoidHom.forall_comp_le_iff_of_forall_pow_mem_range`, supplies the pointwise
+  comparison argument for valuation restriction.
 - [Spectral Stone Duality](https://github.com/FormalFrontier/spectral-stone-duality):
   supplies the canonical generic-point topology `Topology.WithGenericPoint`
   used by the valuation spectrum homeomorphism.
@@ -545,8 +566,10 @@ Authors: Formal Frontier Agents. Formal Frontier contributors developed the
 original proof expressions, clients and mathematical plans; contributors to
 this library adapted them. The module guides distinguish these roles and
 credit relevant mathlib contributors; mathlib retains its own contributor
-notices and license. Agent-assisted Lean development is described in
-`formalization.yaml`. Licensed under [Apache-2.0](LICENSE).
+notices and license. The Group Theory contributors supplied the reusable
+positive-power comparison formalization used in valuation restriction.
+Agent-assisted Lean development is described in `formalization.yaml`.
+Licensed under [Apache-2.0](LICENSE).
 
 ### Powers separated from scalar values
 
