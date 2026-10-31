@@ -474,3 +474,267 @@ theorem ncard_image_eval₂_eq_zero_le_natDegree
     (encard_image_eval₂_eq_zero_le_natDegree f ν hadd p hcoeff)).2
 
 end MonoidWithZeroHom
+
+@[expose] public section
+
+section
+universe uD_N uE_N uΓ_N
+
+/-- If at least one coefficient index is active, the nonzero values attained at zeros of `p`
+number at most one less than its active coefficient indices. An index is active when its
+coefficient has nonzero value after `f`.
+
+This counts distinct attained values, not zeros or their multiplicities. -/
+theorem MonoidWithZeroHom.encard_image_eval₂_eq_zero_diff_zero_le_card_support_filter_sub_one
+    {D : Type uD_N} {E : Type uE_N} {Γ : Type uΓ_N}
+    [Semiring D] [Semiring E] [LinearOrderedCommMonoidWithZero Γ]
+    (ν : E →*₀ Γ) (p : Polynomial D) (f : D →+* E)
+    (hadd : ∀ a b : E, ν (a + b) ≤ max (ν a) (ν b))
+    (hA : (p.support.filter (fun i => ν (f (p.coeff i)) ≠ 0)).Nonempty) :
+    let A : Finset ℕ := p.support.filter (fun i => ν (f (p.coeff i)) ≠ 0)
+    let R : Set Γ := ν '' {x : E | p.eval₂ f x = 0}
+    (R \ ({0} : Set Γ)).encard ≤ ((A.card - 1 : ℕ) : ℕ∞) := by
+  classical
+  let A : Finset ℕ := p.support.filter (fun i => ν (f (p.coeff i)) ≠ 0)
+  let R : Set Γ := ν '' {x : E | p.eval₂ f x = 0}
+  let S : Set Γ := R \ ({0} : Set Γ)
+  let q : Polynomial D := p * Polynomial.X
+  let Cq : Finset ℕ :=
+    q.support.filter (fun k => k ≠ 0 ∧ ν (f (q.coeff k)) ≠ 0)
+  let Rq : Set Γ := ν '' {x : E | q.eval₂ f x = 0}
+  let T : Set Γ := insert 0 S
+  change S.encard ≤ ((A.card - 1 : ℕ) : ℕ∞)
+  have hqzero : q.coeff 0 = 0 := by
+    dsimp only [q]
+    exact Polynomial.coeff_mul_X_zero p
+  have hqsucc (i : ℕ) : q.coeff (i + 1) = p.coeff i := by
+    dsimp only [q]
+    exact Polynomial.coeff_mul_X p i
+  have hcoeff_ne (r : Polynomial D) (i : ℕ)
+      (hi : ν (f (r.coeff i)) ≠ 0) : r.coeff i ≠ 0 := by
+    intro hz
+    apply hi
+    simp [hz]
+  have hCq : Cq = A.image Nat.succ := by
+    apply Finset.ext
+    intro k
+    cases k with
+    | zero =>
+        simp [Cq, Finset.mem_image]
+    | succ i =>
+        constructor
+        · intro hk
+          have hv : ν (f (p.coeff i)) ≠ 0 := by
+            simpa only [Nat.succ_eq_add_one, hqsucc] using
+              (Finset.mem_filter.mp hk).2.2
+          have hi : i ∈ p.support :=
+            Polynomial.mem_support_iff.mpr (hcoeff_ne p i hv)
+          exact Finset.mem_image.mpr
+            ⟨i, Finset.mem_filter.mpr ⟨hi, hv⟩, rfl⟩
+        · intro hk
+          rcases Finset.mem_image.mp hk with ⟨j, hj, hji⟩
+          have hji' : j = i := Nat.succ.inj hji
+          subst j
+          have hv : ν (f (p.coeff i)) ≠ 0 :=
+            (Finset.mem_filter.mp hj).2
+          have hvq : ν (f (q.coeff (i + 1))) ≠ 0 := by
+            rw [hqsucc]
+            exact hv
+          have hqi : i + 1 ∈ q.support :=
+            Polynomial.mem_support_iff.mpr (hcoeff_ne q (i + 1) hvq)
+          exact Finset.mem_filter.mpr ⟨hqi, Nat.succ_ne_zero i, hvq⟩
+  have hCqcard : Cq.card = A.card := by
+    rw [hCq]
+    exact Finset.card_image_of_injective A Nat.succ_injective
+  have hcoeffq : ∃ k ∈ q.support, ν (f (q.coeff k)) ≠ 0 := by
+    rcases hA with ⟨i, hi⟩
+    have hv : ν (f (p.coeff i)) ≠ 0 := (Finset.mem_filter.mp hi).2
+    have hvq : ν (f (q.coeff (i + 1))) ≠ 0 := by
+      rw [hqsucc]
+      exact hv
+    exact ⟨i + 1, Polynomial.mem_support_iff.mpr
+      (hcoeff_ne q (i + 1) hvq), hvq⟩
+  have heval (x : E) : q.eval₂ f x = p.eval₂ f x * x := by
+    dsimp only [q]
+    exact Polynomial.eval₂_mul_X (f := f) (x := x) (p := p)
+  have hzeroRq : (0 : Γ) ∈ Rq := by
+    refine ⟨(0 : E), ?_, by simp⟩
+    change q.eval₂ f 0 = 0
+    rw [heval]
+    simp
+  have hSintoRq : S ⊆ Rq := by
+    intro y hy
+    have hyR : y ∈ R := hy.1
+    rcases hyR with ⟨x, hx, hxy⟩
+    refine ⟨x, ?_, hxy⟩
+    change q.eval₂ f x = 0
+    rw [heval, hx]
+    simp
+  have hTintoRq : T ⊆ Rq := by
+    intro y hy
+    rcases hy with hzero | hyS
+    · subst y
+      exact hzeroRq
+    · exact hSintoRq hyS
+  -- Reuse the total sparse bound after shifting the coefficient indices.
+  have hRq : Rq.encard ≤ (Cq.card : ℕ∞) := by
+    dsimp only [Rq, Cq]
+    apply MonoidWithZeroHom.encard_image_eval₂_eq_zero_le_card_support_filter
+    all_goals first | exact hadd | exact hcoeffq
+  have hTbound : T.encard ≤ (A.card : ℕ∞) := by
+    calc
+      T.encard ≤ Rq.encard := Set.encard_mono hTintoRq
+      _ ≤ (Cq.card : ℕ∞) := hRq
+      _ = (A.card : ℕ∞) := by rw [hCqcard]
+  have hSintoT : S ⊆ T := by
+    intro y hy
+    exact Or.inr hy
+  have hSbound : S.encard ≤ (A.card : ℕ∞) :=
+    (Set.encard_mono hSintoT).trans hTbound
+  -- Establish finiteness before subtracting in the natural numbers.
+  have hSfinite : S.Finite :=
+    ((Set.encard_le_coe_iff_finite_ncard_le
+      (s := S) (k := A.card)).mp hSbound).1
+  let _ : Fintype ↥S := hSfinite.fintype
+  have hScast : (S.ncard : ℕ∞) = S.encard := Set.coe_ncard_eq_encard S
+  have hzeroS : (0 : Γ) ∉ S := by
+    simp [S]
+  have hTsdiff : T \ ({0} : Set Γ) = S := by
+    ext y
+    by_cases hy : y = 0
+    · subst y
+      simp [T, hzeroS]
+    · simp [T, hy]
+  have hTint : T ∩ ({0} : Set Γ) = ({0} : Set Γ) := by
+    ext y
+    by_cases hy : y = 0
+    · subst y
+      simp [T]
+    · simp [hy]
+  have hsum : S.encard + 1 = T.encard := by
+    have hparts := Set.encard_sdiff_add_encard_inter T ({0} : Set Γ)
+    rw [hTsdiff, hTint] at hparts
+    simpa using hparts
+  have hsucc : S.ncard + 1 ≤ A.card := by
+    have hcast_le : ((S.ncard + 1 : ℕ) : ℕ∞) ≤ (A.card : ℕ∞) := by
+      calc
+        ((S.ncard + 1 : ℕ) : ℕ∞) = S.encard + 1 := by
+          simp only [Nat.cast_add, Nat.cast_one, hScast]
+        _ = T.encard := hsum
+        _ ≤ (A.card : ℕ∞) := hTbound
+    exact_mod_cast hcast_le
+  have hpred : S.ncard ≤ A.card - 1 := by omega
+  rw [← hScast]
+  exact_mod_cast hpred
+
+end
+
+
+section
+universe uD_T uE_T uΓ_T
+
+/-- If at least one coefficient index is active, the values attained at zeros of `p` are bounded
+by the active coefficient count minus one, plus the contribution from the value zero.
+
+The zero-value contribution is one precisely when some zero of `p` has value zero; that zero
+need not itself be the zero element. -/
+theorem
+  MonoidWithZeroHom.encard_image_eval₂_eq_zero_le_card_support_filter_sub_one_add_encard_inter_zero
+    {D : Type uD_T} {E : Type uE_T} {Γ : Type uΓ_T}
+    [Semiring D] [Semiring E] [LinearOrderedCommMonoidWithZero Γ]
+    (ν : E →*₀ Γ) (p : Polynomial D) (f : D →+* E)
+    (hadd : ∀ a b : E, ν (a + b) ≤ max (ν a) (ν b))
+    (hA : (p.support.filter (fun i => ν (f (p.coeff i)) ≠ 0)).Nonempty) :
+    let A : Finset ℕ := p.support.filter (fun i => ν (f (p.coeff i)) ≠ 0)
+    let R : Set Γ := ν '' {x : E | p.eval₂ f x = 0}
+    R.encard ≤ ((A.card - 1 : ℕ) : ℕ∞) + (R ∩ ({0} : Set Γ)).encard := by
+  let A : Finset ℕ := p.support.filter (fun i => ν (f (p.coeff i)) ≠ 0)
+  let R : Set Γ := ν '' {x : E | p.eval₂ f x = 0}
+  change R.encard ≤ ((A.card - 1 : ℕ) : ℕ∞) + (R ∩ ({0} : Set Γ)).encard
+  have hnonzero : (R \ ({0} : Set Γ)).encard ≤ ((A.card - 1 : ℕ) : ℕ∞) :=
+    MonoidWithZeroHom.encard_image_eval₂_eq_zero_diff_zero_le_card_support_filter_sub_one
+      ν p f hadd hA
+  calc
+    R.encard = (R \ ({0} : Set Γ)).encard + (R ∩ ({0} : Set Γ)).encard :=
+      (Set.encard_sdiff_add_encard_inter R ({0} : Set Γ)).symm
+    _ ≤ ((A.card - 1 : ℕ) : ℕ∞) + (R ∩ ({0} : Set Γ)).encard := by
+      simpa only [add_comm] using
+        (add_le_add_right hnonzero (R ∩ ({0} : Set Γ)).encard)
+
+end
+
+
+section
+universe uD_NN uE_NN uΓ_NN
+
+/-- Natural-cardinality form of the bound on nonzero values attained at zeros of `p`.
+The hypothesis ensures finiteness of the attained value set. -/
+theorem MonoidWithZeroHom.ncard_image_eval₂_eq_zero_diff_zero_le_card_support_filter_sub_one
+    {D : Type uD_NN} {E : Type uE_NN} {Γ : Type uΓ_NN}
+    [Semiring D] [Semiring E] [LinearOrderedCommMonoidWithZero Γ]
+    (ν : E →*₀ Γ) (p : Polynomial D) (f : D →+* E)
+    (hadd : ∀ a b : E, ν (a + b) ≤ max (ν a) (ν b))
+    (hA : (p.support.filter (fun i => ν (f (p.coeff i)) ≠ 0)).Nonempty) :
+    let A : Finset ℕ := p.support.filter (fun i => ν (f (p.coeff i)) ≠ 0)
+    let R : Set Γ := ν '' {x : E | p.eval₂ f x = 0}
+    (R \ ({0} : Set Γ)).ncard ≤ A.card - 1 := by
+  let A : Finset ℕ := p.support.filter (fun i => ν (f (p.coeff i)) ≠ 0)
+  let R : Set Γ := ν '' {x : E | p.eval₂ f x = 0}
+  change (R \ ({0} : Set Γ)).ncard ≤ A.card - 1
+  have hnonzero : (R \ ({0} : Set Γ)).encard ≤ ((A.card - 1 : ℕ) : ℕ∞) :=
+    MonoidWithZeroHom.encard_image_eval₂_eq_zero_diff_zero_le_card_support_filter_sub_one
+      ν p f hadd hA
+  -- The bridge derives finiteness together with the natural-cardinality bound.
+  have hfinite_and_bound :
+      (R \ ({0} : Set Γ)).Finite ∧ (R \ ({0} : Set Γ)).ncard ≤ A.card - 1 :=
+    (Set.encard_le_coe_iff_finite_ncard_le
+      (s := R \ ({0} : Set Γ)) (k := A.card - 1)).mp hnonzero
+  exact hfinite_and_bound.2
+
+end
+
+
+namespace MonoidWithZeroHom
+
+section
+universe uD_NT uE_NT uΓ_NT
+
+/-- Natural-cardinality bound on all values attained at zeros of `p`, retaining the contribution
+from an attained zero value. The active coefficient count is a count of indices. -/
+theorem ncard_image_eval₂_eq_zero_le_card_support_filter_sub_one_add_ncard_inter_zero
+    {D : Type uD_NT} {E : Type uE_NT} {Γ : Type uΓ_NT}
+    [Semiring D] [Semiring E] [LinearOrderedCommMonoidWithZero Γ]
+    (ν : E →*₀ Γ) (p : Polynomial D) (f : D →+* E)
+    (hadd : ∀ a b : E, ν (a + b) ≤ max (ν a) (ν b))
+    (hA : (p.support.filter (fun i => ν (f (p.coeff i)) ≠ 0)).Nonempty) :
+    let A : Finset ℕ := p.support.filter (fun i => ν (f (p.coeff i)) ≠ 0)
+    let R : Set Γ := ν '' {x : E | p.eval₂ f x = 0}
+    R.ncard ≤ A.card - 1 + (R ∩ ({0} : Set Γ)).ncard := by
+  let A : Finset ℕ := p.support.filter (fun i => ν (f (p.coeff i)) ≠ 0)
+  let R : Set Γ := ν '' {x : E | p.eval₂ f x = 0}
+  change R.ncard ≤ A.card - 1 + (R ∩ ({0} : Set Γ)).ncard
+  have hzero_bound : (R ∩ ({0} : Set Γ)).encard ≤ ((1 : ℕ) : ℕ∞) := by
+    rw [Set.inter_comm]
+    exact Set.encard_singleton_inter R 0
+  have hzero_finite : (R ∩ ({0} : Set Γ)).Finite :=
+    ((Set.encard_le_coe_iff_finite_ncard_le
+      (s := R ∩ ({0} : Set Γ)) (k := 1)).mp hzero_bound).1
+  let _ : Fintype ↥(R ∩ ({0} : Set Γ)) := hzero_finite.fintype
+  have hzero_cast :
+      (((R ∩ ({0} : Set Γ)).ncard : ℕ) : ℕ∞) = (R ∩ ({0} : Set Γ)).encard :=
+    Set.coe_ncard_eq_encard (R ∩ ({0} : Set Γ))
+  have htotal :
+      R.encard ≤ ((A.card - 1 + (R ∩ ({0} : Set Γ)).ncard : ℕ) : ℕ∞) := by
+    rw [Nat.cast_add, hzero_cast]
+    exact encard_image_eval₂_eq_zero_le_card_support_filter_sub_one_add_encard_inter_zero
+      ν p f hadd hA
+  -- This derives R.Finite from the primary bound plus the zero intersection.
+  have hfinite_and_bound :
+      R.Finite ∧ R.ncard ≤ A.card - 1 + (R ∩ ({0} : Set Γ)).ncard :=
+    (Set.encard_le_coe_iff_finite_ncard_le
+      (s := R) (k := A.card - 1 + (R ∩ ({0} : Set Γ)).ncard)).mp htotal
+  exact hfinite_and_bound.2
+
+end
+
+end MonoidWithZeroHom

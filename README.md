@@ -39,6 +39,21 @@ or discreteness hypotheses.
   zero-and-one-preserving map into a linearly ordered commutative monoid with zero
   satisfying the max-addition inequality.
 
+- **Active-coefficient bounds for root values.** Let `D`, `E` be semirings and
+  `Γ` a `LinearOrderedCommMonoidWithZero`, in independent universes. Let
+  `p : D[X]`, `f : D →+* E`, and `ν : E →*₀ Γ` satisfy
+  `ν (a + b) ≤ max (ν a) (ν b)` for all `a, b : E`.
+  Suppose `A = p.support.filter (fun i => ν (f (p.coeff i)) ≠ 0)` is nonempty.
+  For `R = ν '' {x : E | p.eval₂ f x = 0}`,
+  `encard (R \ {0}) ≤ A.card - 1` and
+  `encard R ≤ A.card - 1 + encard (R ∩ {0})`.
+  Finiteness follows, yielding corresponding natural-cardinality bounds.
+  These count distinct root values; `A.card` counts coefficient indices,
+  not distinct coefficient values, root multiplicities, or roots.
+  The final term detects roots of value zero, which need not themselves be zero;
+  it is not the constant coefficient's value.
+  See [polynomial values](ValuationIntegers/Valuation/PolynomialValues.lean).
+
 - **Canonical valuation-subring extensions under positive scalar powers**
   ([module](ValuationIntegers/ValuationSubring/PowerImage.lean)). Let `F` and `E` be
   fields with an `F`-algebra structure on `E`. Assume that **every** `x : E` has
