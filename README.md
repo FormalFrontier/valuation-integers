@@ -14,6 +14,14 @@ or discreteness hypotheses.
 
 ## Headline results
 
+- **Canonical valuation-subring extensions**
+  ([module](ValuationIntegers/ValuationSubring/PurelyInseparable.lean)). For an arbitrary
+  purely inseparable extension of fields `E/F`, `ValuationSubring.integralClosure`
+  bundles the existing integral closure of a valuation subring `A` of `F`. Its
+  restriction along `algebraMap F E` is exactly `A`, and every valuation subring of
+  `E` with that restriction equals it. Membership is integrality over `A`; no
+  characteristic or finite-degree hypothesis is imposed.
+
 - **Valuation equivalence from unit cuts**
   ([module](ValuationIntegers/Valuation/Equivalence.lean)).
   `Valuation.isEquiv_iff_lt_one` characterizes equivalence of two valuations on an

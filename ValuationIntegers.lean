@@ -7,6 +7,8 @@ public import ValuationIntegers.Valuation.IsTrivialOn
 public import ValuationIntegers.Valuation.LinearIndependent
 public import ValuationIntegers.Valuation.Equivalence
 
+public import ValuationIntegers.ValuationSubring.PurelyInseparable
+
 public import ValuationIntegers.Algebra.CharP.Finite
 
 public import ValuationIntegers.NNReal.Power
