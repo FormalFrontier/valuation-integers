@@ -3,6 +3,7 @@ SPDX-License-Identifier: Apache-2.0
 Authors: Formal Frontier Agents
 -/
 module
+public import Mathlib.Algebra.Order.BigOperators.Group.List
 
 public import Mathlib.Algebra.Polynomial.Inductions
 public import Mathlib.RingTheory.Valuation.Basic
@@ -96,48 +97,144 @@ theorem map_eval₂_eq_pow_of_monic (v : Valuation A G) (f : R →+* A)
   (map_eval₂_eq_pow_and_one_le_of_monic v f x hx p hp hc).1
 
 
-private lemma exists_lt_support_weight_eq_of_eval₂_eq_zero
-    {D : Type u} {A : Type v} {G : Type w} [Semiring D] [Ring A]
-    [LinearOrderedCommMonoidWithZero G] (f : D →+* A) (v : Valuation A G)
+end Valuation
+
+namespace MonoidWithZeroHom
+
+/-- A vanishing polynomial evaluation with a supported term of nonzero weight has two
+distinct supported terms of equal, nonzero maximal weight. The addition bound is required only
+of the multiplicative map, and neither semiring need be commutative. -/
+theorem exists_lt_support_weight_eq_max_of_eval₂_eq_zero
+    {D : Type u} {A : Type v} {G : Type w} [Semiring D] [Semiring A]
+    [LinearOrderedCommMonoidWithZero G] (f : D →+* A) (ν : A →*₀ G)
+    (hadd : ∀ a b, ν (a + b) ≤ max (ν a) (ν b))
     (p : Polynomial D) (x : A) (hx : p.eval₂ f x = 0)
-    (hw : ∃ i ∈ p.support, v (f (p.coeff i)) * v x ^ i ≠ 0) :
+    (hw : ∃ i ∈ p.support, ν (f (p.coeff i)) * ν x ^ i ≠ 0) :
     ∃ i ∈ p.support, ∃ j ∈ p.support, i < j ∧
-      v (f (p.coeff i)) * v x ^ i = v (f (p.coeff j)) * v x ^ j := by
+      ν (f (p.coeff i)) * ν x ^ i = ν (f (p.coeff j)) * ν x ^ j ∧
+      ν (f (p.coeff i)) * ν x ^ i ≠ 0 ∧
+      ∀ k ∈ p.support, ν (f (p.coeff k)) * ν x ^ k ≤
+        ν (f (p.coeff i)) * ν x ^ i := by
   classical
   obtain ⟨k, hk, hkw⟩ := hw
   let g : ℕ → A := fun i => f (p.coeff i) * x ^ i
   have hsum : p.support.sum g = 0 := by
-    simpa only [Polynomial.eval₂_eq_sum, Polynomial.sum, g] using hx
-  have hkw' : v (g k) ≠ 0 := by
+    simpa only [Polynomial.eval₂_eq_sum, Polynomial.sum_def, g] using hx
+  have hkw' : ν (g k) ≠ 0 := by
     simpa only [g, map_mul, map_pow] using hkw
   have hs : p.support.Nonempty := ⟨k, hk⟩
   obtain ⟨m, hm, hmax⟩ :=
-    Finset.exists_max_image p.support (fun i => v (g i)) hs
-  have hmax_ne : v (g m) ≠ 0 := by
+    Finset.exists_max_image p.support (fun i => ν (g i)) hs
+  have hmax_ne : ν (g m) ≠ 0 := by
     intro hzero
     apply hkw'
     apply le_antisymm
     · simpa only [hzero] using hmax k hk
     · exact zero_le
-  have hother : ∃ j ∈ p.support, j ≠ m ∧ v (g j) = v (g m) := by
+  have hmax_pos : 0 < ν (g m) := lt_of_le_of_ne zero_le (Ne.symm hmax_ne)
+  let b : A := (p.support.erase m).sum g
+  have hab : g m + b = 0 := by
+    dsimp only [b]
+    rw [Finset.add_sum_erase p.support g hm]
+    exact hsum
+  -- In a semiring, a + b = 0 forces a² = b² without additive cancellation.
+  have ha : g m * g m + g m * b = 0 := by
+    rw [← mul_add, hab, mul_zero]
+  have hb : g m * b + b * b = 0 := by
+    rw [← add_mul, hab, zero_mul]
+  have hsq : g m ^ 2 = b ^ 2 := by
+    calc
+      g m ^ 2 = g m * g m + (g m * b + b * b) := by
+        rw [hb, add_zero, pow_two]
+      _ = (g m * g m + g m * b) + b * b := (add_assoc _ _ _).symm
+      _ = b ^ 2 := by rw [ha, zero_add, pow_two]
+  have hvals : ν (g m) = ν b :=
+    (sq_eq_sq₀ zero_le zero_le).mp (by
+      simpa only [map_pow] using congrArg ν hsq)
+  have hbound : ν b ≤
+      (((p.support.erase m).toList.map g).map ν).foldr max 0 := by
+    simpa only [b, Finset.sum_map_toList] using
+      List.sum_le_foldr_max (fun a : A => ν a)
+        (by simp only [map_zero, le_refl]) hadd ((p.support.erase m).toList.map g)
+  rw [← hvals] at hbound
+  have hother : ∃ j ∈ p.support, j ≠ m ∧ ν (g j) = ν (g m) := by
     by_contra hnone
-    have hstrict : ∀ j ∈ p.support, j ≠ m → v (g j) < v (g m) := by
+    have hstrict : ∀ j ∈ p.support, j ≠ m → ν (g j) < ν (g m) := by
       intro j hj hjm
       rcases lt_or_eq_of_le (hmax j hj) with hlt | heq
       · exact hlt
       · exact False.elim (hnone ⟨j, hj, hjm, heq⟩)
-    have hdom : v (p.support.sum g) = v (g m) := by
-      apply v.map_sum_eq_of_lt hm
-      simpa only [Finset.mem_sdiff, Finset.mem_singleton, and_imp] using hstrict
-    rw [hsum, map_zero] at hdom
-    exact hmax_ne hdom.symm
+    -- Only the order-theoretic fold is handled here; the sum bound is reused above.
+    have hfold_lt : ∀ l : List G, (∀ a ∈ l, a < ν (g m)) →
+        l.foldr max 0 < ν (g m) := by
+      intro l
+      induction l with
+      | nil =>
+          intro _
+          exact hmax_pos
+      | cons a l ih =>
+          intro hl
+          exact max_lt (hl a (by simp)) (ih (fun c hc => hl c (by simp [hc])))
+    have hfold : (((p.support.erase m).toList.map g).map ν).foldr max 0 <
+        ν (g m) := by
+      apply hfold_lt
+      intro a ha
+      obtain ⟨t, ht, rfl⟩ := List.mem_map.mp ha
+      obtain ⟨j, hj, rfl⟩ := List.mem_map.mp ht
+      have hj' : j ∈ p.support.erase m := Finset.mem_toList.mp hj
+      exact hstrict j (Finset.mem_erase.mp hj').2 (Finset.mem_erase.mp hj').1
+    exact (not_lt_of_ge hbound) hfold
   obtain ⟨j, hj, hjm, heq⟩ := hother
   rcases lt_or_gt_of_ne hjm with hjm_lt | hmj_lt
-  · refine ⟨j, hj, m, hm, hjm_lt, ?_⟩
-    simpa only [g, map_mul, map_pow] using heq
-  · refine ⟨m, hm, j, hj, hmj_lt, ?_⟩
-    simpa only [g, map_mul, map_pow] using heq.symm
+  · refine ⟨j, hj, m, hm, hjm_lt, ?_, ?_, ?_⟩
+    · simpa only [g, map_mul, map_pow] using heq
+    · have hj_ne : ν (g j) ≠ 0 := by
+        rw [heq]
+        exact hmax_ne
+      simpa only [g, map_mul, map_pow] using hj_ne
+    · intro k hk
+      have hle : ν (g k) ≤ ν (g j) := by
+        rw [heq]
+        exact hmax k hk
+      simpa only [g, map_mul, map_pow] using hle
+  · refine ⟨m, hm, j, hj, hmj_lt, ?_, ?_, ?_⟩
+    · simpa only [g, map_mul, map_pow] using heq.symm
+    · simpa only [g, map_mul, map_pow] using hmax_ne
+    · intro k hk
+      simpa only [g, map_mul, map_pow] using hmax k hk
 
+
+/-- If a nonzero polynomial vanishes at `x` and the images of its supported coefficients
+have value one, then `ν x` is zero or one. Only the coefficients occurring in this
+polynomial are required to have value one. -/
+theorem map_eq_zero_or_one_of_eval₂_eq_zero
+    {D : Type u} {A : Type v} {G : Type w} [Semiring D] [Semiring A]
+    [LinearOrderedCommMonoidWithZero G] (f : D →+* A) (ν : A →*₀ G)
+    (hadd : ∀ a b, ν (a + b) ≤ max (ν a) (ν b))
+    (p : Polynomial D) (x : A) (hp : p ≠ 0) (hx : p.eval₂ f x = 0)
+    (hc : ∀ i ∈ p.support, ν (f (p.coeff i)) = 1) :
+    ν x = 0 ∨ ν x = 1 := by
+  classical
+  by_cases hγ : ν x = 0
+  · exact Or.inl hγ
+  right
+  have : Nontrivial G := ⟨⟨ν x, 0, hγ⟩⟩
+  by_contra hγ₁
+  obtain ⟨k, hk⟩ := Polynomial.support_nonempty.mpr hp
+  have hw : ∃ i ∈ p.support, ν (f (p.coeff i)) * ν x ^ i ≠ 0 := by
+    refine ⟨k, hk, ?_⟩
+    simpa only [hc k hk, one_mul] using pow_ne_zero k hγ
+  obtain ⟨i, hi, j, hj, hij, heq, _, _⟩ :=
+    exists_lt_support_weight_eq_max_of_eval₂_eq_zero f ν hadd p x hx hw
+  have hpowers : ν x ^ i = ν x ^ j := by
+    simpa only [hc i hi, hc j hj, one_mul] using heq
+  have hpos : 0 < ν x := lt_of_le_of_ne zero_le (Ne.symm hγ)
+  exact (Nat.ne_of_lt hij) ((pow_right_inj₀ hpos hγ₁).mp hpowers)
+
+
+end MonoidWithZeroHom
+
+namespace Valuation
 
 /-- If a nonzero polynomial vanishes at `x` and the images of its supported coefficients
 have valuation one, then `v x` is zero or one. Only the coefficients occurring in this
@@ -148,22 +245,8 @@ theorem map_eq_zero_or_one_of_eval₂_eq_zero
     (p : Polynomial D) (x : A) (hp : p ≠ 0) (hx : p.eval₂ f x = 0)
     (hc : ∀ i ∈ p.support, v (f (p.coeff i)) = 1) :
     v x = 0 ∨ v x = 1 := by
-  classical
-  by_cases hγ : v x = 0
-  · exact Or.inl hγ
-  right
-  have : Nontrivial G := ⟨⟨v x, 0, hγ⟩⟩
-  by_contra hγ₁
-  obtain ⟨k, hk⟩ := Polynomial.support_nonempty.mpr hp
-  have hw : ∃ i ∈ p.support, v (f (p.coeff i)) * v x ^ i ≠ 0 := by
-    refine ⟨k, hk, ?_⟩
-    simpa only [hc k hk, one_mul] using pow_ne_zero k hγ
-  obtain ⟨i, hi, j, hj, hij, heq⟩ :=
-    exists_lt_support_weight_eq_of_eval₂_eq_zero f v p x hx hw
-  have hpowers : v x ^ i = v x ^ j := by
-    simpa only [hc i hi, hc j hj, one_mul] using heq
-  have hpos : 0 < v x := lt_of_le_of_ne zero_le (Ne.symm hγ)
-  exact (Nat.ne_of_lt hij) ((pow_right_inj₀ hpos hγ₁).mp hpowers)
+  exact MonoidWithZeroHom.map_eq_zero_or_one_of_eval₂_eq_zero f
+    v.toMonoidWithZeroHom (fun a b => v.map_add a b) p x hp hx hc
 
 
 /-- The value of a root of a nonzero polynomial over a division semiring is either zero,
@@ -191,8 +274,14 @@ theorem map_eq_zero_or_exists_pow_eq_of_eval₂_eq_zero
         simpa only [map_mul, map_one, hzero, zero_mul] using hvalue
       exact zero_ne_one hzero_one
     exact ⟨k, hk, mul_ne_zero hcoeff (pow_ne_zero k hγ)⟩
-  obtain ⟨i, hi, j, hj, hij, h⟩ :=
-    exists_lt_support_weight_eq_of_eval₂_eq_zero f v p x hx hw
+  obtain ⟨i, hi, j, hj, hij, h, _, _⟩ :
+      ∃ i ∈ p.support, ∃ j ∈ p.support, i < j ∧
+        v (f (p.coeff i)) * v x ^ i = v (f (p.coeff j)) * v x ^ j ∧
+        v (f (p.coeff i)) * v x ^ i ≠ 0 ∧
+        ∀ k ∈ p.support, v (f (p.coeff k)) * v x ^ k ≤
+          v (f (p.coeff i)) * v x ^ i :=
+    MonoidWithZeroHom.exists_lt_support_weight_eq_max_of_eval₂_eq_zero
+      f v.toMonoidWithZeroHom (fun a b => v.map_add a b) p x hx hw
   have hai : p.coeff i ≠ 0 := Polynomial.mem_support_iff.mp hi
   have hbj : p.coeff j ≠ 0 := Polynomial.mem_support_iff.mp hj
   refine ⟨j - i, Nat.sub_pos_of_lt hij,

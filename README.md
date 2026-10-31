@@ -541,3 +541,23 @@ this library adapted them. The module guides distinguish these roles and
 credit relevant mathlib contributors; mathlib retains its own contributor
 notices and license. Agent-assisted Lean development is described in
 `formalization.yaml`. Licensed under [Apache-2.0](LICENSE).
+
+### Powers separated from scalar values
+
+For a field `F`, an `F`-algebra `A` that is a ring, and a valuation `v : Valuation A G`
+with `G` a linearly ordered commutative monoid with zero, suppose `v x ≠ 0` and
+`(v x)^n ≠ v (algebraMap F A a)` whenever `0 < n < d` and `a ≠ 0`.
+Then `Valuation.linearIndependent_powers_of_pow_ne` gives linear independence over
+`F` of `1, x, …, x^(d-1)`, indexed by `Fin d`.
+If `A` is finite as an `F`-module, `Valuation.le_finrank_of_pow_ne` gives
+`d ≤ Module.finrank F A` through the weighted-value cardinality theorem.
+The types `F`, `A`, and `G` may lie in independent universes.
+For `i < j`, equality between power values weighted by nonzero scalars would imply
+`(v x)^(j-i) = v (algebraMap F A (a * b⁻¹))`. Only the scalar inverse in `F`
+is used; neither a domain structure on `A` nor a group structure on `G` is needed.
+A characteristic-`p` example is `F_p(t^p) ⊂ F_p(t)`, with `p` prime and a `t`-adic
+valuation satisfying `v(t) = ρ`, `0 < ρ < 1`. Nonzero scalar values lie in `ρ^(pℤ)`,
+so the separation holds for `d = p`.
+The nonzero-value assumption is essential: for `x = 0` and `d = 2` over a field,
+positive powers of `v x = 0` differ from every nonzero scalar value, but the
+family `1, 0` is not linearly independent.

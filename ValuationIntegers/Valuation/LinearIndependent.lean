@@ -83,4 +83,79 @@ theorem card_le_finrank_of_pairwise_ne [Fintype I] [Module.Finite F A]
     Fintype.card I ≤ Module.finrank F A :=
   (v.linearIndependent_of_pairwise_ne x hx hsep).fintype_card_le_finrank
 
+
+/-! ### Powers separated from scalar values -/
+
+private theorem powers_pairwise_ne (v : Valuation A G) (x : A) {d : ℕ}
+    (hx : v x ≠ 0)
+    (hsep : ∀ n, 0 < n → n < d → ∀ a : F, a ≠ 0 →
+      (v x) ^ n ≠ v (algebraMap F A a)) :
+    ∀ i j : Fin d, i ≠ j → ∀ a b : F, a ≠ 0 → b ≠ 0 →
+      v (algebraMap F A a) * v (x ^ i.val) ≠
+        v (algebraMap F A b) * v (x ^ j.val) := by
+  have hlt (i j : Fin d) (hij : i.val < j.val)
+      (a b : F) (ha : a ≠ 0) (hb : b ≠ 0) :
+      v (algebraMap F A a) * v (x ^ i.val) ≠
+        v (algebraMap F A b) * v (x ^ j.val) := by
+    intro h
+    have hr : 0 < v x := lt_of_le_of_ne (zero_le) (Ne.symm hx)
+    have h' : v (algebraMap F A a) * (v x) ^ i.val =
+        v (algebraMap F A b) * (v x) ^ j.val := by
+      simpa only [map_pow] using h
+    have hunit : v (algebraMap F A b⁻¹) * v (algebraMap F A b) = 1 := by
+      rw [← v.map_mul, ← (algebraMap F A).map_mul, inv_mul_cancel₀ hb,
+        (algebraMap F A).map_one, v.map_one]
+    have heq : v (algebraMap F A (a * b⁻¹)) * (v x) ^ i.val = (v x) ^ j.val := by
+      calc
+        _ = v (algebraMap F A b⁻¹) *
+            (v (algebraMap F A a) * (v x) ^ i.val) := by
+          rw [(algebraMap F A).map_mul, v.map_mul]
+          ac_rfl
+        _ = v (algebraMap F A b⁻¹) *
+            (v (algebraMap F A b) * (v x) ^ j.val) := by rw [h']
+        _ = (v x) ^ j.val := by rw [← mul_assoc, hunit, one_mul]
+    have hc : v (algebraMap F A (a * b⁻¹)) = (v x) ^ (j.val - i.val) := by
+      apply mul_left_cancel₀ (ne_of_gt (pow_pos hr i.val))
+      calc
+        (v x) ^ i.val * v (algebraMap F A (a * b⁻¹)) = (v x) ^ j.val := by
+          rw [mul_comm]; exact heq
+        _ = (v x) ^ i.val * (v x) ^ (j.val - i.val) := by
+          rw [← pow_add, Nat.add_sub_of_le hij.le]
+    exact hsep _ (Nat.sub_pos_of_lt hij)
+      (lt_of_le_of_lt (Nat.sub_le _ _) j.isLt) _
+      (mul_ne_zero ha (inv_ne_zero hb)) hc.symm
+  intro i j hij a b ha hb
+  have hne : i.val ≠ j.val := fun h => hij (Fin.ext h)
+  rcases lt_or_gt_of_ne hne with h | h
+  · exact hlt i j h a b ha hb
+  · exact Ne.symm (hlt j i h b a hb ha)
+
+/-- The first `d` powers are linearly independent when the nonzero value of `x`
+has no positive power below `d` equal to a nonzero scalar's value. -/
+theorem linearIndependent_powers_of_pow_ne (v : Valuation A G) (x : A) {d : ℕ}
+    (hx : v x ≠ 0)
+    (hsep : ∀ n, 0 < n → n < d → ∀ a : F, a ≠ 0 →
+      (v x) ^ n ≠ v (algebraMap F A a)) :
+    LinearIndependent F (fun i : Fin d => x ^ i.val) := by
+  apply v.linearIndependent_of_pairwise_ne (fun i : Fin d => x ^ i.val)
+  · intro i
+    have hp : 0 < (v x) ^ i.val :=
+      pow_pos (lt_of_le_of_ne (zero_le) (Ne.symm hx)) _
+    simpa only [map_pow] using ne_of_gt hp
+  · exact powers_pairwise_ne v x hx hsep
+
+/-- Scalar-separated powers give a lower bound for the dimension of a finite algebra. -/
+theorem le_finrank_of_pow_ne [Module.Finite F A]
+    (v : Valuation A G) (x : A) {d : ℕ} (hx : v x ≠ 0)
+    (hsep : ∀ n, 0 < n → n < d → ∀ a : F, a ≠ 0 →
+      (v x) ^ n ≠ v (algebraMap F A a)) :
+    d ≤ Module.finrank F A := by
+  simpa only [Fintype.card_fin] using
+    v.card_le_finrank_of_pairwise_ne (fun i : Fin d => x ^ i.val)
+      (fun i => by
+        have hp : 0 < (v x) ^ i.val :=
+          pow_pos (lt_of_le_of_ne (zero_le) (Ne.symm hx)) _
+        simpa only [map_pow] using ne_of_gt hp)
+      (powers_pairwise_ne v x hx hsep)
+
 end Valuation
