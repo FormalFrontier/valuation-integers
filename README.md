@@ -14,12 +14,13 @@ or discreteness hypotheses.
 
 ## Headline results
 
-- **Valuation equivalence over purely inseparable extensions**
+- **Valuations over purely inseparable extensions**
   ([module](ValuationIntegers/Valuation/PurelyInseparable.lean)). For a field `F`
   and a purely inseparable `F`-algebra `E` that is a ring and a domain, two
   valuations on `E` are equivalent exactly when their restrictions to `F` are
   equivalent. Their linearly ordered commutative value monoids with zero may
-  differ; no value-group or characteristic hypothesis is needed.
+  differ; no value-group or characteristic hypothesis is needed. With a fixed
+  value monoid, restriction is injective: equal restrictions imply equal valuations.
 
 - **Values of integral elements under scalar-trivial valuations**
   ([module](ValuationIntegers/Valuation/Integral.lean)). For any commutative ring
