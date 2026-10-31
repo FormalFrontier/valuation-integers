@@ -9,15 +9,22 @@ public import Mathlib.Algebra.Polynomial.Div
 import Mathlib.Algebra.Group.Units.Defs
 
 /-!
-# One-sided values and unit images of polynomial roots
+# One-sided values, left inverses and unit images of polynomial roots
 
-A multiplicative map to a commutative monoid sends a polynomial root to a unit if the
-mapped constant coefficient is a unit. For an ultrametric multiplicative map to a
-linearly ordered commutative monoid with zero, a nonzero dominant leading coefficient
-bounds the root value above by one, while a nonzero dominant constant coefficient
-bounds it below by one. In particular, supported coefficient values at most one give
-the corresponding one-sided bound when the relevant endpoint value is one. If both
-endpoint values are one, the root value is one.
+A multiplicative map to an arbitrary monoid sends a polynomial root to an element
+with a left inverse if the mapped constant coefficient is a unit. For a commutative
+target monoid this gives the unit-image corollary. Specializing the map to the
+identity gives a left inverse for the root itself, without coefficient centrality.
+In this raw specialization, the hypotheses force the evaluation semiring to admit
+a ring structure, even though no `Ring` instance is required; the generic mapped-unit
+result allows genuinely nonring evaluation semirings.
+
+For an ultrametric multiplicative map to a linearly ordered commutative monoid with
+zero, a nonzero dominant leading coefficient bounds the root value above by one,
+while a nonzero dominant constant coefficient bounds it below by one. In particular,
+supported coefficient values at most one give the corresponding one-sided bound
+when the relevant endpoint value is one. If both endpoint values are one, the root
+value is one.
 -/
 
 @[expose] public section
@@ -64,6 +71,35 @@ private theorem eval₂_apply_ne_zero
 
 namespace MonoidHom
 
+/-- A multiplicative image of an evaluation root has a left inverse if the image
+of the mapped constant coefficient is a unit. The target need only be a monoid:
+neither addition nor zero preservation is required of the map, and neither semiring
+needs to be commutative. -/
+theorem exists_mul_apply_eq_one_of_eval₂_eq_zero
+    {D : Type u} {E : Type v} {T : Type w}
+    [Semiring D] [Semiring E] [Monoid T]
+    (μ : E →* T) (f : D →+* E) (p : Polynomial D) (x : E)
+    (hconstant : IsUnit (μ (f (p.coeff 0))))
+    (hroot : p.eval₂ f x = 0) :
+    ∃ y : T, y * μ x = 1 := by
+  obtain ⟨u, hu⟩ := hconstant
+  let b := p.divX.eval₂ f x
+  have hsquare : (u : T) * (u : T) =
+      (μ b * μ x) * (μ b * μ x) := by
+    simpa only [map_mul, ← hu] using
+      congrArg μ (eval₂_constant_square_eq f p x hroot)
+  let v : T := ↑(u⁻¹)
+  have hv : v * (u : T) = 1 := u.inv_val
+  -- Cancel the constant unit on the left of the square without commuting factors.
+  refine ⟨(v * v) * ((μ b * μ x) * μ b), ?_⟩
+  calc
+    ((v * v) * ((μ b * μ x) * μ b)) * μ x =
+        (v * v) * ((μ b * μ x) * (μ b * μ x)) := by
+      simp only [mul_assoc]
+    _ = (v * v) * ((u : T) * (u : T)) := by rw [← hsquare]
+    _ = v * (v * (u : T)) * (u : T) := by simp only [mul_assoc]
+    _ = 1 := by rw [hv, mul_one, hv]
+
 /-- A multiplicative map to a commutative monoid sends an evaluation root to a unit
 when the image of the mapped constant coefficient is a unit. Neither the evaluation
 semiring nor the coefficient semiring needs to be commutative. -/
@@ -74,18 +110,34 @@ theorem isUnit_apply_of_eval₂_eq_zero
     (hconstant : IsUnit (φ (f (p.coeff 0))))
     (hroot : p.eval₂ f x = 0) :
     IsUnit (φ x) := by
-  let a := f (p.coeff 0)
-  let c := p.divX.eval₂ f x * x
-  have hsquare : a * a = c * c := eval₂_constant_square_eq f p x hroot
-  have hunit_square : IsUnit (φ c * φ c) := by
-    rw [← map_mul, ← hsquare, map_mul]
-    exact hconstant.mul hconstant
-  have hunit_c : IsUnit (φ c) := (IsUnit.mul_iff.mp hunit_square).1
-  have hunit_product : IsUnit (φ (p.divX.eval₂ f x) * φ x) := by
-    simpa only [c, map_mul] using hunit_c
-  exact (IsUnit.mul_iff.mp hunit_product).2
+  obtain ⟨y, hy⟩ :=
+    exists_mul_apply_eq_one_of_eval₂_eq_zero φ f p x hconstant hroot
+  exact ⟨
+    { val := φ x
+      inv := y
+      val_inv := (mul_comm _ _).trans hy
+      inv_val := hy },
+    rfl⟩
 
 end MonoidHom
+
+namespace Polynomial
+
+/-- An evaluation root has a left inverse if the mapped constant coefficient is a
+unit. No coefficient centrality is needed. Although only a `Semiring S` instance is
+required, the hypotheses force `S` to admit a ring structure; they do not give
+genuinely nonring examples. -/
+theorem exists_mul_eq_one_of_eval₂_eq_zero
+    {R : Type u} {S : Type v}
+    [Semiring R] [Semiring S]
+    (φ : R →+* S) (p : Polynomial R) (x : S)
+    (hconstant : IsUnit (φ (p.coeff 0)))
+    (hroot : p.eval₂ φ x = 0) :
+    ∃ y : S, y * x = 1 := by
+  exact MonoidHom.exists_mul_apply_eq_one_of_eval₂_eq_zero
+    (MonoidHom.id S) φ p x hconstant hroot
+
+end Polynomial
 
 namespace MonoidWithZeroHom
 

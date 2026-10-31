@@ -14,7 +14,7 @@ or discreteness hypotheses.
 
 ## Headline results
 
-**Polynomial root-value bounds and unit images.**
+**Polynomial root-value bounds, left inverses and unit images.**
 [PolynomialValueBounds](ValuationIntegers/Valuation/PolynomialValueBounds.lean) treats independent,
 possibly noncommutative semirings $D,E$, a semiring homomorphism $f:D\to E$, and a linearly
 ordered commutative monoid with zero $\Gamma$. Suppose $\nu:E\to\Gamma$ preserves multiplication,
@@ -31,10 +31,20 @@ zero-equals-one target. No injectivity of $f$, coefficient–root commutation, g
 structure on $\Gamma$, nontriviality or nonzero-root hypothesis is required; the upper
 criteria allow zero root value.
 
-Separately, for any $p\in D[X]$ and monoid homomorphism $\varphi:E\to T$ to a commutative
-monoid, a unit $\varphi(f(p_0))$ forces $\varphi(x)$ to be a unit at every evaluation root.
-Neither addition nor zero preservation by $\varphi$, nor commutativity of $E$, is required.
-A nonzero image need not be a unit, and a unit image need not equal one.
+Separately, for any $p\in D[X]$ and monoid homomorphism $\mu:E\to T$ to an arbitrary
+monoid, a unit $\mu(f(p_0))$ forces a left inverse for $\mu(x)$ at every evaluation root:
+there is $y\in T$ with $y\mu(x)=1$. Neither addition nor zero preservation by $\mu$,
+nor commutativity of $D$ or $E$, is required. A right inverse or unit need not follow
+for noncommutative $T$. If $T$ is commutative, the image is a unit, recovering the
+commutative-target unit corollary. A nonzero image need not be a unit, and a unit
+image need not equal one.
+
+For independent semirings $R,S$, a semiring homomorphism $\varphi:R\to S$ and a root
+$p.\mathrm{eval}_2(\varphi,x)=0$, a unit $\varphi(p_0)$ gives $y\in S$ with $yx=1$ by
+the identity-map specialization. No coefficient centrality is required. Although no
+Ring instance on $S$ is needed as input, these raw hypotheses force $S$ to admit a
+ring structure: this is not a source of genuinely nonring raw examples. The generic
+mapped-unit result, in contrast, allows genuinely nonring evaluation semirings.
 
 
 - **Finite values of polynomial roots.** For semirings `D`, `A`, a ring homomorphism
