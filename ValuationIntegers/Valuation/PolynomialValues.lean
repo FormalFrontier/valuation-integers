@@ -183,19 +183,18 @@ theorem finite_image_eval₂_eq_zero_of_ne_zero
 end Valuation
 
 /-!
-## Degree bounds for root values
+## Sparse bounds for root values
 
-For the same coefficient-image hypothesis, the number of root values is at most the
-natural degree. At each positive root value, choose a supported nonzero maximal tie.
-The upper indices of these ties strictly increase with the root value. If zero is a
-root value, the constant coefficient has value zero, so every positive tie has upper
-index at least two. Thus zero occupies slot one and positive values occupy their upper
-tie indices in the interval from one to the natural degree.
+The number of root values is at most the number of positive-degree supported coefficients
+with nonzero image value. At each positive root value, choose a supported nonzero maximal
+tie. The upper indices of these ties strictly increase with the root value. If zero is a
+root value, the constant coefficient has value zero. The least index of a coefficient with
+nonzero image value is then positive and lies below every positive tie's upper index.
+Thus zero and the positive root values inject into the positive-degree active support.
 
-The proof uses `Fin p.natDegree` for this interval, subtracting one from each positive
-upper index and assigning index zero to the zero value. A degree-zero polynomial is
-handled before this finite type is constructed. The existing finite-image theorem
-supplies the finite subtype used in the cardinality comparison.
+The existing finite-image theorem supplies the finite subtype used in the cardinality
+comparison. Since each index in the filtered support lies between one and the natural
+degree, the degree bounds follow as corollaries of the sparse bounds.
 -/
 
 namespace MonoidWithZeroHom
@@ -308,57 +307,32 @@ private lemma coeff_zero_value_eq_zero_of_zero_mem_image_eval₂_eq_zero
   apply hweight
   rw [htie, hxzero, zero_pow hj, mul_zero]
 
-private lemma image_eval₂_eq_zero_eq_empty_of_natDegree_eq_zero
-    {D : Type u} {A : Type v} {G : Type w} [Semiring D] [Semiring A]
-    [LinearOrderedCommMonoidWithZero G] (f : D →+* A) (ν : A →*₀ G)
-    (hadd : ∀ a b, ν (a + b) ≤ max (ν a) (ν b))
-    (p : Polynomial D) (hcoeff : ∃ k ∈ p.support, ν (f (p.coeff k)) ≠ 0)
-    (hd : p.natDegree = 0) :
-    ν '' {x : A | p.eval₂ f x = 0} = ∅ := by
-  classical
-  obtain ⟨k, hk, hck⟩ := hcoeff
-  have hk_le := Polynomial.le_natDegree_of_ne_zero (Polynomial.mem_support_iff.mp hk)
-  have hkzero : k = 0 := by omega
-  subst k
-  apply Set.ext
-  intro q
-  constructor
-  · intro hq
-    obtain ⟨x, hx, _⟩ := hq
-    -- The nonzero constant weight works for every value of x, including value zero.
-    have hw : ∃ k ∈ p.support, ν (f (p.coeff k)) * ν x ^ k ≠ 0 :=
-      ⟨0, hk, by simpa only [pow_zero, mul_one] using hck⟩
-    obtain ⟨i, _, j, hj, hij, _, _, _⟩ :=
-      exists_lt_support_weight_eq_max_of_eval₂_eq_zero f ν hadd p x hx hw
-    have hj_le := Polynomial.le_natDegree_of_ne_zero (Polynomial.mem_support_iff.mp hj)
-    omega
-  · intro hq
-    exact False.elim hq
-
-/-- The number of values of evaluation roots is at most the natural degree if some
-supported coefficient has nonzero image value. The semirings need not be commutative,
-and the evaluation semiring may have zero divisors. The value zero is included in the
-image and in the bound. -/
-theorem encard_image_eval₂_eq_zero_le_natDegree
+/-- The number of values of evaluation roots is at most the number of positive-degree
+supported coefficients with nonzero image value, provided some supported coefficient has
+nonzero image value. Zero is included in the root-value image. Neither semiring needs to
+be commutative, and the evaluation semiring may have zero divisors. -/
+theorem encard_image_eval₂_eq_zero_le_card_support_filter
     {D : Type u} {A : Type v} {G : Type w} [Semiring D] [Semiring A]
     [LinearOrderedCommMonoidWithZero G] (f : D →+* A) (ν : A →*₀ G)
     (hadd : ∀ a b, ν (a + b) ≤ max (ν a) (ν b))
     (p : Polynomial D) (hcoeff : ∃ k ∈ p.support, ν (f (p.coeff k)) ≠ 0) :
-    (ν '' {x : A | p.eval₂ f x = 0}).encard ≤ (p.natDegree : ENat) := by
+    (ν '' {x : A | p.eval₂ f x = 0}).encard ≤
+      ((p.support.filter (fun k => k ≠ 0 ∧ ν (f (p.coeff k)) ≠ 0)).card : ENat) := by
   classical
-  by_cases hd : p.natDegree = 0
-  · rw [image_eval₂_eq_zero_eq_empty_of_natDegree_eq_zero f ν hadd p hcoeff hd, hd]
-    simp
   let R : Set G := ν '' {x : A | p.eval₂ f x = 0}
   let a : ℕ → G := fun k => ν (f (p.coeff k))
+  let T : Finset ℕ := p.support.filter (fun k => k ≠ 0 ∧ a k ≠ 0)
   have hfinite : R.Finite := finite_image_eval₂_eq_zero f ν hadd p hcoeff
   let : Fintype R := hfinite.fintype
-  have hbound (k : ℕ) (hk : k ∈ p.support) : k ≤ p.natDegree :=
-    Polynomial.le_natDegree_of_ne_zero (Polynomial.mem_support_iff.mp hk)
+  have hactive : ∃ k, k ∈ p.support ∧ a k ≠ 0 := hcoeff
+  let m : ℕ := Nat.find hactive
+  have hm : m ∈ p.support ∧ a m ≠ 0 := Nat.find_spec hactive
+  have hmin (k : ℕ) (hk : k ∈ p.support ∧ a k ≠ 0) : m ≤ k :=
+    Nat.find_min' hactive hk
   have hpairs : ∀ (q : R), (q : G) ≠ 0 →
       ∃ i ∈ p.support, ∃ j ∈ p.support, i < j ∧
+        a i ≠ 0 ∧ a j ≠ 0 ∧
         a i * (q : G) ^ i = a j * (q : G) ^ j ∧
-        a i * (q : G) ^ i ≠ 0 ∧
         ∀ k ∈ p.support, a k * (q : G) ^ k ≤ a i * (q : G) ^ i := by
     intro q hq
     let : Nontrivial G := nontrivial_of_ne (q : G) 0 hq
@@ -367,25 +341,21 @@ theorem encard_image_eval₂_eq_zero_le_natDegree
     obtain ⟨k, hk, hck⟩ := hcoeff
     have hw : ∃ k ∈ p.support, ν (f (p.coeff k)) * ν x ^ k ≠ 0 :=
       ⟨k, hk, mul_ne_zero hck (pow_ne_zero k hx_ne)⟩
-    obtain ⟨i, hi, j, hj, hij, htie, hweight, hmax⟩ :=
-      exists_lt_support_weight_eq_max_of_eval₂_eq_zero f ν hadd p x hx hw
-    refine ⟨i, hi, j, hj, hij, ?_, ?_, ?_⟩
+    obtain ⟨i, hi, j, hj, hij, hci, hcj, _, _, htie, _, hmax⟩ :=
+      exists_lt_support_coeff_eq_mul_pow_of_eval₂_eq_zero f ν hadd p x hx hw
+    refine ⟨i, hi, j, hj, hij, hci, hcj, ?_, ?_⟩
     · simpa only [a, hxq] using htie
-    · simpa only [a, hxq] using hweight
     · simpa only [a, hxq] using hmax
-  choose lower hlower upper hupper hlt htie hweight hmax using hpairs
+  choose lower hlower upper hupper hlt hlower_active hupper_active htie hmax using hpairs
   have hupper_pos (q : R) (hq : (q : G) ≠ 0) : 0 < upper q hq :=
     lt_of_le_of_lt (Nat.zero_le (lower q hq)) (hlt q hq)
-  have hupper_le (q : R) (hq : (q : G) ≠ 0) : upper q hq ≤ p.natDegree :=
-    hbound _ (hupper q hq)
+  have hupper_mem (q : R) (hq : (q : G) ≠ 0) : upper q hq ∈ T := by
+    exact Finset.mem_filter.mpr
+      ⟨hupper q hq, Nat.ne_of_gt (hupper_pos q hq), hupper_active q hq⟩
   have hstrict (q r : R) (hq : (q : G) ≠ 0) (hr : (r : G) ≠ 0)
       (hqr : (q : G) < (r : G)) : upper q hq < upper r hr := by
-    have hcu : a (upper q hq) ≠ 0 := by
-      intro hz
-      apply hweight q hq
-      rw [htie q hq, hz, zero_mul]
     have hapos : 0 < a (upper q hq) :=
-      lt_of_not_ge (fun hz => hcu (le_antisymm hz zero_le))
+      lt_of_not_ge (fun hz => hupper_active q hq (le_antisymm hz zero_le))
     have hqpos : 0 < (q : G) :=
       lt_of_not_ge (fun hz => hq (le_antisymm hz zero_le))
     have hle : upper q hq ≤ lower r hr := by
@@ -399,54 +369,36 @@ theorem encard_image_eval₂_eq_zero_le_natDegree
     exact lt_of_le_of_lt hle (hlt r hr)
   have hconstant (hzero : (0 : G) ∈ R) : a 0 = 0 :=
     coeff_zero_value_eq_zero_of_zero_mem_image_eval₂_eq_zero f ν hadd p hzero
-  have hzero_degree (hzero : (0 : G) ∈ R) : 0 < p.natDegree := by
-    obtain ⟨k, hk, hck⟩ := hcoeff
-    have hk_ne : k ≠ 0 := by
-      intro hkzero
-      apply hck
-      simpa only [a, hkzero] using hconstant hzero
-    have hk_le := hbound k hk
-    omega
-  have hzero_upper (hzero : (0 : G) ∈ R) (q : R) (hq : (q : G) ≠ 0) :
-      2 ≤ upper q hq := by
-    have hlower_ne : lower q hq ≠ 0 := by
-      intro hlzero
-      apply hweight q hq
-      rw [hlzero, hconstant hzero, zero_mul]
-    have hltq := hlt q hq
-    omega
-  -- Slot zero represents the first place of the interval {1, ..., natDegree p}.
-  let slot (q : R) : Fin p.natDegree :=
+  have hzero_mem (hzero : (0 : G) ∈ R) : m ∈ T := by
+    refine Finset.mem_filter.mpr ⟨hm.1, ?_, hm.2⟩
+    intro hmzero
+    apply hm.2
+    simpa only [hmzero] using hconstant hzero
+  have hmin_upper (q : R) (hq : (q : G) ≠ 0) : m < upper q hq :=
+    lt_of_le_of_lt (hmin _ ⟨hlower q hq, hlower_active q hq⟩) (hlt q hq)
+  -- The least active index is reserved only when zero is a root value.
+  let slot (q : R) : {k // k ∈ T} :=
     if hq : (q : G) = 0 then
-      ⟨0, hzero_degree (by simpa only [hq] using q.property)⟩
+      ⟨m, hzero_mem (by simpa only [hq] using q.property)⟩
     else
-      ⟨upper q hq - 1, by
-        have hp := hupper_pos q hq
-        have hb := hupper_le q hq
-        omega⟩
+      ⟨upper q hq, hupper_mem q hq⟩
   have hslot : Function.Injective slot := by
     intro q r heq
-    have hval : (slot q).val = (slot r).val := congrArg Fin.val heq
+    have hval : (slot q).val = (slot r).val := congrArg Subtype.val heq
     by_cases hq : (q : G) = 0
     · by_cases hr : (r : G) = 0
       · exact Subtype.ext (hq.trans hr.symm)
-      · have hzero : (0 : G) ∈ R := by simpa only [hq] using q.property
-        have hr_two := hzero_upper hzero r hr
-        have hs : 0 = upper r hr - 1 := by
+      · have hs : m = upper r hr := by
           simpa only [slot, dite_eq_left hq, dite_eq_right hr] using hval
+        have hltmr := hmin_upper r hr
         omega
     · by_cases hr : (r : G) = 0
-      · have hzero : (0 : G) ∈ R := by simpa only [hr] using r.property
-        have hq_two := hzero_upper hzero q hq
-        have hs : upper q hq - 1 = 0 := by
+      · have hs : upper q hq = m := by
           simpa only [slot, dite_eq_right hq, dite_eq_left hr] using hval
+        have hltmq := hmin_upper q hq
         omega
       · have hupper_eq : upper q hq = upper r hr := by
-          have hs : upper q hq - 1 = upper r hr - 1 := by
-            simpa only [slot, dite_eq_right hq, dite_eq_right hr] using hval
-          have hqp := hupper_pos q hq
-          have hrp := hupper_pos r hr
-          omega
+          simpa only [slot, dite_eq_right hq, dite_eq_right hr] using hval
         apply Subtype.ext
         rcases lt_trichotomy (q : G) (r : G) with hqr | hqr | hrq
         · have hltqr := hstrict q r hq hr hqr
@@ -454,13 +406,61 @@ theorem encard_image_eval₂_eq_zero_le_natDegree
         · exact hqr
         · have hltrq := hstrict r q hr hq hrq
           omega
-  have hcard : Fintype.card R ≤ p.natDegree := by
-    simpa only [Fintype.card_fin] using Fintype.card_le_of_injective slot hslot
-  have hncard : R.ncard ≤ p.natDegree := by
-    change (ENat.card R).toNat ≤ p.natDegree
+  have hcard : Fintype.card R ≤ T.card := by
+    simpa only [Fintype.card_coe] using Fintype.card_le_of_injective slot hslot
+  have hncard : R.ncard ≤ T.card := by
+    change (ENat.card R).toNat ≤ T.card
     rw [ENat.card_eq_coe_fintype_card]
     exact hcard
   exact Set.encard_le_coe_iff_finite_ncard_le.mpr ⟨hfinite, hncard⟩
+
+/-- The finite cardinality of the root-value image is at most the number of
+positive-degree supported coefficients with nonzero image value. Zero remains in the
+image, and the coefficient hypothesis asks only for some supported nonzero image value. -/
+theorem ncard_image_eval₂_eq_zero_le_card_support_filter
+    {D : Type u} {A : Type v} {G : Type w} [Semiring D] [Semiring A]
+    [LinearOrderedCommMonoidWithZero G] (f : D →+* A) (ν : A →*₀ G)
+    (hadd : ∀ a b, ν (a + b) ≤ max (ν a) (ν b))
+    (p : Polynomial D) (hcoeff : ∃ k ∈ p.support, ν (f (p.coeff k)) ≠ 0) :
+    (ν '' {x : A | p.eval₂ f x = 0}).ncard ≤
+      (p.support.filter (fun k => k ≠ 0 ∧ ν (f (p.coeff k)) ≠ 0)).card := by
+  exact (Set.encard_le_coe_iff_finite_ncard_le.mp
+    (encard_image_eval₂_eq_zero_le_card_support_filter f ν hadd p hcoeff)).2
+
+/-- The number of values of evaluation roots is at most the natural degree if some
+supported coefficient has nonzero image value. The semirings need not be commutative,
+and the evaluation semiring may have zero divisors. The value zero is included in the
+image and in the bound. -/
+theorem encard_image_eval₂_eq_zero_le_natDegree
+    {D : Type u} {A : Type v} {G : Type w} [Semiring D] [Semiring A]
+    [LinearOrderedCommMonoidWithZero G] (f : D →+* A) (ν : A →*₀ G)
+    (hadd : ∀ a b, ν (a + b) ≤ max (ν a) (ν b))
+    (p : Polynomial D) (hcoeff : ∃ k ∈ p.support, ν (f (p.coeff k)) ≠ 0) :
+    (ν '' {x : A | p.eval₂ f x = 0}).encard ≤ (p.natDegree : ENat) := by
+  classical
+  let T : Finset ℕ := p.support.filter (fun k => k ≠ 0 ∧ ν (f (p.coeff k)) ≠ 0)
+  have hcard : T.card ≤ p.natDegree := by
+    let index (k : {k // k ∈ T}) : Fin p.natDegree :=
+      ⟨k.val - 1, by
+        have hk : k.val ∈ p.support ∧
+            k.val ≠ 0 ∧ ν (f (p.coeff k.val)) ≠ 0 := Finset.mem_filter.mp k.property
+        have hbound := Polynomial.le_natDegree_of_ne_zero
+          (Polynomial.mem_support_iff.mp hk.1)
+        have hpos := hk.2.1
+        omega⟩
+    have hinjective : Function.Injective index := by
+      intro k l heq
+      have hkpos : k.val ≠ 0 := (Finset.mem_filter.mp k.property).2.1
+      have hlpos : l.val ≠ 0 := (Finset.mem_filter.mp l.property).2.1
+      have hval : k.val - 1 = l.val - 1 := by
+        simpa only [index] using congrArg Fin.val heq
+      apply Subtype.ext
+      omega
+    simpa only [Fintype.card_coe, Fintype.card_fin] using
+      Fintype.card_le_of_injective index hinjective
+  obtain ⟨hfinite, hsparse⟩ := Set.encard_le_coe_iff_finite_ncard_le.mp
+    (encard_image_eval₂_eq_zero_le_card_support_filter f ν hadd p hcoeff)
+  exact Set.encard_le_coe_iff_finite_ncard_le.mpr ⟨hfinite, hsparse.trans hcard⟩
 
 /-- The finite cardinality of the root-value image is at most the natural degree,
 under the supported nonzero-valued-coefficient hypothesis. -/

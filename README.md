@@ -31,6 +31,14 @@ or discreteness hypotheses.
   image values, not merely `p ≠ 0`.
   See [PolynomialValues](ValuationIntegers/Valuation/PolynomialValues.lean).
 
+- `ValuationIntegers.Valuation.PolynomialValues`: distinct values of polynomial
+  evaluation roots, including zero, are bounded by the number of positive-degree
+  supported coefficients with nonzero image value. This sharp sparse bound improves
+  the natural-degree bound, assuming only some supported coefficient has nonzero
+  image value. It holds for independent-universe semirings and a multiplicative,
+  zero-and-one-preserving map into a linearly ordered commutative monoid with zero
+  satisfying the max-addition inequality.
+
 - **Canonical valuation-subring extensions under positive scalar powers**
   ([module](ValuationIntegers/ValuationSubring/PowerImage.lean)). Let `F` and `E` be
   fields with an `F`-algebra structure on `E`. Assume that **every** `x : E` has
