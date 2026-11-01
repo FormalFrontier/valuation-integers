@@ -41,6 +41,15 @@ value is one.
 
 universe u v w
 
+private theorem eval₂_constant_add_divX_mul_eq_zero {D : Type u} {E : Type v}
+    [Semiring D] [Semiring E] (f : D →+* E) (p : Polynomial D) (x : E)
+    (hroot : p.eval₂ f x = 0) :
+    f (p.coeff 0) + p.divX.eval₂ f x * x = 0 := by
+  have hsplit := congrArg (fun q : Polynomial D => q.eval₂ f x)
+    (Polynomial.divX_mul_X_add p)
+  simpa only [Polynomial.eval₂_add, Polynomial.eval₂_mul_X, Polynomial.eval₂_C,
+    hroot, add_comm] using hsplit
+
 /-- The root decomposition gives a square identity before applying a multiplicative map. -/
 private theorem eval₂_constant_square_eq
     {D : Type u} {E : Type v} [Semiring D] [Semiring E]
@@ -50,11 +59,7 @@ private theorem eval₂_constant_square_eq
       (p.divX.eval₂ f x * x) * (p.divX.eval₂ f x * x) := by
   let a := f (p.coeff 0)
   let c := p.divX.eval₂ f x * x
-  have hsplit := congrArg (fun q : Polynomial D => q.eval₂ f x)
-    (Polynomial.divX_mul_X_add p)
-  have hsum : a + c = 0 := by
-    simpa only [Polynomial.eval₂_add, Polynomial.eval₂_mul_X, Polynomial.eval₂_C,
-      hroot, add_comm] using hsplit
+  have hsum : a + c = 0 := eval₂_constant_add_divX_mul_eq_zero f p x hroot
   have ha : a * a + c * a = 0 := by
     simpa only [add_mul, zero_mul] using congrArg (fun z : E => z * a) hsum
   have hc : c * a + c * c = 0 := by
