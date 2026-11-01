@@ -8,6 +8,7 @@ public import ValuationIntegers.Valuation.Polynomial
 public import Mathlib.Algebra.Polynomial.Div
 public import Mathlib.Algebra.Group.Hom.Defs
 public import Mathlib.Algebra.Regular.Defs
+import GroupTheory.Algebra.IsAddUnit
 import Mathlib.Algebra.Group.Units.Defs
 import Mathlib.Algebra.Group.Units.Basic
 
@@ -57,18 +58,8 @@ private theorem eval₂_constant_square_eq
     (hroot : p.eval₂ f x = 0) :
     f (p.coeff 0) * f (p.coeff 0) =
       (p.divX.eval₂ f x * x) * (p.divX.eval₂ f x * x) := by
-  let a := f (p.coeff 0)
-  let c := p.divX.eval₂ f x * x
-  have hsum : a + c = 0 := eval₂_constant_add_divX_mul_eq_zero f p x hroot
-  have ha : a * a + c * a = 0 := by
-    simpa only [add_mul, zero_mul] using congrArg (fun z : E => z * a) hsum
-  have hc : c * a + c * c = 0 := by
-    simpa only [mul_add, mul_zero] using congrArg (fun z : E => c * z) hsum
-  calc
-    a * a = a * a + 0 := (add_zero _).symm
-    _ = a * a + (c * a + c * c) := by rw [hc]
-    _ = (a * a + c * a) + c * c := (add_assoc _ _ _).symm
-    _ = c * c := by rw [ha, zero_add]
+  exact mul_self_eq_mul_self_of_add_eq_zero
+    (eval₂_constant_add_divX_mul_eq_zero f p x hroot)
 
 /-- A nonzero constant image forces a nonzero root image without requiring a unit. -/
 private theorem eval₂_apply_ne_zero
@@ -191,14 +182,11 @@ theorem isUnit_apply_of_eval₂_eq_zero
     (hconstant : IsUnit (φ (f (p.coeff 0))))
     (hroot : p.eval₂ f x = 0) :
     IsUnit (φ x) := by
-  obtain ⟨y, hy⟩ :=
-    exists_mul_apply_eq_one_of_eval₂_eq_zero φ f p x hconstant hroot
-  exact ⟨
-    { val := φ x
-      inv := y
-      val_inv := (mul_comm _ _).trans hy
-      inv_val := hy },
-    rfl⟩
+  have hproduct : IsUnit (φ (p.divX.eval₂ f x * x)) :=
+    (MulHomClass.isUnit_apply_iff_of_add_eq_zero φ
+      (eval₂_constant_add_divX_mul_eq_zero f p x hroot)).mp hconstant
+  rw [map_mul] at hproduct
+  exact isUnit_of_mul_isUnit_right hproduct
 
 end MonoidHom
 
