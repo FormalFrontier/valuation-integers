@@ -31,13 +31,17 @@ zero-equals-one target. No injectivity of $f$, coefficient–root commutation, g
 structure on $\Gamma$, nontriviality or nonzero-root hypothesis is required; the upper
 criteria allow zero root value.
 
-Separately, for any $p\in D[X]$ and monoid homomorphism $\mu:E\to T$ to an arbitrary
-monoid, a supplied $l\in T$ with $l\mu(f(p_0))=1$ forces a left inverse for $\mu(x)$
-at every evaluation root: there is $y\in T$ with $y\mu(x)=1$. A unit mapped constant
-supplies such an $l$, recovering the unit-constant API. Neither addition nor zero preservation
-by $\mu$, nor commutativity of $D$ or $E$, is required. A right inverse or unit need not follow
-for noncommutative $T$. If $T$ is commutative, the unit-constant corollary gives a unit image.
-A nonzero image need not be a unit, and a unit image need not equal one.
+Separately, for any $p\in D[X]$ and multiplication-preserving map $\mu:E\to T$ to an
+arbitrary monoid, a supplied $l\in T$ with $l\mu(f(p_0))=1$ forces a left inverse for
+$\mu(x)$ at every evaluation root: there is $y\in T$ with $y\mu(x)=1$. At such a root,
+$\mu(x)$ is a unit if and only if right multiplication by $\mu(x)$ is injective
+(`IsRightRegular`). Preservation of one need not be supplied: it follows from the
+constant-coefficient left-inverse hypothesis. A unit mapped constant supplies such
+an $l$, recovering the unit-constant API. Neither addition nor zero preservation by
+$\mu$, nor commutativity of $D$ or $E$, is required. A left inverse alone need not give
+a right inverse or a unit for noncommutative $T$. If $T$ is commutative, the
+unit-constant corollary gives a unit image. A nonzero image need not be a unit, and a
+unit image need not equal one.
 
 For independent semirings $R,S$, a semiring homomorphism $\varphi:R\to S$ and a root
 $p.\mathrm{eval}_2(\varphi,x)=0$, a unit $\varphi(p_0)$ gives $y\in S$ with $yx=1$ by
