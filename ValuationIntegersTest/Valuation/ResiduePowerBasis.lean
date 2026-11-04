@@ -6,7 +6,8 @@ module
 
 import ValuationIntegers.Valuation.ResiduePowerBasis
 import ValuationIntegers.Valuation.ResidueExtension
-import Mathlib.RingTheory.AdjoinRoot
+import ValuationIntegers.Valuation.ResidueSeparability
+import Mathlib.RingTheory.Etale.StandardEtale
 
 /-!
 # Coordinates and polynomial presentations from primitive residue lifts
@@ -19,7 +20,10 @@ coordinates agree under the original embeddings at matching indices. Reduction
 reconstructs each element from its reduced integral coordinates and the powers of
 the residue generator. The ring power basis also presents the integer ring as an
 `AdjoinRoot` and gives its root universal property for any ring target with the
-given central coefficient action. No separability assumption is needed.
+given central coefficient action. No separability assumption is needed for these
+conclusions. If the residue generator's minimal polynomial is separable, the
+original integer-ring algebra is also finite and étale. Mathlib's standard étale
+presentation and localization-at-a-unit equivalence supply this last conclusion.
 -/
 
 noncomputable section
@@ -62,7 +66,8 @@ include hR hS aRF aSL aFL aRS aRL towerRFL towerRSL
 include aKK aRK towerRkK towerRSK finiteFL hnf α hα hθ
 
 -- The same lift gives compatible coordinates and reduction, a polynomial presentation,
--- and the root universal property, even for noncommutative targets.
+-- and the root universal property, even for noncommutative targets. Separability
+-- additionally makes the original integer-ring algebra finite étale.
 example {A : Type uA} [Ring A] [Algebra R A] :
     ∃ (pbR : PowerBasis R S) (pbF : PowerBasis F L),
       (pbR).gen = θ ∧ (pbF).gen = algebraMap S L θ ∧
@@ -79,7 +84,9 @@ example {A : Type uA} [Ring A] [Algebra R A] :
               α ^ (i : ℕ)) ∧
       ∃ Q : AdjoinRoot (PowerBasis.minpolyGen pbR) ≃ₐ[R] S,
         Q (AdjoinRoot.root (PowerBasis.minpolyGen pbR)) = θ ∧
-        Nonempty ((S →ₐ[R] A) ≃ {a : A // aeval a (PowerBasis.minpolyGen pbR) = 0}) := by
+        Nonempty ((S →ₐ[R] A) ≃ {a : A // aeval a (PowerBasis.minpolyGen pbR) = 0}) ∧
+        ((minpoly (@ResidueField R _ (Valuation.Integers.isLocalRing hR)) α).Separable →
+          Module.Finite R S ∧ Algebra.Etale R S) := by
   let : IsFractionRing R F := Valuation.Integers.isFractionRing hR
   let : IsFractionRing S L := Valuation.Integers.isFractionRing hS
   let : IsDomain R :=
@@ -147,7 +154,7 @@ example {A : Type uA} [Ring A] [Algebra R A] :
     rw [AdjoinRoot.equiv'_toAlgHom]
     exact (AdjoinRoot.liftAlgHom_root (PowerBasis.minpolyGen pbR)
       (Algebra.ofId R S) (pbR).gen (PowerBasis.aeval_minpolyGen pbR)).trans hgenR
-  refine ⟨pbR, pbF, hgenR, hgenF, hdim, ?_, hreduction, Q, hQ, ⟨?_⟩⟩
+  refine ⟨pbR, pbF, hgenR, hgenF, hdim, ?_, hreduction, Q, hQ, ⟨?_⟩, ?_⟩
   · intro s i j hij
     have hij' : i = j := Fin.ext hij
     subst j
@@ -155,5 +162,28 @@ example {A : Type uA} [Ring A] [Algebra R A] :
   · simpa only [PowerBasis.minpolyGen_eq] using
       (PowerBasis.liftEquiv pbR :
         (S →ₐ[R] A) ≃ {a : A // aeval a (minpoly R (pbR).gen) = 0})
+  · intro hsep
+    refine ⟨pbR.finite, ?_⟩
+    let f := PowerBasis.minpolyGen pbR
+    have hunit : IsUnit (aeval θ f.derivative) :=
+      ValuationRing.isUnit_aeval_derivative_integralPowerBasisOfPrimitiveResidue_minpolyGen
+        (R := R) (S := S) (F := F) (L := L) hSL hnf α hα θ hθ hsep
+    have hgen : Q.symm θ = AdjoinRoot.root f := by
+      rw [← hQ, Q.symm_apply_apply]
+    have hx : IsUnit (AdjoinRoot.mk f f.derivative) := by
+      have hback := hunit.map Q.symm.toMonoidHom
+      change IsUnit (Q.symm (aeval θ f.derivative)) at hback
+      rw [← aeval_algHom_apply Q.symm, hgen, AdjoinRoot.aeval_eq] at hback
+      exact hback
+    let P : StandardEtalePair R :=
+      { f := f
+        monic_f := pbR.minpolyGen_monic
+        g := f.derivative
+        cond := ⟨1, 0, 1, by simp⟩ }
+    let u : AdjoinRoot f ≃ₐ[AdjoinRoot f]
+        Localization.Away (AdjoinRoot.mk f f.derivative) :=
+      IsLocalization.atUnit _ _ _ hx
+    exact Algebra.Etale.of_equiv
+      ((P.equivAwayAdjoinRoot.trans (u.symm.restrictScalars R)).trans Q)
 
 end Valuation.Integers
