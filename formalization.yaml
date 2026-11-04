@@ -372,18 +372,22 @@ highlights:
     declarations:
       - declaration: Valuation.exists_root_of_map_eval_lt_map_derivative_sq
         file: ValuationIntegers/Polynomial/Hensel.lean
-  - title: Norms in ideal-congruence neighborhoods of one
+  - title: Unit norms over Henselian valuation domains
     statement: >-
       Let R be a Henselian valuation domain with fraction field F and S a local
       commutative R-algebra embedded in a finite extension L/F, with compatible
       given ambient and residue algebras. If field degree equals residue degree
       and the residue extension is separable, every u with u - 1 in an ideal I
       contained in the maximal ideal of R is the norm of a unit s of S with
-      s - 1 in the extension of I to S. No Galois or invertible-degree hypothesis
-      is needed.
+      s - 1 in the extension of I to S. If the base residue field is finite,
+      every unit of R is the norm of a unit of S, with residue separability
+      derived from finiteness. Neither statement requires a Galois or
+      invertible-degree hypothesis.
     declarations:
       - declaration: ValuationRing.exists_isUnit_norm_eq_of_sub_one_mem
         file: ValuationIntegers/Valuation/NormUnits.lean
+      - declaration: ValuationRing.exists_isUnit_norm_eq
+        file: ValuationIntegers/Valuation/UnitNorm.lean
 alignment:
   namespace: Valuation
   note: >-

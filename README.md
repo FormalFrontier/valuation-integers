@@ -144,8 +144,9 @@ space from Spectral Stone Duality; their valuation applications are developed he
   neither is an extra premise. Residue separability is not required, and there
   is no restriction on characteristic.
 
-- **Norms near one over a Henselian valuation domain**
-  ([module](ValuationIntegers/Valuation/NormUnits.lean)).
+- **Unit norms over a Henselian valuation domain**
+  ([principal congruences](ValuationIntegers/Valuation/NormUnits.lean),
+  [finite residue fields](ValuationIntegers/Valuation/UnitNorm.lean)).
   In the preceding compatible valuation-domain and local embedded-algebra setting,
   assume `R` Henselian, `[L : F] = [κS : κR]`, and the given residue extension
   separable. For every ideal `I ≤ maximalIdeal R` and `u : R` with `u - 1 ∈ I`,
@@ -154,6 +155,10 @@ space from Spectral Stone Duality; their valuation applications are developed he
   trace-unit witness is a premise. The statement uses ideal extension, not an
   asserted power of the maximal ideal of `S`; it has no Galois, prime-degree,
   invertible-degree, discreteness or completeness hypothesis.
+  If the base residue field is finite, every unit of `R` is the norm of a unit
+  of the original `S`. Residue separability is derived from finiteness, rather
+  than assumed. This combines finite-field unit norm surjectivity, the residue
+  norm comparison and the principal-congruence correction.
 
 - **Power bases and minimal polynomials from arbitrary primitive residue lifts**
   ([power bases](ValuationIntegers/Valuation/ResiduePowerBasis.lean),
@@ -371,6 +376,8 @@ comparisons with Mathlib's residue-unit, polynomial-derivative and separable-adj
 The norm-congruence theorem combines the residue-trace comparison and separable
 trace surjectivity with Mathlib's regular-multiplication determinant derivative and
 evaluation APIs and Adic Modules' nonmonic Hensel and subideal theorems.
+The all-unit application also uses Mathlib's finite-field unit norm surjectivity,
+finite-module cardinality and residue-unit APIs.
 
 ## Credits and license
 

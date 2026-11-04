@@ -15,6 +15,7 @@ public import ValuationIntegers.Valuation.ResidueSeparability
 public import ValuationIntegers.Valuation.ResidueHom
 public import ValuationIntegers.Valuation.ResidueTraceNorm
 public import ValuationIntegers.Valuation.NormUnits
+public import ValuationIntegers.Valuation.UnitNorm
 public import ValuationIntegers.Valuation.Equivalence
 
 public import ValuationIntegers.ValuationSubring.PurelyInseparable
@@ -108,6 +109,8 @@ into a local Henselian `R`-algebra with compatible residue towers lifts uniquely
 to an `R`-algebra homomorphism commuting with reduction on the whole source algebra.
 Over a Henselian base, degree exhaustion and residue separability also give unit norm
 preimages in every extended ideal-congruence neighborhood of one.
+If the residue field of the base is finite, degree exhaustion gives norm preimages
+for every unit of the base; residue separability is then a consequence of finiteness.
 It also provides bounded-module finiteness, Henselian power neighborhoods, Bernoulli
 integrality and rational denominator-support results.
 The polynomial Hensel criteria give strong roots with maximal-ideal power precision,
