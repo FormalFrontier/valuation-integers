@@ -11,6 +11,7 @@ public import ValuationIntegers.Valuation.ResidueDegree
 public import ValuationIntegers.Valuation.ResidueBasis
 public import ValuationIntegers.Valuation.ResiduePowerBasis
 public import ValuationIntegers.Valuation.ResiduePolynomial
+public import ValuationIntegers.Valuation.ResidueSeparability
 public import ValuationIntegers.Valuation.ResidueTraceNorm
 public import ValuationIntegers.Valuation.Equivalence
 
@@ -98,6 +99,8 @@ When residue degree equals field degree, every lift of every primitive residue
 generator gives power bases of the original ring algebra and field extension.
 The integral power-basis polynomial maps exactly to the field minimal polynomial
 and reduces exactly to the residue minimal polynomial, without separability assumptions.
+With separable residue minimal polynomial, its derivative evaluates to a unit in the original
+local algebra and the original ambient field extension is separable.
 It also provides bounded-module finiteness, Henselian power neighborhoods, Bernoulli
 integrality and rational denominator-support results.
 The polynomial Hensel criteria give strong roots with maximal-ideal power precision,

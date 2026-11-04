@@ -146,7 +146,8 @@ space from Spectral Stone Duality; their valuation applications are developed he
 
 - **Power bases and minimal polynomials from arbitrary primitive residue lifts**
   ([power bases](ValuationIntegers/Valuation/ResiduePowerBasis.lean),
-  [polynomial comparisons](ValuationIntegers/Valuation/ResiduePolynomial.lean)).
+  [polynomial comparisons](ValuationIntegers/Valuation/ResiduePolynomial.lean),
+  [derivatives and separability](ValuationIntegers/Valuation/ResidueSeparability.lean)).
   In the preceding valuation-domain, local embedded-algebra setting, assume
   `[L : F] = [κS : κR]`. For every `α : κS` with
   `Algebra.adjoin κR {α} = ⊤` and every `θ : S` reducing to `α`,
@@ -164,7 +165,9 @@ space from Spectral Stone Duality; their valuation applications are developed he
   of polynomials. Residue finiteness is derived; no power basis, finite
   `R`-module structure or integrality of `S` is assumed. Neither comparison
   requires separability. No Henselianity, discreteness, completeness or common
-  value group is required.
+  value group is required. If `minpoly κR α` is separable, then
+  `pbR.minpolyGen.derivative` evaluates at the same prescribed `θ` to a unit
+  in the original `S`, and the original extension `L/F` is separable.
 
 - **Absolute values and rank-at-most-one realizations**
   ([generic layer](docs/AbsoluteValues.md),
@@ -346,6 +349,8 @@ APIs, and finiteness and freeness results for bases. The primitive-residue-lift
 power bases use this library's prescribed-lift bases and Mathlib's power-basis,
 finite-algebra and algebra-generation APIs. The exact polynomial comparisons
 use Mathlib's minimal-polynomial, coefficient-map and monic-degree APIs.
+The derivative-unit and field-separability conclusions combine the same exact
+comparisons with Mathlib's residue-unit, polynomial-derivative and separable-adjoin APIs.
 
 ## Credits and license
 
