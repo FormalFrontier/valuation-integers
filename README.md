@@ -144,6 +144,17 @@ space from Spectral Stone Duality; their valuation applications are developed he
   neither is an extra premise. Residue separability is not required, and there
   is no restriction on characteristic.
 
+- **Norms near one over a Henselian valuation domain**
+  ([module](ValuationIntegers/Valuation/NormUnits.lean)).
+  In the preceding compatible valuation-domain and local embedded-algebra setting,
+  assume `R` Henselian, `[L : F] = [κS : κR]`, and the given residue extension
+  separable. For every ideal `I ≤ maximalIdeal R` and `u : R` with `u - 1 ∈ I`,
+  there is a unit `s : S` with `s - 1 ∈ I.map (algebraMap R S)` and
+  `Algebra.norm R s = u`. No primitive element, basis, finite/free module or
+  trace-unit witness is a premise. The statement uses ideal extension, not an
+  asserted power of the maximal ideal of `S`; it has no Galois, prime-degree,
+  invertible-degree, discreteness or completeness hypothesis.
+
 - **Power bases and minimal polynomials from arbitrary primitive residue lifts**
   ([power bases](ValuationIntegers/Valuation/ResiduePowerBasis.lean),
   [polynomial comparisons](ValuationIntegers/Valuation/ResiduePolynomial.lean),
@@ -357,6 +368,9 @@ finite-algebra and algebra-generation APIs. The exact polynomial comparisons
 use Mathlib's minimal-polynomial, coefficient-map and monic-degree APIs.
 The derivative-unit and field-separability conclusions combine the same exact
 comparisons with Mathlib's residue-unit, polynomial-derivative and separable-adjoin APIs.
+The norm-congruence theorem combines the residue-trace comparison and separable
+trace surjectivity with Mathlib's regular-multiplication determinant derivative and
+evaluation APIs and Adic Modules' nonmonic Hensel and subideal theorems.
 
 ## Credits and license
 

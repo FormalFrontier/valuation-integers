@@ -756,11 +756,12 @@ Lake dependencies are GitHub Mathlib at
 [`spectral-stone-duality`](https://github.com/FormalFrontier/spectral-stone-duality)
 at `d7dad16f9308a468bb964c0f13caf896a780621d`,
 [`adic-modules`](https://github.com/FormalFrontier/adic-modules) at
-`4e50b3b03c0c3ce11498774d72e111654ff35d08`, and
+`2fb498d13a8195ddd32e0462f7983828f61aece1`, and
 [`group-theory`](https://github.com/FormalFrontier/group-theory) at
-`5b7fccf66358d844869aaefd320f5768f6306cd3`.
+`4791da691c8cf6f7bf40caf2606e17e46b432e08`.
 Adic Modules supplies the generic Henselian-pair root-lifting API used by the Power
-module's root argument; Group Theory supplies the positive-power comparison used
+module's root argument and the nonmonic root and subideal theorems used for norm
+congruences; Group Theory supplies the positive-power comparison used
 by valuation restriction and the generic polynomial-root left-inverse and unit-image
 criteria. The manifest also fixes inherited `ideal-completion` at
 `001e3b7508184ecd51e0d86177cb1d54508bf59d` and `homological_algebra` at

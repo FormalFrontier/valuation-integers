@@ -14,6 +14,7 @@ public import ValuationIntegers.Valuation.ResiduePolynomial
 public import ValuationIntegers.Valuation.ResidueSeparability
 public import ValuationIntegers.Valuation.ResidueHom
 public import ValuationIntegers.Valuation.ResidueTraceNorm
+public import ValuationIntegers.Valuation.NormUnits
 public import ValuationIntegers.Valuation.Equivalence
 
 public import ValuationIntegers.ValuationSubring.PurelyInseparable
@@ -105,6 +106,8 @@ local algebra and the original ambient field extension is separable.
 With these separability and primitive-residue hypotheses, every residue-field algebra homomorphism
 into a local Henselian `R`-algebra with compatible residue towers lifts uniquely
 to an `R`-algebra homomorphism commuting with reduction on the whole source algebra.
+Over a Henselian base, degree exhaustion and residue separability also give unit norm
+preimages in every extended ideal-congruence neighborhood of one.
 It also provides bounded-module finiteness, Henselian power neighborhoods, Bernoulli
 integrality and rational denominator-support results.
 The polynomial Hensel criteria give strong roots with maximal-ideal power precision,
