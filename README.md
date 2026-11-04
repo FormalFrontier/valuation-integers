@@ -144,8 +144,9 @@ space from Spectral Stone Duality; their valuation applications are developed he
   neither is an extra premise. Residue separability is not required, and there
   is no restriction on characteristic.
 
-- **Power bases from arbitrary primitive residue lifts**
-  ([module](ValuationIntegers/Valuation/ResiduePowerBasis.lean)).
+- **Power bases and minimal polynomials from arbitrary primitive residue lifts**
+  ([power bases](ValuationIntegers/Valuation/ResiduePowerBasis.lean),
+  [polynomial comparisons](ValuationIntegers/Valuation/ResiduePolynomial.lean)).
   In the preceding valuation-domain, local embedded-algebra setting, assume
   `[L : F] = [κS : κR]`. For every `α : κS` with
   `Algebra.adjoin κR {α} = ⊤` and every `θ : S` reducing to `α`,
@@ -156,9 +157,14 @@ space from Spectral Stone Duality; their valuation applications are developed he
   degrees. Their full bases are the prescribed-lift bases above, formed from
   the stock residue power basis and the same family `θ ^ i`, without reindexing.
   The stock power-basis generation theorem gives `S = R[θ]` and
-  `L = F[algebraMap S L θ]`. Residue finiteness is derived; no power basis,
-  finite `R`-module structure or integrality of `S` is assumed. No separability,
-  Henselianity, discreteness, completeness or common value group is required.
+  `L = F[algebraMap S L θ]`. For the integral power basis `pbR`, the monic
+  polynomial `pbR.minpolyGen = minpoly R θ` maps under `R → F` exactly to
+  `minpoly F (algebraMap S L θ)` and reduces under `R → κR` exactly to
+  `minpoly κR α`. These are coefficientwise equalities, not just association
+  of polynomials. Residue finiteness is derived; no power basis, finite
+  `R`-module structure or integrality of `S` is assumed. Neither comparison
+  requires separability. No Henselianity, discreteness, completeness or common
+  value group is required.
 
 - **Absolute values and rank-at-most-one realizations**
   ([generic layer](docs/AbsoluteValues.md),
@@ -338,7 +344,8 @@ For the residue-degree and lifted-basis settings, see Fesenko–Vostokov's
 local-flat and fraction-field linear-independence APIs, basis and coordinate
 APIs, and finiteness and freeness results for bases. The primitive-residue-lift
 power bases use this library's prescribed-lift bases and Mathlib's power-basis,
-finite-algebra and algebra-generation APIs.
+finite-algebra and algebra-generation APIs. The exact polynomial comparisons
+use Mathlib's minimal-polynomial, coefficient-map and monic-degree APIs.
 
 ## Credits and license
 
