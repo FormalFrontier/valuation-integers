@@ -9,6 +9,7 @@ public import ValuationIntegers.Valuation.LinearCombination
 public import ValuationIntegers.Valuation.LinearIndependent
 public import ValuationIntegers.Valuation.ResidueDegree
 public import ValuationIntegers.Valuation.ResidueBasis
+public import ValuationIntegers.Valuation.ResidueTraceNorm
 public import ValuationIntegers.Valuation.Equivalence
 
 public import ValuationIntegers.ValuationSubring.PurelyInseparable

@@ -135,6 +135,15 @@ space from Spectral Stone Duality; their valuation applications are developed he
   value group is required. This is degree exhaustion by the residue-basis size,
   not a definition of an unramified extension.
 
+- **Trace and norm for prescribed residue lifts**
+  ([module](ValuationIntegers/Valuation/ResidueTraceNorm.lean)).
+  Under the preceding prescribed-lift hypotheses, including finite `L/F` and
+  `card ι = [L : F]`, ordinary algebraic trace and norm commute with the original
+  embeddings `R → F` and `S → L`, and with the canonical residue maps.
+  Finiteness and freeness of `S` over `R` follow from the lifted ring basis;
+  neither is an extra premise. Residue separability is not required, and there
+  is no restriction on characteristic.
+
 - **Absolute values and rank-at-most-one realizations**
   ([generic layer](docs/AbsoluteValues.md),
   [rank and topology details](docs/Guide.md#rank-dimension-and-real-absolute-values)).
