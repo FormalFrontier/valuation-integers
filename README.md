@@ -8,11 +8,10 @@ selective imports, examples and boundaries.
 
 ## Headline results
 
-The valuation results below are proved in this library, using the dependencies credited
-in the [references](#references). The generic Henselian-pair estimates come from
-Adic Modules, positive-power comparison and polynomial-root inverse-image criteria
-from Group Theory, and the generic-point space from Spectral Stone Duality; their
-valuation applications are developed here.
+The valuation API below uses the dependencies credited in the [references](#references).
+The generic Henselian-pair estimates come from Adic Modules, positive-power comparison
+and polynomial-root inverse-image criteria from Group Theory, and the generic-point
+space from Spectral Stone Duality; their valuation applications are developed here.
 
 - **Polynomial root-value bounds and inverse images**
   ([module](ValuationIntegers/Valuation/PolynomialValueBounds.lean),
@@ -68,6 +67,24 @@ valuation applications are developed here.
   every nonzero scalar value for `0 < n < d` make the first `d` powers independent;
   if `A` is finite over `F`, then `d ≤ Module.finrank F A`. No domain on `A` or
   group structure on the value monoid is needed.
+
+- **Residue degree bounded by field degree**
+  ([module](ValuationIntegers/Valuation/ResidueDegree.lean)).
+  Let `R` be a valuation domain with fraction field `F`, `L/F` a finite field
+  extension, and `S` a commutative local `R`-algebra whose given `algebraMap S L`
+  is injective, with commuting `R/F/L` and `R/S/L` scalar towers. Write `κR`, `κS`
+  for the original residue fields. The given `κR`- and `R`-algebra structures
+  on `κS` satisfy the `R/κR/κS` and `R/S/κS` towers; the residue square follows
+  from these towers, rather than being an extra premise.
+  `ValuationRing.finite_residueField` gives finite residue degree, and
+  `ValuationRing.finrank_residueField_le` gives `[κS : κR] ≤ [L : F]`.
+  Residue finiteness is a conclusion, not an input, and means finite degree,
+  not finite cardinality. The domain structure on `S` and its flatness over `R`
+  are derived from the embeddings and valuation-domain structure.
+  No valuation-ring structure on `S`, fraction-field structure for `S → L`,
+  or explicit local-map hypothesis on `R → S` is assumed. Universes are independent;
+  no Henselianity, completeness, discreteness, separability, residue perfection
+  or common value group is required.
 
 - **Absolute values and rank-at-most-one realizations**
   ([generic layer](docs/AbsoluteValues.md),
@@ -242,6 +259,10 @@ proof for Hochster's Theorem* (with antecedent credit to Ershov), and the reused
 Mathlib, Norm Forms, Group Theory, Spectral Stone Duality, Adic Modules and Polynomial
 Root Stability work. The bibliography distinguishes motivation, generalization and
 prior formalization; it does not assert exact book coverage.
+For the residue-degree setting, see Fesenko–Vostokov's
+*Local Fields and Their Extensions*. The formalization follows Mathlib's
+local-flat and fraction-field linear-independence APIs and its finiteness results
+for bases.
 
 ## Credits and license
 
