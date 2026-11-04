@@ -12,6 +12,7 @@ import ValuationIntegersTest.HeightOnePolynomial
 import ValuationIntegersTest.HeightOneScalarTower
 import ValuationIntegersTest.Valuation.Integral
 import ValuationIntegersTest.Valuation.ResiduePowerBasis
+import ValuationIntegersTest.Valuation.ResidueHom
 
 import ValuationIntegersTest.LaurentSeriesDiscreteValuationRing
 public import ValuationIntegersTest.LaurentPolynomialDensity

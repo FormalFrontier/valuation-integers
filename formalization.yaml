@@ -394,6 +394,8 @@ alignment:
       module: ValuationIntegers/Valuation/ResidueDegree.lean
     - lean: ValuationRing.finrank_residueField_le
       module: ValuationIntegers/Valuation/ResidueDegree.lean
+    - lean: ValuationRing.existsUnique_algHom_lift_of_primitiveResidue
+      module: ValuationIntegers/Valuation/ResidueHom.lean
     - lean: Valuation.exists_root_of_map_eval_lt_map_derivative_sq
       module: ValuationIntegers/Polynomial/Hensel.lean
     - lean: Valuation.map_lt_sq_of_mem_maximalIdeal_pow

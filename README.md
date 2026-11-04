@@ -168,6 +168,12 @@ space from Spectral Stone Duality; their valuation applications are developed he
   value group is required. If `minpoly κR α` is separable, then
   `pbR.minpolyGen.derivative` evaluates at the same prescribed `θ` to a unit
   in the original `S`, and the original extension `L/F` is separable.
+  Under this separability hypothesis, for a commutative local `R`-algebra `T`
+  with the given `R/κR/κT` and `R/T/κT` residue towers and a value
+  `hT : HenselianLocalRing T`, every `κR`-algebra
+  homomorphism `φ : κS →ₐ[κR] κT` lifts uniquely to an `R`-algebra homomorphism
+  `S → T` whose reduction agrees with `φ` on every element of `S`
+  ([residue homomorphisms](ValuationIntegers/Valuation/ResidueHom.lean)).
 
 - **Absolute values and rank-at-most-one realizations**
   ([generic layer](docs/AbsoluteValues.md),
