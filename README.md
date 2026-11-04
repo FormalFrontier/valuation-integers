@@ -99,6 +99,42 @@ space from Spectral Stone Duality; their valuation applications are developed he
   no Henselianity, completeness, discreteness, separability, residue perfection
   or common value group is required.
 
+- **Prescribed residue lifts give field and ring bases**
+  ([module](ValuationIntegers/Valuation/ResidueBasis.lean)).
+  Let `R` be a valuation domain with fraction field `F`, `L/F` a finite field
+  extension, and `S` a commutative local `R`-algebra with its given injective
+  `algebraMap S L`. Retain the original `R/S/F/L` algebras and actions, with
+  commuting `R/F/L` and `R/S/L` scalar towers, and the given `κR`- and
+  `R`-algebra structures on `κS`, with both `R/κR/κS` and `R/S/κS` towers.
+  These two residue towers imply the residue square and localness of the
+  original `R → S` map; neither is an extra premise.
+  Given a `κR`-basis `b : ι → κS` indexed by a finite type, prescribed lifts
+  `s : ι → S`, and reduction equations
+  `residue S (s i) = b i`, assume `card ι = [L : F]`.
+  `ValuationRing.basisOfResidue` constructs an `F`-basis of `L` with vectors
+  `algebraMap S L (s i)`, and `ValuationRing.integralBasisOfResidue` constructs
+  an `R`-basis of `S` with vectors `s i`, for the given actions and maps.
+  An element of `L` lies in the image of `S → L` iff every field coordinate
+  lies in the image of `R → F`; it lies in the image of the maximal ideal of
+  `S` iff every coordinate lies in the image of the maximal ideal of `R`.
+  For finite sums `∑ i, a i • algebraMap S L (s i)`, the same range and
+  maximal-ideal criteria test the coefficients `a i` directly. These two
+  criteria need neither finite ambient dimension nor `card ι = [L : F]`,
+  while retaining the finite index, given residue basis, prescribed lifts and
+  reductions, and all original maps, towers and injectivity of `S → L`.
+  Ring and field coordinates agree under `R → F`, and ring coordinates reduce
+  to the `b`-coordinates of the residue. Both bases are uniquely characterized
+  by their prescribed vectors. Membership in the maximal ideal of `S` is
+  coefficientwise membership in the maximal ideal of `R`; `S` is finite and
+  free as an `R`-module.
+  No valuation-ring structure on `S`, fraction-field structure for `S → L`,
+  or prior finiteness, freeness, flatness or integrality of `S` over `R` is assumed.
+  The domain structure on `S` and its flatness over `R` are derived.
+  Universes are independent; no Henselianity, completeness, discreteness,
+  separability, residue perfection, finite residue-field cardinality or common
+  value group is required. This is degree exhaustion by the residue-basis size,
+  not a definition of an unramified extension.
+
 - **Absolute values and rank-at-most-one realizations**
   ([generic layer](docs/AbsoluteValues.md),
   [rank and topology details](docs/Guide.md#rank-dimension-and-real-absolute-values)).
@@ -272,10 +308,10 @@ proof for Hochster's Theorem* (with antecedent credit to Ershov), and the reused
 Mathlib, Norm Forms, Group Theory, Spectral Stone Duality, Adic Modules and Polynomial
 Root Stability work. The bibliography distinguishes motivation, generalization and
 prior formalization; it does not assert exact book coverage.
-For the residue-degree setting, see Fesenko–Vostokov's
+For the residue-degree and lifted-basis settings, see Fesenko–Vostokov's
 *Local Fields and Their Extensions*. The formalization follows Mathlib's
-local-flat and fraction-field linear-independence APIs and its finiteness results
-for bases.
+local-flat and fraction-field linear-independence APIs, basis and coordinate
+APIs, and finiteness and freeness results for bases.
 
 ## Credits and license
 
