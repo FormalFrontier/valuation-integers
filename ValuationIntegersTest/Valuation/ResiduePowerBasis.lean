@@ -9,12 +9,15 @@ import ValuationIntegers.Valuation.ResidueExtension
 import Mathlib.RingTheory.AdjoinRoot
 
 /-!
-# Polynomial presentations from primitive residue lifts
+# Coordinates and polynomial presentations from primitive residue lifts
 
 The residue fields use locality derived from two given presentations of valuation
 integers. The same presentations supply the domain, valuation-ring and fraction-ring
 structures for applying the primitive-residue-lift constructions over the original
-coefficient ring and field. The ring power basis presents the integer ring as an
+coefficient ring and field. The two power bases have the same dimension, and their
+coordinates agree under the original embeddings at matching indices. Reduction
+reconstructs each element from its reduced integral coordinates and the powers of
+the residue generator. The ring power basis also presents the integer ring as an
 `AdjoinRoot` and gives its root universal property for any ring target with the
 given central coefficient action. No separability assumption is needed.
 -/
@@ -58,11 +61,22 @@ variable (θ : S) (hθ : @residue S _ (Valuation.Integers.isLocalRing hS) θ = �
 include hR hS aRF aSL aFL aRS aRL towerRFL towerRSL
 include aKK aRK towerRkK towerRSK finiteFL hnf α hα hθ
 
--- The same lift gives both power bases, a polynomial presentation, and the root
--- universal property over the original coefficient ring, even for noncommutative targets.
+-- The same lift gives compatible coordinates and reduction, a polynomial presentation,
+-- and the root universal property, even for noncommutative targets.
 example {A : Type uA} [Ring A] [Algebra R A] :
     ∃ (pbR : PowerBasis R S) (pbF : PowerBasis F L),
       (pbR).gen = θ ∧ (pbF).gen = algebraMap S L θ ∧
+      (pbR).dim = (pbF).dim ∧
+      (∀ (s : S) (i : Fin (pbR).dim) (j : Fin (pbF).dim), (i : ℕ) = (j : ℕ) →
+        (pbF).basis.repr (algebraMap S L s) j =
+          algebraMap R F ((pbR).basis.repr s i)) ∧
+      (∀ s : S, @residue S _ (Valuation.Integers.isLocalRing hS) s =
+        ∑ i : Fin (pbR).dim,
+          algebraMap
+            (@ResidueField R _ (Valuation.Integers.isLocalRing hR))
+            (@ResidueField S _ (Valuation.Integers.isLocalRing hS))
+            (@residue R _ (Valuation.Integers.isLocalRing hR) ((pbR).basis.repr s i)) *
+              α ^ (i : ℕ)) ∧
       ∃ Q : AdjoinRoot (PowerBasis.minpolyGen pbR) ≃ₐ[R] S,
         Q (AdjoinRoot.root (PowerBasis.minpolyGen pbR)) = θ ∧
         Nonempty ((S →ₐ[R] A) ≃ {a : A // aeval a (PowerBasis.minpolyGen pbR) = 0}) := by
@@ -89,6 +103,37 @@ example {A : Type uA} [Ring A] [Algebra R A] :
   have hgenF : (pbF).gen = algebraMap S L θ :=
     ValuationRing.powerBasisOfPrimitiveResidue_gen (R := R) (S := S)
       hSL hnf α hα θ hθ
+  have hdim : (pbR).dim = (pbF).dim :=
+    (ValuationRing.integralPowerBasisOfPrimitiveResidue_dim (F := F) (L := L)
+      hSL hnf α hα θ hθ).trans
+      (ValuationRing.powerBasisOfPrimitiveResidue_dim (R := R) (S := S)
+        hSL hnf α hα θ hθ).symm
+  have hcoordinates (s : S) (i : Fin (pbR).dim) :
+      (pbF).basis.repr (algebraMap S L s) i =
+        algebraMap R F ((pbR).basis.repr s i) := by
+    dsimp only [pbR, pbF]
+    rw [ValuationRing.powerBasisOfPrimitiveResidue_basis,
+      ValuationRing.integralPowerBasisOfPrimitiveResidue_basis]
+    exact (ValuationRing.integralBasisOfResidue_repr_algebraMap
+      (F := F) (L := L) hSL _ _ _ _ s i).symm
+  have hreduction (s : S) :
+      residue S s = ∑ i : Fin (pbR).dim,
+        algebraMap (ResidueField R) (ResidueField S)
+          (residue R ((pbR).basis.repr s i)) * α ^ (i : ℕ) := by
+    let bκ : PowerBasis (ResidueField R) (ResidueField S) :=
+      PowerBasis.ofAdjoinEqTop
+        (@IsIntegral.of_finite (ResidueField R) (ResidueField S) _ _ _
+          (ValuationRing.finite_residueField (R := R) (F := F) (L := L) hSL) α) hα
+    have hsum : residue S s = ∑ i : Fin (pbR).dim,
+        residue R ((pbR).basis.repr s i) • (bκ).basis i := by
+      dsimp only [pbR]
+      rw [ValuationRing.integralPowerBasisOfPrimitiveResidue_basis]
+      exact ValuationRing.integralBasisOfResidue_residue_eq_sum
+        (F := F) (L := L) hSL _ _ _ _ s
+    have hpowers (i : Fin (pbR).dim) : (bκ).basis i = α ^ (i : ℕ) := by
+      simpa only [bκ, PowerBasis.ofAdjoinEqTop_gen] using
+        (PowerBasis.basis_eq_pow bκ i)
+    simpa only [hpowers, Algebra.smul_def] using hsum
   have hroot : aeval (AdjoinRoot.root (PowerBasis.minpolyGen pbR))
       (minpoly R (pbR).gen) = 0 := by
     rw [← PowerBasis.minpolyGen_eq pbR, AdjoinRoot.aeval_eq, AdjoinRoot.mk_self]
@@ -102,9 +147,13 @@ example {A : Type uA} [Ring A] [Algebra R A] :
     rw [AdjoinRoot.equiv'_toAlgHom]
     exact (AdjoinRoot.liftAlgHom_root (PowerBasis.minpolyGen pbR)
       (Algebra.ofId R S) (pbR).gen (PowerBasis.aeval_minpolyGen pbR)).trans hgenR
-  refine ⟨pbR, pbF, hgenR, hgenF, Q, hQ, ⟨?_⟩⟩
-  simpa only [PowerBasis.minpolyGen_eq] using
-    (PowerBasis.liftEquiv pbR :
-      (S →ₐ[R] A) ≃ {a : A // aeval a (minpoly R (pbR).gen) = 0})
+  refine ⟨pbR, pbF, hgenR, hgenF, hdim, ?_, hreduction, Q, hQ, ⟨?_⟩⟩
+  · intro s i j hij
+    have hij' : i = j := Fin.ext hij
+    subst j
+    exact hcoordinates s i
+  · simpa only [PowerBasis.minpolyGen_eq] using
+      (PowerBasis.liftEquiv pbR :
+        (S →ₐ[R] A) ≃ {a : A // aeval a (minpoly R (pbR).gen) = 0})
 
 end Valuation.Integers
