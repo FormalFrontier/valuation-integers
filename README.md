@@ -62,8 +62,8 @@ space from Spectral Stone Duality; their valuation applications are developed he
   base field, without identifying value groups. The original local coefficient
   map induces a commuting residue map. For any finite separable extension of
   the original residue field, a lifted primitive-generator polynomial gives a
-  finite simple field extension of the same degree, an integral generator in its
-  chosen valuation subring, and a base-compatible isomorphism from the given
+  finite separable simple field extension of the same degree, an integral generator
+  in its chosen valuation subring, and a base-compatible isomorphism from the given
   extension to its residue field. The selected power-basis generators correspond
   under reduction. No Henselianity,
   discreteness or completeness hypothesis is imposed.

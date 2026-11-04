@@ -28,11 +28,14 @@ import Mathlib.FieldTheory.IsAlgClosed.Basic
 public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 import Mathlib.FieldTheory.IntermediateField.Adjoin.Defs
 import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
+import Mathlib.FieldTheory.IntermediateField.Adjoin.Algebra
+import Mathlib.FieldTheory.SeparableDegree
 import Mathlib.FieldTheory.Minpoly.Basic
 import Mathlib.FieldTheory.Minpoly.Field
 import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
 import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 public import Mathlib.RingTheory.PowerBasis
+import Mathlib.RingTheory.Polynomial.Resultant.Basic
 import Mathlib.RingTheory.SimpleRing.Basic
 
 /-!
@@ -45,7 +48,7 @@ ring induces a map on the original residue field. Equality of valuation-subring
 pullbacks also preserves every valuation-order comparison on the base field.
 
 For a finite separable extension of the residue field, lifting the minimal
-polynomial of a primitive generator gives a finite simple field extension,
+polynomial of a primitive generator gives a finite separable simple field extension,
 an integral generator in the chosen valuation subring, and a base-compatible
 isomorphism from the given extension to its residue field. The field extension
 has the same degree as the residue-field extension, and the selected power-basis
@@ -57,7 +60,7 @@ rings, without a Henselianity, completeness or discreteness hypothesis.
 The polynomial-lifting construction is motivated by finite unramified extensions
 as treated in I. B. Fesenko and S. V. Vostokov, *Local Fields and Their Extensions*,
 second edition (2002). Valuation-ring domination, simple field extensions and
-power-basis lifts use Mathlib's existing constructions.
+power-basis lifts and monic resultants use Mathlib's existing constructions.
 -/
 
 public section
@@ -506,8 +509,72 @@ private theorem residueExtension_polynomial_properties :
       Module.finrank F Lroot ≤ Module.finrank κR E :=
   (exists_residueExtensionPowerBasis hR E).choose_spec.choose_spec
 
+private theorem residueExtensionPolynomial_separable :
+    (residueExtensionPolynomial hR E).Separable := by
+  let : IsLocalRing R := Valuation.Integers.isLocalRing hR
+  let p : R[X] := residueExtensionPolynomial hR E
+  have hp : p.Monic := (residueExtension_polynomial_properties hR E).1
+  have hpmap : (p.map πR).Separable := by
+    rw [show p.map πR = minpoly κR (bE).gen from
+      (residueExtension_polynomial_properties hR E).2.1]
+    exact Algebra.IsSeparable.isSeparable κR (bE).gen
+  have hunit : IsUnit (resultant (p.map πR) (p.derivative.map πR)) := by
+    apply (isUnit_resultant_iff_isCoprime (hp.map πR)).mpr
+    simpa only [derivative_map] using (separable_def (p.map πR)).mp hpmap
+  have hdegree : (p.derivative.map πR).natDegree ≤ p.derivative.natDegree :=
+    natDegree_map_le
+  -- The derivative may lose degree under reduction. Only the monic first
+  -- polynomial's degree must be preserved to compare the two resultants.
+  have hresultant : πR (resultant p p.derivative) =
+      resultant (p.map πR) (p.derivative.map πR) := by
+    calc
+      πR (resultant p p.derivative) =
+          resultant (p.map πR) (p.derivative.map πR)
+            p.natDegree p.derivative.natDegree :=
+        (resultant_map_map p p.derivative p.natDegree p.derivative.natDegree πR).symm
+      _ = resultant (p.map πR) (p.derivative.map πR)
+          (p.map πR).natDegree ((p.derivative.map πR).natDegree +
+            (p.derivative.natDegree - (p.derivative.map πR).natDegree)) := by
+        rw [hp.natDegree_map πR, Nat.add_sub_of_le hdegree]
+      _ = (p.map πR).coeff (p.map πR).natDegree ^
+          (p.derivative.natDegree - (p.derivative.map πR).natDegree) *
+            resultant (p.map πR) (p.derivative.map πR) :=
+        resultant_add_right_deg (f := p.map πR) (g := p.derivative.map πR)
+          (m := (p.map πR).natDegree) (n := (p.derivative.map πR).natDegree)
+          (p.derivative.natDegree - (p.derivative.map πR).natDegree) le_rfl
+      _ = resultant (p.map πR) (p.derivative.map πR) := by
+        rw [(hp.map πR).coeff_natDegree, one_pow, one_mul]
+  have hunit_image : IsUnit (πR (resultant p p.derivative)) := by
+    rw [hresultant]
+    exact hunit
+  exact (separable_def p).mpr
+    ((isUnit_resultant_iff_isCoprime hp).mp (IsUnit.of_map πR _ hunit_image))
+
 instance residueExtensionField_finiteDimensional : FiniteDimensional F Lroot :=
   (hR.residueExtensionPowerBasis E).finite
+
+/-- The field obtained by lifting a finite separable residue-field extension is
+separable over the original field. -/
+instance residueExtensionField_isSeparable : Algebra.IsSeparable F Lroot := by
+  have hpF : ((residueExtensionPolynomial hR E).map (algebraMap R F)).Separable :=
+    (residueExtensionPolynomial_separable hR E).map
+  have hroot : Polynomial.aeval (hR.residueExtensionPowerBasis E).gen
+      ((residueExtensionPolynomial hR E).map (algebraMap R F)) = 0 := by
+    rw [Polynomial.aeval_def, Polynomial.eval₂_map]
+    exact (residueExtension_polynomial_properties hR E).2.2.2.1
+  have hgen : IsSeparable F (hR.residueExtensionPowerBasis E).gen :=
+    hpF.of_dvd (minpoly.dvd F (hR.residueExtensionPowerBasis E).gen hroot)
+  have htop : IntermediateField.adjoin F
+      ({(hR.residueExtensionPowerBasis E).gen} : Set Lroot) = ⊤ :=
+    (IntermediateField.adjoin_eq_top_iff (F := F) (E := Lroot)).mpr
+      (PowerBasis.adjoin_gen_eq_top (hR.residueExtensionPowerBasis E))
+  have hsep : Algebra.IsSeparable F (IntermediateField.adjoin F
+      ({(hR.residueExtensionPowerBasis E).gen} : Set Lroot)) :=
+    (IntermediateField.isSeparable_adjoin_simple_iff_isSeparable
+      (F := F) (E := Lroot)).mpr hgen
+  rw [htop] at hsep
+  exact (AlgEquiv.Algebra.isSeparable_iff
+    (IntermediateField.topEquiv (F := F) (E := Lroot))).mp hsep
 
 /-- The degree of the constructed simple field is bounded by the degree of the
 given residue-field extension. -/
