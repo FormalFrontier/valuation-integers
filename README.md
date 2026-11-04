@@ -144,6 +144,22 @@ space from Spectral Stone Duality; their valuation applications are developed he
   neither is an extra premise. Residue separability is not required, and there
   is no restriction on characteristic.
 
+- **Power bases from arbitrary primitive residue lifts**
+  ([module](ValuationIntegers/Valuation/ResiduePowerBasis.lean)).
+  In the preceding valuation-domain, local embedded-algebra setting, assume
+  `[L : F] = [κS : κR]`. For every `α : κS` with
+  `Algebra.adjoin κR {α} = ⊤` and every `θ : S` reducing to `α`,
+  `ValuationRing.integralPowerBasisOfPrimitiveResidue` constructs a power
+  basis of the original `S/R`, and `ValuationRing.powerBasisOfPrimitiveResidue`
+  constructs a power basis of the original `L/F` with generator `algebraMap S L θ`.
+  Both dimensions are `natDegree (minpoly κR α)`, equal to the field and residue
+  degrees. Their full bases are the prescribed-lift bases above, formed from
+  the stock residue power basis and the same family `θ ^ i`, without reindexing.
+  The stock power-basis generation theorem gives `S = R[θ]` and
+  `L = F[algebraMap S L θ]`. Residue finiteness is derived; no power basis,
+  finite `R`-module structure or integrality of `S` is assumed. No separability,
+  Henselianity, discreteness, completeness or common value group is required.
+
 - **Absolute values and rank-at-most-one realizations**
   ([generic layer](docs/AbsoluteValues.md),
   [rank and topology details](docs/Guide.md#rank-dimension-and-real-absolute-values)).
@@ -320,7 +336,9 @@ prior formalization; it does not assert exact book coverage.
 For the residue-degree and lifted-basis settings, see Fesenko–Vostokov's
 *Local Fields and Their Extensions*. The formalization follows Mathlib's
 local-flat and fraction-field linear-independence APIs, basis and coordinate
-APIs, and finiteness and freeness results for bases.
+APIs, and finiteness and freeness results for bases. The primitive-residue-lift
+power bases use this library's prescribed-lift bases and Mathlib's power-basis,
+finite-algebra and algebra-generation APIs.
 
 ## Credits and license
 

@@ -9,6 +9,7 @@ public import ValuationIntegers.Valuation.LinearCombination
 public import ValuationIntegers.Valuation.LinearIndependent
 public import ValuationIntegers.Valuation.ResidueDegree
 public import ValuationIntegers.Valuation.ResidueBasis
+public import ValuationIntegers.Valuation.ResiduePowerBasis
 public import ValuationIntegers.Valuation.ResidueTraceNorm
 public import ValuationIntegers.Valuation.Equivalence
 
@@ -92,6 +93,8 @@ integer-presentation comparisons for valuations and DVRs, valuation topology, co
 comparisons and finite intersections with residue maps. Compatible valuation-ring
 extensions preserve comparisons on the original field, and finite separable
 residue-field extensions are realized by finite simple extensions of the same degree.
+When residue degree equals field degree, every lift of every primitive residue
+generator gives power bases of the original ring algebra and field extension.
 It also provides bounded-module finiteness, Henselian power neighborhoods, Bernoulli
 integrality and rational denominator-support results.
 The polynomial Hensel criteria give strong roots with maximal-ideal power precision,
