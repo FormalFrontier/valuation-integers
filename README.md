@@ -55,6 +55,19 @@ space from Spectral Stone Duality; their valuation applications are developed he
   Membership is integrality, or scalar membership after any specified positive power;
   purely inseparable field extensions supply the power witnesses.
 
+- **Compatible valuation-ring extensions and prescribed residue fields**
+  ([module](ValuationIntegers/Valuation/ResidueExtension.lean)).
+  Along a field homomorphism, a chosen extension valuation subring restricts to
+  the original valuation ring and preserves every value-order comparison on the
+  base field, without identifying value groups. The original local coefficient
+  map induces a commuting residue map. For any finite separable extension of
+  the original residue field, a lifted primitive-generator polynomial gives a
+  finite simple field extension of the same degree, an integral generator in its
+  chosen valuation subring, and a base-compatible isomorphism from the given
+  extension to its residue field. The selected power-basis generators correspond
+  under reduction. No Henselianity,
+  discreteness or completeness hypothesis is imposed.
+
 - **Scalar-trivial values and valuation-separated linear independence**
   ([details and modules](docs/Guide.md#scalar-values-and-linear-independence)).
   In a ring algebra over a commutative ring, a valuation into a linearly ordered commutative

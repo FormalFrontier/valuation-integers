@@ -26,6 +26,7 @@ public import ValuationIntegers.Valuation.Integral
 public import ValuationIntegers.Valuation.Localization
 public import ValuationIntegers.Valuation.Polynomial
 public import ValuationIntegers.Valuation.Restriction
+public import ValuationIntegers.Valuation.ResidueExtension
 public import ValuationIntegers.Valuation.PurelyInseparable
 
 public import ValuationIntegers.HeightOne.Generator
@@ -86,7 +87,9 @@ strict-comparison equivalence for independent ordered targets.
 This module re-exports unit-cut and zero-fiber criteria for valuation equivalence,
 valuation-ring rank and dimension, normalized valuation rigidity,
 integer-presentation comparisons for valuations and DVRs, valuation topology, completion
-comparisons and finite intersections with residue maps.
+comparisons and finite intersections with residue maps. Compatible valuation-ring
+extensions preserve comparisons on the original field, and finite separable
+residue-field extensions are realized by finite simple extensions of the same degree.
 It also provides bounded-module finiteness, Henselian power neighborhoods, Bernoulli
 integrality and rational denominator-support results.
 The polynomial Hensel criteria give strong roots with maximal-ideal power precision,
