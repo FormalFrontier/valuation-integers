@@ -8,6 +8,15 @@ selective imports, examples and boundaries.
 
 ## Headline results
 
+- **Scalar multiples of units from independent reductions.** Let `R` be a valuation
+  domain with fraction field `F`, and let `S` be a local commutative `R`-algebra.
+  With compatible algebra and residue-field actions, an `F`-basis of a ring `L`
+  formed by images of elements of `S` whose reductions are linearly independent
+  over the residue field of `R` expresses every `x : L` as a scalar times the image
+  of a unit of `S`. The basis index may be arbitrary and `S → L` need not be
+  injective. See `Module.Basis.exists_isUnit_mul_of_linearIndependent_residue` in
+  [`ValuationIntegers.Valuation.ResidueUnits`](ValuationIntegers/Valuation/ResidueUnits.lean).
+
 The valuation API below uses the dependencies credited in the [references](#references).
 The generic Henselian-pair estimates come from Adic Modules, positive-power comparison
 and polynomial-root inverse-image criteria from Group Theory, and the generic-point
