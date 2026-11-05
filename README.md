@@ -183,6 +183,17 @@ space from Spectral Stone Duality; their valuation applications are developed he
   assumed. This combines finite-field unit norm surjectivity, the residue norm
   comparison and the principal-congruence correction.
 
+- **The field norm group**
+  ([module](ValuationIntegers/Valuation/NormRange.lean)).
+  In the preceding compatible valuation-domain and local embedded-algebra setting,
+  assume `R` Henselian with finite residue field and `[L : F] = [κS : κR]`.
+  `ValuationRing.mem_range_norm_units_iff` identifies the usual norm subgroup
+  `(Units.map (Algebra.norm F : L →* F)).range` of `Fˣ`: its elements are exactly
+  `a ^ [L : F] * image(u)` for `a : Fˣ` and `u : Rˣ`, using the given `R → F` map.
+  Residue bases and lifts are chosen internally. No valuation-ring structure on
+  `S`, fraction-field structure for `S → L`, separability or degree invertibility
+  is assumed. This is the norm on `Lˣ`, not the zero-inclusive range on `L`.
+
 - **Power bases and minimal polynomials from arbitrary primitive residue lifts**
   ([power bases](ValuationIntegers/Valuation/ResiduePowerBasis.lean),
   [polynomial comparisons](ValuationIntegers/Valuation/ResiduePolynomial.lean),
@@ -429,7 +440,9 @@ The norm-congruence theorem combines the residue-trace comparison and separable
 trace surjectivity with Mathlib's regular-multiplication determinant derivative and
 evaluation APIs and Adic Modules' nonmonic Hensel and subideal theorems.
 The all-unit application also uses Mathlib's finite-field unit norm surjectivity,
-finite-module cardinality and residue-unit APIs.
+finite-module cardinality and residue-unit APIs. The field norm-group description
+combines the prescribed-lift field basis, scalar-unit factorization and ring-to-field
+norm comparison with that all-unit result and Mathlib's units and subgroup-range APIs.
 The finite-target residue-homomorphism theorem uses Mathlib's primitive-element
 and finite-module integrality APIs and Adic Modules' Henselianity theorem for
 integral ring maps, together with this library's primitive-residue lifting theorem.
