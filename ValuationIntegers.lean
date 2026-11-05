@@ -19,6 +19,7 @@ public import ValuationIntegers.Valuation.ResidueHomFunctorial
 public import ValuationIntegers.Valuation.ResidueTraceNorm
 public import ValuationIntegers.Valuation.NormUnits
 public import ValuationIntegers.Valuation.UnitNorm
+public import ValuationIntegers.Valuation.NormValuation
 public import ValuationIntegers.Valuation.Equivalence
 
 public import ValuationIntegers.ValuationSubring.PurelyInseparable

@@ -153,6 +153,18 @@ space from Spectral Stone Duality; their valuation applications are developed he
   neither is an extra premise. Residue separability is not required, and there
   is no restriction on characteristic.
 
+- **Valuation of a norm under residue-degree exhaustion**
+  ([module](ValuationIntegers/Valuation/NormValuation.lean)).
+  Let `L/F` be a finite field extension with given valuations `v`, `w` and
+  original integer rings `R`, `S`. Retain the compatible ambient and residue
+  algebra structures and scalar towers above, and assume `[L : F] = [κS : κR]`.
+  For any monoid-with-zero homomorphism `j` between their independent value groups
+  satisfying `w (algebraMap F L a) = j (v a)` for every `a : F`,
+  `Valuation.map_norm_eq_pow_of_finrank_eq_residueField` gives
+  `j (v (Algebra.norm F x)) = (w x) ^ Module.finrank F L` for every `x : L`.
+  No injectivity or order preservation of `j`, Henselianity, separability,
+  discreteness or finite residue-field cardinality is assumed.
+
 - **Unit norms over a Henselian valuation domain**
   ([principal congruences](ValuationIntegers/Valuation/NormUnits.lean),
   [finite residue fields](ValuationIntegers/Valuation/UnitNorm.lean)).
