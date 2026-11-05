@@ -13,6 +13,8 @@ public import ValuationIntegers.Valuation.ResiduePowerBasis
 public import ValuationIntegers.Valuation.ResiduePolynomial
 public import ValuationIntegers.Valuation.ResidueSeparability
 public import ValuationIntegers.Valuation.ResidueHom
+public import ValuationIntegers.Valuation.ResidueHomFinite
+public import ValuationIntegers.Valuation.ResidueHomFunctorial
 public import ValuationIntegers.Valuation.ResidueTraceNorm
 public import ValuationIntegers.Valuation.NormUnits
 public import ValuationIntegers.Valuation.UnitNorm
@@ -107,6 +109,18 @@ local algebra and the original ambient field extension is separable.
 With these separability and primitive-residue hypotheses, every residue-field algebra homomorphism
 into a local Henselian `R`-algebra with compatible residue towers lifts uniquely
 to an `R`-algebra homomorphism commuting with reduction on the whole source algebra.
+
+If the original base `R` is Henselian, both local algebras embed in finite extensions
+of its fraction field with residue degree equal to field degree, and the source
+residue extension is explicitly separable, every residue-field algebra homomorphism
+also lifts uniquely. The primitive source residue generator and its lift, and target
+module finiteness, integrality and Henselianity, are derived for the given maps and
+actions; no target separability or additional domain typeclass is a premise.
+The compatible ring lift extends uniquely to a field algebra homomorphism,
+characterized by both reduction and the ambient square on every source element.
+These field homomorphisms satisfy identity and composition laws; for given
+compatible intermediate maps, the intermediate ambient algebra need not be a field.
+
 Over a Henselian base, degree exhaustion and residue separability also give unit norm
 preimages in every extended ideal-congruence neighborhood of one.
 If the residue field of the base is finite, degree exhaustion gives norm preimages

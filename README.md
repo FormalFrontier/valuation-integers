@@ -193,6 +193,35 @@ space from Spectral Stone Duality; their valuation applications are developed he
   `S → T` whose reduction agrees with `φ` on every element of `S`
   ([residue homomorphisms](ValuationIntegers/Valuation/ResidueHom.lean)).
 
+- **Unique residue and field homomorphism lifts**
+  ([lifting](ValuationIntegers/Valuation/ResidueHomFinite.lean),
+  [identity and composition](ValuationIntegers/Valuation/ResidueHomFunctorial.lean)).
+  Let `R` be a Henselian valuation domain with fraction field `F`. Let `S` and
+  `T` be commutative local `R`-algebras embedded by their given algebra maps in
+  finite field extensions `L/F` and `E/F`, respectively, with the compatible
+  ambient and residue scalar towers above. Assume `[L : F] = [κS : κR]`,
+  `[E : F] = [κT : κR]`, and explicitly `[Algebra.IsSeparable κR κS]`.
+  `ValuationRing.existsUnique_residueAlgHom_lift_of_finrank_eq` gives, for every
+  `φ : κS →ₐ[κR] κT`, a unique `ψ : S →ₐ[R] T` satisfying
+  `residue T (ψ s) = φ (residue S s)` for every `s : S`.
+  `ValuationRing.existsUnique_fieldAlgHom_lift_of_finrank_eq` also gives a unique
+  `ι : L →ₐ[F] E` admitting such a `ψ` with
+  `algebraMap T E (ψ s) = ι (algebraMap S L s)` for every `s : S`.
+  The identity and composition laws follow from this characterization. For
+  composition of given compatible witnesses, the intermediate ambient algebra
+  need only be a commutative ring, without intermediate separability or finite-degree
+  assumptions; the source and final target retain the lifting hypotheses.
+  A finite separable source residue extension supplies a primitive generator
+  and its lift. The target degree equality gives module finiteness, integrality
+  of the given `R → T` map, and Henselianity of `T` from that of `R`.
+  No `Module.Finite R T`, target Henselianity, target separability or freeness
+  assumption is required; the domain property of `T` follows from its embedding
+  into `E`, rather than from an additional domain typeclass. The six universes are
+  independent, and the given maps, actions and towers are retained. Both degree
+  equalities and source residue
+  separability are restrictions; this is not a statement for arbitrary finite
+  ambient extensions or a full unramified-extension equivalence.
+
 - **Absolute values and rank-at-most-one realizations**
   ([generic layer](docs/AbsoluteValues.md),
   [rank and topology details](docs/Guide.md#rank-dimension-and-real-absolute-values)).
@@ -380,6 +409,9 @@ trace surjectivity with Mathlib's regular-multiplication determinant derivative 
 evaluation APIs and Adic Modules' nonmonic Hensel and subideal theorems.
 The all-unit application also uses Mathlib's finite-field unit norm surjectivity,
 finite-module cardinality and residue-unit APIs.
+The finite-target residue-homomorphism theorem uses Mathlib's primitive-element
+and finite-module integrality APIs and Adic Modules' Henselianity theorem for
+integral ring maps, together with this library's primitive-residue lifting theorem.
 
 ## Credits and license
 
