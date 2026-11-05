@@ -195,6 +195,15 @@ space from Spectral Stone Duality; their valuation applications are developed he
   Henselianity, finite residue-field cardinality, or invertibility of the degree
   is assumed.
 
+- **Unit discriminants from separable residue-degree exhaustion**
+  ([module](ValuationIntegers/Valuation/Discriminant.lean)).
+  In the same compatible valuation-domain and local embedded-algebra setting,
+  if `[L : F] = [κS : κR]` and the given residue extension is separable,
+  `ValuationRing.discr_isUnit_of_finrank_eq` makes the discriminant of every
+  finite `R`-basis of the original `S` a unit in the original `R`.
+  Finite freeness and the extended maximal-ideal equality are derived internally;
+  no Henselianity, finite residue-field cardinality or invertible degree is required.
+
 - **Ambient membership detected by the trace pairing**
   ([module](ValuationIntegers/Valuation/ResidueTraceNorm.lean)).
   Let `R` be a commutative valuation domain with fraction field `F`, and let
