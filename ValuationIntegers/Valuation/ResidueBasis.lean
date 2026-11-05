@@ -16,7 +16,10 @@ public import Mathlib.Tactic.Ring
 
 A prescribed lift of a finite residue basis is a field basis when its cardinality
 exhausts the field degree. Its coordinates detect the original integer ring and
-maximal ideal, and the same lifts form a basis of the integer ring.
+maximal ideal, and the same lifts form a basis of the integer ring. When residue
+degree equals field degree, this gives finiteness and freeness of the original
+integer-ring extension and identifies the extension of the base maximal ideal
+with the target maximal ideal, without prescribing a residue basis or its lifts.
 
 The target ring in this file is only assumed to be local and to embed in the
 ambient field. In particular it need not itself be a valuation ring or have the
@@ -161,28 +164,31 @@ variable [towerRkK : IsScalarTower R (IsLocalRing.ResidueField R) (IsLocalRing.R
 variable [towerRSK : IsScalarTower R S (IsLocalRing.ResidueField S)]
 variable (hSL : Function.Injective (algebraMap S L))
 
+private theorem isLocalHom_algebraMap_of_residue : IsLocalHom (algebraMap R S) := by
+  have hcomp :
+      (IsLocalRing.residue S).comp (algebraMap R S) =
+        (algebraMap (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField S)).comp
+          (IsLocalRing.residue R) := by
+    ext r
+    change IsLocalRing.residue S (algebraMap R S r) =
+      algebraMap (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField S)
+        (IsLocalRing.residue R r)
+    rw [← IsLocalRing.ResidueField.algebraMap_eq R,
+      ← IsLocalRing.ResidueField.algebraMap_eq S,
+      ← IsScalarTower.algebraMap_apply R S (IsLocalRing.ResidueField S),
+      ← IsScalarTower.algebraMap_apply R (IsLocalRing.ResidueField R)
+        (IsLocalRing.ResidueField S)]
+  have : IsLocalHom ((IsLocalRing.residue S).comp (algebraMap R S)) := by
+    rw [hcomp]
+    infer_instance
+  exact isLocalHom_of_comp (algebraMap R S) (IsLocalRing.residue S)
+
 include hSL in
 private theorem scalar_mem_range (q : F)
     (hq : algebraMap F L q ∈ Set.range (algebraMap S L)) :
     q ∈ Set.range (algebraMap R F) := by
-  let : IsLocalHom (algebraMap R S) := by
-    have hcomp :
-        (IsLocalRing.residue S).comp (algebraMap R S) =
-          (algebraMap (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField S)).comp
-            (IsLocalRing.residue R) := by
-      ext r
-      change IsLocalRing.residue S (algebraMap R S r) =
-        algebraMap (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField S)
-          (IsLocalRing.residue R r)
-      rw [← IsLocalRing.ResidueField.algebraMap_eq R,
-        ← IsLocalRing.ResidueField.algebraMap_eq S,
-        ← IsScalarTower.algebraMap_apply R S (IsLocalRing.ResidueField S),
-        ← IsScalarTower.algebraMap_apply R (IsLocalRing.ResidueField R)
-          (IsLocalRing.ResidueField S)]
-    have : IsLocalHom ((IsLocalRing.residue S).comp (algebraMap R S)) := by
-      rw [hcomp]
-      infer_instance
-    exact isLocalHom_of_comp (algebraMap R S) (IsLocalRing.residue S)
+  let : IsLocalHom (algebraMap R S) :=
+    isLocalHom_algebraMap_of_residue (R := R) (S := S)
   by_cases hq0 : q = 0
   · exact ⟨0, by simp [hq0]⟩
   rcases scalar_or_inverse (R := R) q with hr | ⟨r, hr⟩
@@ -647,5 +653,110 @@ theorem free_of_residueBasis : Module.Free R S :=
   Module.Free.of_basis (integralBasisOfResidue hSL b s hs hdeg)
 
 end ResidueBasis
+
+section ResidueDegreeEq
+
+variable {R : Type uR} {S : Type uS} {F : Type uF} {L : Type uL}
+variable [cR : CommRing R] [dR : IsDomain R] [vR : ValuationRing R]
+variable [cS : CommRing S] [lS : IsLocalRing S]
+variable [fF : Field F] [fL : Field L]
+variable [aRF : Algebra R F] [fracRF : IsFractionRing R F]
+variable [aFL : Algebra F L]
+variable [aRS : Algebra R S] [aSL : Algebra S L] [aRL : Algebra R L]
+variable [towerRFL : IsScalarTower R F L]
+variable [towerRSL : IsScalarTower R S L]
+variable [aKK : Algebra (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField S)]
+variable [aRK : Algebra R (IsLocalRing.ResidueField S)]
+variable [towerRkK : IsScalarTower R (IsLocalRing.ResidueField R)
+  (IsLocalRing.ResidueField S)]
+variable [towerRSK : IsScalarTower R S (IsLocalRing.ResidueField S)]
+variable [finiteFL : Module.Finite F L]
+
+include R S F L cR dR vR cS lS fF fL
+include aRF fracRF aFL aRS aSL aRL towerRFL towerRSL
+include aKK aRK towerRkK towerRSK finiteFL
+
+private theorem exists_integralBasis_of_finrank_eq
+    (hSL : Function.Injective (algebraMap S L))
+    (hnf : Module.finrank F L =
+      Module.finrank (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField S)) :
+    ∃ b : Module.Basis
+        (Fin (Module.finrank (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField S)))
+        R S,
+      ∀ z, z ∈ IsLocalRing.maximalIdeal S ↔
+        ∀ i, b.repr z i ∈ IsLocalRing.maximalIdeal R := by
+  classical
+  let : Module.Finite (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField S) :=
+    finite_residueField (R := R) (S := S) (F := F) (L := L) hSL
+  let bκ : @Module.Basis
+      (Fin (Module.finrank (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField S)))
+      (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField S) _ _
+      (@Algebra.toModule (IsLocalRing.ResidueField R)
+        (IsLocalRing.ResidueField S) _ _ aKK) :=
+    Module.finBasis (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField S)
+  let s : Fin (Module.finrank (IsLocalRing.ResidueField R)
+      (IsLocalRing.ResidueField S)) → S := fun i =>
+    Classical.choose (IsLocalRing.residue_surjective (R := S) (bκ i))
+  have hs (i : Fin (Module.finrank (IsLocalRing.ResidueField R)
+      (IsLocalRing.ResidueField S))) : IsLocalRing.residue S (s i) = bκ i :=
+    Classical.choose_spec (IsLocalRing.residue_surjective (R := S) (bκ i))
+  have hdeg : Fintype.card (Fin (Module.finrank (IsLocalRing.ResidueField R)
+      (IsLocalRing.ResidueField S))) = Module.finrank F L :=
+    (Fintype.card_fin _).trans hnf.symm
+  refine ⟨integralBasisOfResidue (R := R) (S := S) (F := F) (L := L)
+    hSL bκ s hs hdeg, ?_⟩
+  exact integralBasisOfResidue_mem_maximalIdeal_iff
+    (R := R) (S := S) (F := F) (L := L) hSL bκ s hs hdeg
+
+/-- When residue degree exhausts field degree, the original target local ring is
+finite over the base valuation domain. Residue finiteness and lifts of a residue
+basis are constructed internally, as in Fesenko–Vostokov's lifted-basis argument. -/
+theorem finite_of_finrank_eq
+    (hSL : Function.Injective (algebraMap S L))
+    (hnf : Module.finrank F L =
+      Module.finrank (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField S)) :
+    Module.Finite R S := by
+  obtain ⟨b, _⟩ := exists_integralBasis_of_finrank_eq
+    (R := R) (S := S) (F := F) (L := L) hSL hnf
+  exact Module.Finite.of_basis b
+
+/-- When residue degree exhausts field degree, the original target local ring is
+free over the base valuation domain, by the lifted-residue-basis construction of
+Fesenko–Vostokov. No residue basis or lifts are required as input. -/
+theorem free_of_finrank_eq
+    (hSL : Function.Injective (algebraMap S L))
+    (hnf : Module.finrank F L =
+      Module.finrank (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField S)) :
+    Module.Free R S := by
+  obtain ⟨b, _⟩ := exists_integralBasis_of_finrank_eq
+    (R := R) (S := S) (F := F) (L := L) hSL hnf
+  exact Module.Free.of_basis b
+
+/-- When residue degree exhausts field degree, the extension of the base maximal
+ideal is the maximal ideal of the original target local ring. This follows from
+Fesenko–Vostokov's lifted-basis coordinate criterion; neither Henselianity nor
+separability of the residue extension is required. -/
+theorem map_maximalIdeal_eq_of_finrank_eq
+    (hSL : Function.Injective (algebraMap S L))
+    (hnf : Module.finrank F L =
+      Module.finrank (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField S)) :
+    (IsLocalRing.maximalIdeal R).map (algebraMap R S) =
+      IsLocalRing.maximalIdeal S := by
+  classical
+  let : IsLocalHom (algebraMap R S) :=
+    isLocalHom_algebraMap_of_residue (R := R) (S := S)
+  obtain ⟨b, hb⟩ := exists_integralBasis_of_finrank_eq
+    (R := R) (S := S) (F := F) (L := L) hSL hnf
+  refine le_antisymm (IsLocalRing.map_maximalIdeal_le (algebraMap R S)) ?_
+  intro z hz
+  have hcoeff : ∀ i, b.repr z i ∈ IsLocalRing.maximalIdeal R := (hb z).mp hz
+  rw [← b.sum_repr z]
+  exact Submodule.sum_mem _ fun i _ => by
+    rw [Algebra.smul_def]
+    exact Ideal.mul_mem_right (b i)
+      ((IsLocalRing.maximalIdeal R).map (algebraMap R S))
+      (Ideal.mem_map_of_mem (algebraMap R S) (hcoeff i))
+
+end ResidueDegreeEq
 
 end ValuationRing
