@@ -152,13 +152,15 @@ space from Spectral Stone Duality; their valuation applications are developed he
   separable. For every ideal `I ≤ maximalIdeal R` and `u : R` with `u - 1 ∈ I`,
   there is a unit `s : S` with `s - 1 ∈ I.map (algebraMap R S)` and
   `Algebra.norm R s = u`. No primitive element, basis, finite/free module or
-  trace-unit witness is a premise. The statement uses ideal extension, not an
-  asserted power of the maximal ideal of `S`; it has no Galois, prime-degree,
-  invertible-degree, discreteness or completeness hypothesis.
+  trace-unit witness is a premise. For every `n > 0`, the norm on units maps
+  the kernel of reduction modulo `maximalIdeal S ^ n` onto the corresponding
+  kernel for `R`. No Galois, prime-degree, invertible-degree, discreteness or
+  completeness hypothesis is required.
   If the base residue field is finite, every unit of `R` is the norm of a unit
-  of the original `S`. Residue separability is derived from finiteness, rather
-  than assumed. This combines finite-field unit norm surjectivity, the residue
-  norm comparison and the principal-congruence correction.
+  of the original `S`, and the kernel-image equality holds for every `n`,
+  including zero. Residue separability is derived from finiteness, rather than
+  assumed. This combines finite-field unit norm surjectivity, the residue norm
+  comparison and the principal-congruence correction.
 
 - **Power bases and minimal polynomials from arbitrary primitive residue lifts**
   ([power bases](ValuationIntegers/Valuation/ResiduePowerBasis.lean),

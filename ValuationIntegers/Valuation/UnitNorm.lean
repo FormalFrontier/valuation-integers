@@ -15,7 +15,9 @@ Let `R` be a Henselian valuation domain with fraction field `F` and finite
 residue field. Let `S` be a commutative local `R`-algebra embedded in a finite
 extension `L/F`, with the given compatible ambient and residue algebras. If
 residue degree equals field degree, every unit of `R` is the norm of a unit
-of `S`.
+of `S`. At every nonnegative level, the norm on units maps the kernel of
+reduction modulo that power of the maximal ideal of `S` onto the corresponding
+kernel for `R`; level zero is surjectivity on all units.
 
 A finite residue basis and its lifts supply a basis for the original `R`-action
 on `S`. Finite-field unit norm surjectivity supplies a unit whose norm has the
@@ -155,5 +157,75 @@ theorem exists_isUnit_norm_eq
     Algebra.norm R ((E : S) * c) = (ν : R) * (W : R) := by
       simp only [map_mul, hnc, ν, Units.coe_map]
     _ = (U : R) := congrArg Units.val hcancel
+
+/-- Over a Henselian valuation domain with finite residue field, the norm maps
+every unit congruence subgroup onto the corresponding subgroup of the base.
+
+These are the kernels of reduction modulo powers of the maximal ideals. At
+level zero the assertion is norm surjectivity on all units. In the unramified
+local-field case this is the unit-filtration norm-image statement of
+Fesenko–Vostokov; here Henselianity and degree exhaustion suffice without a
+Galois or completeness hypothesis. -/
+theorem map_norm_units_ker_quotient_pow_maximalIdeal
+    (hSL : Function.Injective (algebraMap S L))
+    (hnf : Module.finrank F L =
+      Module.finrank (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField S))
+    (n : ℕ) :
+    ((Units.map
+      (Ideal.Quotient.mk ((IsLocalRing.maximalIdeal S) ^ n)).toMonoidHom).ker).map
+        (Units.map (Algebra.norm R (S := S))) =
+      (Units.map
+        (Ideal.Quotient.mk ((IsLocalRing.maximalIdeal R) ^ n)).toMonoidHom).ker := by
+  classical
+  rcases Nat.eq_zero_or_pos n with rfl | hn
+  · have hNormUnitsSurj :
+        Function.Surjective (Units.map (Algebra.norm R (S := S))) := by
+      intro u
+      have hu : IsUnit (u : R) := ⟨u, rfl⟩
+      obtain ⟨s, hsUnit, hsNorm⟩ :=
+        exists_isUnit_norm_eq (R := R) (S := S) (F := F) (L := L)
+          hSL hnf (u : R) hu
+      refine ⟨hsUnit.unit, ?_⟩
+      apply Units.ext
+      simpa only [Units.coe_map, IsUnit.unit_spec] using hsNorm
+    have hzeroS :
+        (Units.map
+          (Ideal.Quotient.mk
+            ((IsLocalRing.maximalIdeal S) ^ (0 : ℕ))).toMonoidHom).ker =
+          (⊤ : Subgroup Sˣ) := by
+      apply le_antisymm le_top
+      intro v _
+      rw [MonoidHom.mem_ker, ← Units.val_eq_one, Units.coe_map]
+      apply (Ideal.Quotient.mk_eq_one_iff_sub_mem
+        (I := (IsLocalRing.maximalIdeal S) ^ (0 : ℕ)) (v : S)).mpr
+      rw [pow_zero, Ideal.one_eq_top]
+      exact Submodule.mem_top
+    have hzeroR :
+        (Units.map
+          (Ideal.Quotient.mk
+            ((IsLocalRing.maximalIdeal R) ^ (0 : ℕ))).toMonoidHom).ker =
+          (⊤ : Subgroup Rˣ) := by
+      apply le_antisymm le_top
+      intro u _
+      rw [MonoidHom.mem_ker, ← Units.val_eq_one, Units.coe_map]
+      apply (Ideal.Quotient.mk_eq_one_iff_sub_mem
+        (I := (IsLocalRing.maximalIdeal R) ^ (0 : ℕ)) (u : R)).mpr
+      rw [pow_zero, Ideal.one_eq_top]
+      exact Submodule.mem_top
+    rw [hzeroS, hzeroR, Subgroup.map_top]
+    exact MonoidHom.range_eq_top.mpr hNormUnitsSurj
+  · have : Module.Finite (IsLocalRing.ResidueField R)
+        (IsLocalRing.ResidueField S) :=
+      finite_residueField (R := R) (S := S) (F := F) (L := L) hSL
+    have : Finite (IsLocalRing.ResidueField S) :=
+      Module.finite_of_finite (IsLocalRing.ResidueField R)
+    have : IsGalois (IsLocalRing.ResidueField R)
+        (IsLocalRing.ResidueField S) := inferInstance
+    have : Algebra.IsSeparable (IsLocalRing.ResidueField R)
+        (IsLocalRing.ResidueField S) :=
+      IsGalois.to_isSeparable
+        (F := IsLocalRing.ResidueField R) (E := IsLocalRing.ResidueField S)
+    exact map_norm_units_ker_quotient_pow_maximalIdeal_of_pos
+      (R := R) (S := S) (F := F) (L := L) hSL hnf n hn
 
 end ValuationRing
