@@ -18,7 +18,8 @@ commutative local `R`-algebra embedded in a finite field extension `L/F`.
 Keep the given algebra structures and commuting ambient and residue towers.
 If prescribed lifts of a finite residue basis have cardinality `[L : F]`,
 then algebraic trace and norm commute both with the original embeddings and
-with the canonical residue maps.
+with the canonical residue maps. When the residue degree equals `[L : F]`, the
+norm comparison also holds without prescribing a residue basis or its lifts.
 
 Degree exhaustion by the residue-basis size supplies the ring and field bases.
 Neither residue separability nor a restriction on characteristic is required.
@@ -162,6 +163,52 @@ theorem residue_norm_of_residueBasis (x : S) :
   rw [hmap, leftMulMatrix_integralBasisOfResidue_residue hSL b s hs hdeg x]
 
 end ResidueBasis
+
+section FinrankEq
+
+variable {R : Type uR} {S : Type uS} {F : Type uF} {L : Type uL}
+variable [cR : CommRing R] [dR : IsDomain R] [vR : ValuationRing R]
+variable [cS : CommRing S] [lS : IsLocalRing S]
+variable [fF : Field F] [fL : Field L]
+variable [aRF : Algebra R F] [fracRF : IsFractionRing R F]
+variable [aFL : Algebra F L]
+variable [aRS : Algebra R S] [aSL : Algebra S L] [aRL : Algebra R L]
+variable [towerRFL : IsScalarTower R F L]
+variable [towerRSL : IsScalarTower R S L]
+variable [aKK : Algebra (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField S)]
+variable [aRK : Algebra R (IsLocalRing.ResidueField S)]
+variable [towerRkK : IsScalarTower R (IsLocalRing.ResidueField R)
+  (IsLocalRing.ResidueField S)]
+variable [towerRSK : IsScalarTower R S (IsLocalRing.ResidueField S)]
+variable [finiteFL : Module.Finite F L]
+
+include R S F L cR dR vR cS lS fF fL
+include aRF fracRF aFL aRS aSL aRL towerRFL towerRSL
+include aKK aRK towerRkK towerRSK finiteFL
+
+/-- If the residue degree equals the finite ambient field degree, the norm on the
+local algebra commutes with its embedding into the ambient field extension. -/
+theorem algebraMap_norm_of_finrank_eq
+    (hSL : Function.Injective (algebraMap S L))
+    (hnf : Module.finrank F L =
+      Module.finrank (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField S))
+    (x : S) :
+    algebraMap R F (Algebra.norm R x) =
+      Algebra.norm F (algebraMap S L x) := by
+  classical
+  let : Module.Finite (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField S) :=
+    finite_residueField (R := R) (S := S) (F := F) (L := L) hSL
+  let b := Module.finBasis (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField S)
+  choose s hs using fun i : Fin (Module.finrank (IsLocalRing.ResidueField R)
+      (IsLocalRing.ResidueField S)) =>
+    IsLocalRing.residue_surjective (R := S) (b i)
+  have hdeg : Fintype.card (Fin (Module.finrank (IsLocalRing.ResidueField R)
+      (IsLocalRing.ResidueField S))) = Module.finrank F L := by
+    simpa using hnf.symm
+  exact algebraMap_norm_of_residueBasis (R := R) (S := S) (F := F) (L := L)
+    hSL b s hs hdeg x
+
+end FinrankEq
 
 end ValuationRing
 

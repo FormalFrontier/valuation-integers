@@ -76,27 +76,11 @@ theorem exists_unit_coboundary_of_norm_eq_one_of_generator [IsGalois F L]
       Units.map (restrictAlgEquivOfFinrankEq hSL hnf σ).toAlgHom.toMonoidHom v / v =
         u := by
   classical
-  have hrespos : 0 < Module.finrank (IsLocalRing.ResidueField R)
-      (IsLocalRing.ResidueField S) := by
-    rw [← hnf]
-    exact Module.finrank_pos
-  let : Module.Finite (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField S) :=
-    Module.finite_of_finrank_pos hrespos
-  let b := Module.finBasis (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField S)
-  choose s hs using fun i : Fin (Module.finrank (IsLocalRing.ResidueField R)
-      (IsLocalRing.ResidueField S)) =>
-    IsLocalRing.residue_surjective (R := S) (b i)
-  have hdeg : Fintype.card (Fin (Module.finrank (IsLocalRing.ResidueField R)
-      (IsLocalRing.ResidueField S))) = Module.finrank F L := by
-    simpa using hnf.symm
-  have hnorm (z : S) : algebraMap R F (Algebra.norm R z) =
-      Algebra.norm F (algebraMap S L z) :=
-    algebraMap_norm_of_residueBasis (R := R) (S := S) (F := F) (L := L)
-      hSL b s hs hdeg z
   have hnu : Algebra.norm R (u : S) = 1 :=
     congrArg (fun t : Rˣ => (t : R)) hu
   have hfield : Algebra.norm F (algebraMap S L (u : S)) = 1 := by
-    rw [← hnorm, hnu, map_one]
+    rw [← algebraMap_norm_of_finrank_eq (R := R) (S := S) (F := F) (L := L)
+      hSL hnf (u : S), hnu, map_one]
   obtain ⟨y, hy⟩ := groupCohomology.exists_unit_div_of_norm_eq_one
     (K := F) (L := L) (g := σ) hσ hfield
   let w : L := (y : L)⁻¹

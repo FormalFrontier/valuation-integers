@@ -79,32 +79,17 @@ theorem mem_range_algebraMap_iff_norm_mem_range [finiteFL : Module.Finite F L]
       Algebra.norm F x ∈ Set.range (algebraMap R F) := by
   classical
   have hpos : 0 < Module.finrank F L := Module.finrank_pos
-  have hrespos : 0 < Module.finrank (IsLocalRing.ResidueField R)
-      (IsLocalRing.ResidueField S) := by
-    rw [← hnf]
-    exact hpos
-  let : Module.Finite (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField S) :=
-    Module.finite_of_finrank_pos hrespos
-  let b := Module.finBasis (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField S)
-  choose s hs using fun i : Fin (Module.finrank (IsLocalRing.ResidueField R)
-      (IsLocalRing.ResidueField S)) =>
-    IsLocalRing.residue_surjective (R := S) (b i)
-  have hdeg : Fintype.card (Fin (Module.finrank (IsLocalRing.ResidueField R)
-      (IsLocalRing.ResidueField S))) = Module.finrank F L := by
-    simpa using hnf.symm
-  have hnorm (y : S) : algebraMap R F (Algebra.norm R y) =
-      Algebra.norm F (algebraMap S L y) :=
-    algebraMap_norm_of_residueBasis (R := R) (S := S) (F := F) (L := L)
-      hSL b s hs hdeg y
   constructor
   · rintro ⟨y, rfl⟩
-    exact ⟨Algebra.norm R y, hnorm y⟩
+    exact ⟨Algebra.norm R y,
+      algebraMap_norm_of_finrank_eq (R := R) (S := S) (F := F) (L := L) hSL hnf y⟩
   · rintro ⟨c, hc⟩
     obtain ⟨a, z, hz, haz⟩ := exists_isUnit_mul_of_finrank_eq
       (R := R) (S := S) (F := F) (L := L) hSL hnf x
     have hnormx : Algebra.norm F x =
         a ^ Module.finrank F L * algebraMap R F (Algebra.norm R z) := by
-      rw [← haz, map_mul, Algebra.norm_algebraMap, ← hnorm z]
+      rw [← haz, map_mul, Algebra.norm_algebraMap,
+        ← algebraMap_norm_of_finrank_eq (R := R) (S := S) (F := F) (L := L) hSL hnf z]
     have hzunit : IsUnit (Algebra.norm R z) := hz.map (Algebra.norm R)
     obtain ⟨t, ht⟩ := IsUnit.exists_right_inv hzunit
     have hapow : algebraMap R F (c * t) = a ^ Module.finrank F L := by
