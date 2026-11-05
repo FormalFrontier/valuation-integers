@@ -16,6 +16,7 @@ public import ValuationIntegers.Valuation.ResidueSeparability
 public import ValuationIntegers.Valuation.ResidueHom
 public import ValuationIntegers.Valuation.ResidueHomFinite
 public import ValuationIntegers.Valuation.ResidueHomFunctorial
+public import ValuationIntegers.Valuation.ResidueGalois
 public import ValuationIntegers.Valuation.ResidueTraceNorm
 public import ValuationIntegers.Valuation.NormUnits
 public import ValuationIntegers.Valuation.UnitNorm

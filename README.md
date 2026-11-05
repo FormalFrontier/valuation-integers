@@ -8,6 +8,15 @@ selective imports, examples and boundaries.
 
 ## Headline results
 
+- **Galois and cyclic extensions from residue extensions.** Let `R` be a
+  Henselian valuation domain with fraction field `F`, and let a local
+  commutative `R`-algebra `S` embed in a finite extension `L/F`. With compatible
+  algebra and residue-field actions, suppose the residue degree equals `[L : F]`.
+  If the residue extension is Galois, then `L/F` is Galois; if its
+  algebra-automorphism group is also cyclic, so is that of `L/F`.
+  A finite residue field of `R` suffices for both conclusions. See
+  [`ValuationIntegers.Valuation.ResidueGalois`](ValuationIntegers/Valuation/ResidueGalois.lean).
+
 - **Scalar multiples of units from independent reductions.** Let `R` be a valuation
   domain with fraction field `F`, and let `S` be a local commutative `R`-algebra.
   With compatible algebra and residue-field actions, an `F`-basis of a ring `L`
