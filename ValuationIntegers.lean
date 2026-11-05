@@ -26,6 +26,7 @@ public import ValuationIntegers.Valuation.NormUnits
 public import ValuationIntegers.Valuation.UnitNorm
 public import ValuationIntegers.Valuation.UnitCoboundary
 public import ValuationIntegers.Valuation.NormRange
+public import ValuationIntegers.Valuation.NormQuotient
 public import ValuationIntegers.Valuation.NormValuation
 public import ValuationIntegers.Valuation.Equivalence
 
@@ -145,6 +146,9 @@ has a generator whose coboundary on the original algebra's units has range
 exactly equal to the kernel of its unit norm. The Galois property and cyclicity
 are derived before choosing the generator, and the coboundary witness remains
 in the original unit group.
+If the base is moreover a discrete valuation ring, the quotient of the original
+field units by field norms is canonically the additive group of integers modulo
+the field degree, hence is cyclic with cardinality equal to that degree.
 It also provides bounded-module finiteness, Henselian power neighborhoods, Bernoulli
 integrality and rational denominator-support results.
 The polynomial Hensel criteria give strong roots with maximal-ideal power precision,

@@ -266,6 +266,17 @@ space from Spectral Stone Duality; their valuation applications are developed he
   `S`, fraction-field structure for `S → L`, separability or degree invertibility
   is assumed. This is the norm on `Lˣ`, not the zero-inclusive range on `L`.
 
+- **The field norm quotient over a discrete valuation ring**
+  ([module](ValuationIntegers/Valuation/NormQuotient.lean)).
+  In the preceding field-norm setting, additionally suppose that the base `R`
+  is a discrete valuation ring. `ValuationRing.normQuotientEquivZMod` identifies
+  `Fˣ / N(Lˣ)` with the additive group `ZMod [L : F]`, written multiplicatively.
+  Its value on a representative is the exponent of the canonical maximal-ideal
+  valuation, reduced modulo the degree; a uniformizer has exponent `-1`.
+  `ValuationRing.isCyclic_normQuotient` and `ValuationRing.card_normQuotient`
+  give cyclicity and cardinality `[L : F]`. No discrete valuation ring structure
+  on `S`, Galois assumption or restriction on the characteristic or degree is added.
+
 - **Power bases and minimal polynomials from arbitrary primitive residue lifts**
   ([power bases](ValuationIntegers/Valuation/ResiduePowerBasis.lean),
   [polynomial comparisons](ValuationIntegers/Valuation/ResiduePolynomial.lean),
