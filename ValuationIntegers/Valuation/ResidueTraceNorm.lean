@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 module
 
 public import ValuationIntegers.Valuation.ResidueBasis
+public import ValuationIntegers.Valuation.ResidueUnits
 public import Mathlib.RingTheory.Trace.Defs
 public import Mathlib.RingTheory.Trace.Basic
 public import Mathlib.RingTheory.Norm.Defs
@@ -262,5 +263,105 @@ theorem trace_surjective
   refine ⟨r • (u : S), ?_⟩
   rw [(Algebra.trace R S).map_smul, hu]
   exact mul_one r
+
+end ValuationRing
+
+namespace ValuationRing
+
+/-- An element of the ambient field lies in the image of `S → L` exactly when its trace
+product with every element of `S` lies in the image of `R → F`, when the separable
+residue degree equals the ambient field degree.
+
+This combines the scalar-unit decomposition, prescribed-residue-basis trace comparison
+and trace-one-unit theorem of this library with Mathlib's trace linearity. No
+integral-closure characterization of `S` is assumed. -/
+theorem mem_range_algebraMap_iff_forall_trace_mul_mem_range
+    {R : Type uR} {S : Type uS} {F : Type uF} {L : Type uL}
+    [cR : CommRing R] [dR : IsDomain R] [vR : ValuationRing R]
+    [cS : CommRing S] [lS : IsLocalRing S]
+    [fF : Field F] [fL : Field L]
+    [aRF : Algebra R F] [fracRF : IsFractionRing R F]
+    [aFL : Algebra F L]
+    [aRS : Algebra R S] [aSL : Algebra S L] [aRL : Algebra R L]
+    [towerRFL : IsScalarTower R F L]
+    [towerRSL : IsScalarTower R S L]
+    [aKK : Algebra (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField S)]
+    [aRK : Algebra R (IsLocalRing.ResidueField S)]
+    [towerRkK : IsScalarTower R (IsLocalRing.ResidueField R)
+      (IsLocalRing.ResidueField S)]
+    [towerRSK : IsScalarTower R S (IsLocalRing.ResidueField S)]
+    [finiteFL : Module.Finite F L]
+    [sepKK : Algebra.IsSeparable (IsLocalRing.ResidueField R)
+      (IsLocalRing.ResidueField S)]
+    (hSL : Function.Injective (algebraMap S L))
+    (hnf : Module.finrank (IsLocalRing.ResidueField R)
+      (IsLocalRing.ResidueField S) = Module.finrank F L)
+    (x : L) :
+    x ∈ Set.range (algebraMap S L) ↔
+      ∀ y : S, Algebra.trace F L (x * algebraMap S L y) ∈
+        Set.range (algebraMap R F) := by
+  classical
+  let : Module.Finite (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField S) :=
+    finite_residueField (R := R) (S := S) (F := F) (L := L) hSL
+  let b : @Module.Basis
+      (Fin (Module.finrank (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField S)))
+      (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField S) _ _
+      (@Algebra.toModule (IsLocalRing.ResidueField R)
+        (IsLocalRing.ResidueField S) _ _ aKK) :=
+    Module.finBasis (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField S)
+  have hsurj : Function.Surjective (IsLocalRing.residue S) :=
+    IsLocalRing.residue_surjective
+  choose s hs using fun i => hsurj (b i)
+  have hdeg : Fintype.card
+      (Fin (Module.finrank (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField S))) =
+      Module.finrank F L := by
+    simpa only [Fintype.card_fin] using hnf
+  let e : Module.Basis
+      (Fin (Module.finrank (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField S)))
+      F L := basisOfResidue (R := R) (S := S) (F := F) (L := L) hSL b s hs hdeg
+  have he : ∀ i, e i = algebraMap S L (s i) := by
+    intro i
+    exact basisOfResidue_apply hSL b s hs hdeg i
+  have hres : LinearIndependent (IsLocalRing.ResidueField R)
+      (fun i => IsLocalRing.residue S (s i)) := by
+    simpa only [hs] using b.linearIndependent
+  constructor
+  · rintro ⟨z, rfl⟩ y
+    refine ⟨Algebra.trace R S (z * y), ?_⟩
+    rw [algebraMap_trace_of_residueBasis hSL b s hs hdeg, map_mul]
+  · intro h
+    obtain ⟨a, z, hz, hfactor⟩ :=
+      Module.Basis.exists_isUnit_mul_of_linearIndependent_residue
+        (R := R) e s he hres x
+    rcases hz with ⟨u, rfl⟩
+    obtain ⟨t, ht⟩ := exists_unit_trace_eq_one
+      (R := R) (S := S) (F := F) (L := L) hSL hnf
+    have htL : Algebra.trace F L (algebraMap S L (t : S)) = 1 := by
+      rw [← algebraMap_trace_of_residueBasis hSL b s hs hdeg, ht, map_one]
+    -- The test element cancels the unit without dividing by the scalar or the degree.
+    have hmul : x * algebraMap S L ((u⁻¹ * t : Sˣ) : S) =
+        a • algebraMap S L (t : S) := by
+      calc
+        x * algebraMap S L ((u⁻¹ * t : Sˣ) : S) =
+            algebraMap F L a * algebraMap S L ((u * (u⁻¹ * t) : Sˣ) : S) := by
+          simp only [← hfactor, Units.val_mul, map_mul, mul_assoc]
+        _ = a • algebraMap S L (t : S) := by simp [Algebra.smul_def]
+    obtain ⟨r, hr⟩ := h ((u⁻¹ * t : Sˣ) : S)
+    have ha : algebraMap R F r = a := by
+      calc
+        algebraMap R F r =
+            Algebra.trace F L (x * algebraMap S L ((u⁻¹ * t : Sˣ) : S)) := hr
+        _ = Algebra.trace F L (a • algebraMap S L (t : S)) :=
+          congrArg (Algebra.trace F L) hmul
+        _ = a * Algebra.trace F L (algebraMap S L (t : S)) := by
+          rw [map_smul, smul_eq_mul]
+        _ = a := by rw [htL, mul_one]
+    refine ⟨algebraMap R S r * (u : S), ?_⟩
+    calc
+      algebraMap S L (algebraMap R S r * (u : S)) =
+          algebraMap F L (algebraMap R F r) * algebraMap S L (u : S) := by
+        rw [map_mul, ← IsScalarTower.algebraMap_apply R S L,
+          ← IsScalarTower.algebraMap_apply R F L]
+      _ = x := by simpa only [ha] using hfactor
 
 end ValuationRing

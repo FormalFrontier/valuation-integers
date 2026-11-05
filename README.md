@@ -177,6 +177,24 @@ space from Spectral Stone Duality; their valuation applications are developed he
   valuation-ring structure on `S`, or fraction-field structure for `S → L`
   is required.
 
+- **Ambient membership detected by the trace pairing**
+  ([module](ValuationIntegers/Valuation/ResidueTraceNorm.lean)).
+  Let `R` be a commutative valuation domain with fraction field `F`, and let
+  `S` be a commutative local ring embedded by its given algebra map in a field
+  `L` finite over `F`. Keep the seven given algebras `R → F`, `F → L`,
+  `R → S`, `S → L`, `R → L`, `κR → κS`, `R → κS`, and the four scalar towers
+  `R/F/L`, `R/S/L`, `R/κR/κS`, `R/S/κS`, in independent carrier universes.
+  If `[κS : κR] = [L : F]` and the given residue extension is separable,
+  `ValuationRing.mem_range_algebraMap_iff_forall_trace_mul_mem_range` states,
+  for every `x : L`,
+  `x ∈ range(algebraMap S L) ↔ ∀ y : S, Algebra.trace F L
+  (x * algebraMap S L y) ∈ range(algebraMap R F)`.
+  The tests range over all of `S`, not just `1`. The conclusion
+  is membership in the given image, without assuming an integral-closure
+  presentation of `S`. Residue bases, lifts and finite freeness are internal.
+  No Henselianity, finite residue-field cardinality, invertible degree,
+  ambient separability, valuation-ring or fraction-field structure on `S`,
+  value-group, discreteness or completeness hypothesis is added.
 - **Valuation of a norm under residue-degree exhaustion**
   ([module](ValuationIntegers/Valuation/NormValuation.lean)).
   Let `L/F` be a finite field extension with given valuations `v`, `w` and
@@ -466,6 +484,10 @@ comparisons with Mathlib's residue-unit, polynomial-derivative and separable-adj
 The trace-one unit and trace-surjectivity theorems combine Mathlib's separable
 field-trace surjectivity and residue-unit APIs with this library's prescribed-lift
 residue-trace comparison, choosing the residue basis and lifts internally.
+The ambient trace-pairing membership criterion combines Mathlib's trace linearity
+and scalar-tower laws with this library's scalar-unit decomposition, prescribed-lift
+field basis and trace comparison, and trace-one-unit theorem. These are formalization
+credits, not an assertion of an exact printed-book theorem or source coverage.
 The norm-congruence theorem combines the residue-trace comparison and separable
 trace surjectivity with Mathlib's regular-multiplication determinant derivative and
 evaluation APIs and Adic Modules' nonmonic Hensel and subideal theorems.
