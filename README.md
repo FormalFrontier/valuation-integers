@@ -162,6 +162,21 @@ space from Spectral Stone Duality; their valuation applications are developed he
   neither is an extra premise. Residue separability is not required, and there
   is no restriction on characteristic.
 
+- **Trace-one units and trace surjectivity**
+  ([module](ValuationIntegers/Valuation/ResidueTraceNorm.lean)).
+  Let `R` be a valuation domain with fraction field `F`, `L/F` a finite field
+  extension, and `S` a commutative local `R`-algebra with its given injective
+  `S → L`. Retain the original ambient and residue algebra actions and the
+  four compatible scalar towers described above. If `[κS : κR] = [L : F]`
+  and the given residue extension `κS/κR` is separable,
+  `ValuationRing.exists_unit_trace_eq_one` gives a unit of the original `S`
+  whose original `R`-linear trace is one, and `ValuationRing.trace_surjective`
+  makes `Algebra.trace R S : S →ₗ[R] R` surjective onto all of `R`.
+  Residue bases, lifts and finite freeness are internal, not caller premises.
+  No Henselianity, finite residue-field cardinality, invertible degree,
+  valuation-ring structure on `S`, or fraction-field structure for `S → L`
+  is required.
+
 - **Valuation of a norm under residue-degree exhaustion**
   ([module](ValuationIntegers/Valuation/NormValuation.lean)).
   Let `L/F` be a finite field extension with given valuations `v`, `w` and
@@ -445,6 +460,9 @@ finite-algebra and algebra-generation APIs. The exact polynomial comparisons
 use Mathlib's minimal-polynomial, coefficient-map and monic-degree APIs.
 The derivative-unit and field-separability conclusions combine the same exact
 comparisons with Mathlib's residue-unit, polynomial-derivative and separable-adjoin APIs.
+The trace-one unit and trace-surjectivity theorems combine Mathlib's separable
+field-trace surjectivity and residue-unit APIs with this library's prescribed-lift
+residue-trace comparison, choosing the residue basis and lifts internally.
 The norm-congruence theorem combines the residue-trace comparison and separable
 trace surjectivity with Mathlib's regular-multiplication determinant derivative and
 evaluation APIs and Adic Modules' nonmonic Hensel and subideal theorems.
