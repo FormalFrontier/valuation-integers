@@ -5,29 +5,32 @@ Authors: Formal Frontier Agents
 module
 
 public import ValuationIntegers.Valuation.ResidueHomFinite
+import Mathlib.FieldTheory.PrimitiveElement
 
 /-!
 # Identity and composition for residue-compatible field homomorphisms
 
-Over a Henselian valuation domain, unique lifting from residue fields determines
-field algebra homomorphisms compatible with the given local algebras. This module
-records two consequences of that uniqueness: a lift of the identity residue map
-is the identity, and a lift of a composite residue map is the composite of given
-compatible field homomorphisms.
+Let a local algebra over a valuation domain embed in a finite field extension
+whose degree equals its separable residue degree. Two given compatible ring and
+field-source maps with the same reduction agree. In particular, a map lifting
+the identity residue map is the identity, and a map lifting a composite residue
+map is the composite of given compatible maps.
 
-Both results retain the finite, degree-exhausting source and final-target
-hypotheses of `ValuationRing.existsUnique_fieldAlgHom_lift_of_finrank_eq`. For
-composition, the intermediate ambient algebra need only be a commutative ring:
-the intermediate homomorphisms are given, rather than obtained by a second
-application of the lifting theorem. Both squares are composed through the same
-intermediate residue map and ambient algebra map.
+These are uniqueness statements about maps already given: they require no
+Henselianity or target integrality, finiteness or degree equality. Simple-root
+uniqueness takes place in the commutative local target; both intermediate and
+final ambient algebras in composition need only be semirings, possibly
+noncommutative or trivial. The original six all-element compatibility equations
+are retained.
 
 ## References
 
-* `ValuationIntegers.Valuation.ResidueHomFinite` for unique residue-to-field lifting.
+* `ValuationIntegers.Valuation.ResidueHom` for local simple-root uniqueness.
+* `ValuationIntegers.Valuation.ResidueHomFinite` for the finite source setting.
 * I. Fesenko and S. Vostokov, *Local Fields and Their Extensions*, Chapter II,
   §3, for the primitive-residue lifting method underlying that theorem.
-* Mathlib's algebra homomorphism identity and composition APIs.
+* Mathlib's local simple-root uniqueness, power-basis extensionality and
+  algebra homomorphism identity and composition APIs.
 -/
 
 public section
@@ -39,9 +42,29 @@ open IsLocalRing
 
 universe uR uS uF uL uT uE uU uK
 
+private theorem PowerBasis.algHom_ext_of_residue_eq_of_square
+    {A : Type*} {B : Type*} {C : Type*} {D : Type*} {E : Type*} {H : Type*}
+    [CommRing A] [CommRing B] [CommRing C] [IsLocalRing C]
+    [CommRing D] [Ring E] [Semiring H]
+    [Algebra A B] [Algebra A C] [Algebra D E] [Algebra D H]
+    [Algebra B E] [Algebra C H]
+    (pb : PowerBasis A B) (qb : PowerBasis D E)
+    (hgen : qb.gen = algebraMap B E pb.gen)
+    {p : Polynomial A} (hroot : Polynomial.aeval pb.gen p = 0)
+    (hunit : IsUnit (Polynomial.aeval pb.gen p.derivative))
+    (f g : B →ₐ[A] C) (ι κ : E →ₐ[D] H)
+    (hres : residue C (f pb.gen) = residue C (g pb.gen))
+    (hf : algebraMap C H (f pb.gen) = ι (algebraMap B E pb.gen))
+    (hg : algebraMap C H (g pb.gen) = κ (algebraMap B E pb.gen)) : ι = κ := by
+  have hfg := pb.algHom_ext_of_residue_eq hroot hunit f g hres
+  apply qb.algHom_ext
+  rw [hgen]
+  exact hf.symm.trans ((congrArg (fun ψ : B →ₐ[A] C =>
+    algebraMap C H (ψ pb.gen)) hfg).trans hg)
+
 /-- A field algebra endomorphism compatible with a lift of the identity residue
 map is the identity. The source has finite field degree equal to its separable
-residue degree over the Henselian valuation base. -/
+residue degree over the valuation base. No Henselianity is needed. -/
 theorem ValuationRing.fieldAlgHom_eq_id_of_residue_eq_id
     {R : Type uR} {S : Type uS} {F : Type uF} {L : Type uL}
     [cR : CommRing R] [dR : IsDomain R] [vR : ValuationRing R]
@@ -58,35 +81,47 @@ theorem ValuationRing.fieldAlgHom_eq_id_of_residue_eq_id
     (hSL : Function.Injective (algebraMap S L))
     (hnf : Module.finrank F L = Module.finrank (ResidueField R) (ResidueField S))
     [sourceResidueSep : Algebra.IsSeparable (ResidueField R) (ResidueField S)]
-    (hR : HenselianLocalRing R)
     (ψ : S →ₐ[R] S) (ι : L →ₐ[F] L)
     (hred : ∀ s : S, residue S (ψ s) = residue S s)
     (hsquare : ∀ s : S, algebraMap S L (ψ s) = ι (algebraMap S L s)) :
     ι = AlgHom.id F L := by
-  rcases ValuationRing.existsUnique_fieldAlgHom_lift_of_finrank_eq
-      (R := R) (S := S) (F := F) (L := L)
-      (cR := cR) (dR := dR) (vR := vR) (cS := cS) (lS := lS)
-      (fF := fF) (fL := fL) (aRF := aRF) (fracRF := fracRF) (aFL := aFL)
-      (aRS := aRS) (aSL := aSL) (aRL := aRL)
-      (towerRFL := towerRFL) (towerRSL := towerRSL)
-      (aKK := aKK) (aRK := aRK) (towerRkK := towerRkK) (towerRSK := towerRSK)
-      (finiteFL := finiteFL) hSL hnf (sourceResidueSep := sourceResidueSep)
-      (T := S) (E := L) (cT := cS) (lT := lS) (fE := fL)
-      (aFE := aFL) (aRT := aRS) (aTE := aSL) (aRE := aRL)
-      (towerRFE := towerRFL) (towerRTE := towerRSL)
-      (aKT := aKK) (aRKT := aRK) (towerRkT := towerRkK) (towerRTK := towerRSK)
-      (finiteFE := finiteFL) hSL hnf hR (AlgHom.id (ResidueField R) (ResidueField S))
-    with ⟨ι₀, _, hunique⟩
-  have hι : ι = ι₀ := hunique ι ⟨ψ, hred, hsquare⟩
-  have hid : AlgHom.id F L = ι₀ :=
-    hunique (AlgHom.id F L) ⟨AlgHom.id R S, (fun _ => rfl), (fun _ => rfl)⟩
-  exact hι.trans hid.symm
+  let finiteκS : Module.Finite (ResidueField R) (ResidueField S) :=
+    ValuationRing.finite_residueField (R := R) (S := S) (F := F) (L := L) hSL
+  let pbκ : PowerBasis (ResidueField R) (ResidueField S) :=
+    @Field.powerBasisOfFiniteOfSeparable (ResidueField R) (ResidueField S)
+      _ _ aKK finiteκS sourceResidueSep
+  let α : ResidueField S := pbκ.gen
+  have hα : Algebra.adjoin (ResidueField R) ({α} : Set (ResidueField S)) = ⊤ :=
+    pbκ.adjoin_gen_eq_top
+  obtain ⟨θ, hθ⟩ := residue_surjective (R := S) α
+  let pbR := ValuationRing.integralPowerBasisOfPrimitiveResidue
+    (F := F) (L := L) hSL hnf α hα θ hθ
+  let pbF := ValuationRing.powerBasisOfPrimitiveResidue
+    (R := R) (S := S) hSL hnf α hα θ hθ
+  have hgenR : pbR.gen = θ :=
+    ValuationRing.integralPowerBasisOfPrimitiveResidue_gen
+      (F := F) (L := L) hSL hnf α hα θ hθ
+  have hgenF : pbF.gen = algebraMap S L θ :=
+    ValuationRing.powerBasisOfPrimitiveResidue_gen
+      (R := R) (S := S) hSL hnf α hα θ hθ
+  have hunit : IsUnit (Polynomial.aeval pbR.gen
+      (PowerBasis.minpolyGen pbR).derivative) := by
+    rw [hgenR]
+    exact ValuationRing.isUnit_aeval_derivative_integralPowerBasisOfPrimitiveResidue_minpolyGen
+      (F := F) (L := L) hSL hnf α hα θ hθ
+      (Algebra.IsSeparable.isSeparable (ResidueField R) α)
+  apply PowerBasis.algHom_ext_of_residue_eq_of_square pbR pbF
+    (hgenF.trans (congrArg (algebraMap S L) hgenR.symm))
+    pbR.aeval_minpolyGen hunit ψ (AlgHom.id R S) ι (AlgHom.id F L)
+  · exact hred pbR.gen
+  · exact hsquare pbR.gen
+  · rfl
 
-/-- A field homomorphism lifting a composite residue homomorphism agrees with
-the composite of given compatible homomorphisms. Unique lifting is used only
-from the finite degree-exhausting source to the finite degree-exhausting final
-target. No field, separability or finite-degree hypothesis is imposed on the
-intermediate ambient commutative ring. -/
+/-- A field-source homomorphism lifting a composite residue homomorphism agrees
+with the composite of given compatible homomorphisms. The source has finite
+field degree equal to its separable residue degree. The final local ring need
+not be Henselian, and the two ambient algebras need only be semirings. No target
+integrality, injectivity, finiteness or degree equality is required. -/
 theorem ValuationRing.fieldAlgHom_eq_comp_of_residue_eq_comp
     {R : Type uR} {S : Type uS} {F : Type uF} {L : Type uL}
     [cR : CommRing R] [dR : IsDomain R] [vR : ValuationRing R]
@@ -104,22 +139,12 @@ theorem ValuationRing.fieldAlgHom_eq_comp_of_residue_eq_comp
     (hnf : Module.finrank F L = Module.finrank (ResidueField R) (ResidueField S))
     [sourceResidueSep : Algebra.IsSeparable (ResidueField R) (ResidueField S)]
     {U : Type uU} {K : Type uK}
-    [cU : CommRing U] [lU : IsLocalRing U] [fK : Field K]
+    [cU : CommRing U] [lU : IsLocalRing U] [sK : Semiring K]
     [aFK : Algebra F K]
-    [aRU : Algebra R U] [aUK : Algebra U K] [aRKField : Algebra R K]
-    [towerRFK : IsScalarTower R F K]
-    [towerRUK : IsScalarTower R U K]
+    [aRU : Algebra R U] [aUK : Algebra U K]
     [aKU : Algebra (ResidueField R) (@ResidueField U cU lU)]
-    [aRKU : Algebra R (@ResidueField U cU lU)]
-    [towerRkU : IsScalarTower R (ResidueField R) (@ResidueField U cU lU)]
-    [towerRUkU : IsScalarTower R U (@ResidueField U cU lU)]
-    [finiteFK : Module.Finite F K]
-    (hUK : Function.Injective (algebraMap U K))
-    (hnfU : Module.finrank F K =
-      Module.finrank (ResidueField R) (@ResidueField U cU lU))
-    (hR : HenselianLocalRing R)
     {T : Type uT} {E : Type uE}
-    [cT : CommRing T] [lT : IsLocalRing T] [cE : CommRing E]
+    [cT : CommRing T] [lT : IsLocalRing T] [sE : Semiring E]
     [aRT : Algebra R T] [aFE : Algebra F E] [aTE : Algebra T E]
     [aKT : Algebra (ResidueField R) (@ResidueField T cT lT)]
     (φ₁ : (ResidueField S) →ₐ[ResidueField R] (@ResidueField T cT lT))
@@ -151,21 +176,34 @@ theorem ValuationRing.fieldAlgHom_eq_comp_of_residue_eq_comp
           ι₂ (algebraMap T E (ψ₁ s)) := hsquare₂ (ψ₁ s)
       _ = ι₂ (ι₁ (algebraMap S L s)) := congrArg ι₂ (hsquare₁ s)
       _ = (ι₂.comp ι₁) (algebraMap S L s) := rfl
-  rcases ValuationRing.existsUnique_fieldAlgHom_lift_of_finrank_eq
-      (R := R) (S := S) (F := F) (L := L)
-      (cR := cR) (dR := dR) (vR := vR) (cS := cS) (lS := lS)
-      (fF := fF) (fL := fL) (aRF := aRF) (fracRF := fracRF) (aFL := aFL)
-      (aRS := aRS) (aSL := aSL) (aRL := aRL)
-      (towerRFL := towerRFL) (towerRSL := towerRSL)
-      (aKK := aKK) (aRK := aRK) (towerRkK := towerRkK) (towerRSK := towerRSK)
-      (finiteFL := finiteFL) hSL hnf (sourceResidueSep := sourceResidueSep)
-      (T := U) (E := K) (cT := cU) (lT := lU) (fE := fK)
-      (aFE := aFK) (aRT := aRU) (aTE := aUK) (aRE := aRKField)
-      (towerRFE := towerRFK) (towerRTE := towerRUK)
-      (aKT := aKU) (aRKT := aRKU) (towerRkT := towerRkU) (towerRTK := towerRUkU)
-      (finiteFE := finiteFK) hUK hnfU hR (φ₂.comp φ₁)
-    with ⟨ι₀, _, hunique⟩
-  have hι₃ : ι₃ = ι₀ := hunique ι₃ ⟨ψ₃, hred₃, hsquare₃⟩
-  have hcomp : ι₂.comp ι₁ = ι₀ :=
-    hunique (ι₂.comp ι₁) ⟨ψ₂.comp ψ₁, hredComp, hsquareComp⟩
-  exact hι₃.trans hcomp.symm
+  let finiteκS : Module.Finite (ResidueField R) (ResidueField S) :=
+    ValuationRing.finite_residueField (R := R) (S := S) (F := F) (L := L) hSL
+  let pbκ : PowerBasis (ResidueField R) (ResidueField S) :=
+    @Field.powerBasisOfFiniteOfSeparable (ResidueField R) (ResidueField S)
+      _ _ aKK finiteκS sourceResidueSep
+  let α : ResidueField S := pbκ.gen
+  have hα : Algebra.adjoin (ResidueField R) ({α} : Set (ResidueField S)) = ⊤ :=
+    pbκ.adjoin_gen_eq_top
+  obtain ⟨θ, hθ⟩ := residue_surjective (R := S) α
+  let pbR := ValuationRing.integralPowerBasisOfPrimitiveResidue
+    (F := F) (L := L) hSL hnf α hα θ hθ
+  let pbF := ValuationRing.powerBasisOfPrimitiveResidue
+    (R := R) (S := S) hSL hnf α hα θ hθ
+  have hgenR : pbR.gen = θ :=
+    ValuationRing.integralPowerBasisOfPrimitiveResidue_gen
+      (F := F) (L := L) hSL hnf α hα θ hθ
+  have hgenF : pbF.gen = algebraMap S L θ :=
+    ValuationRing.powerBasisOfPrimitiveResidue_gen
+      (R := R) (S := S) hSL hnf α hα θ hθ
+  have hunit : IsUnit (Polynomial.aeval pbR.gen
+      (PowerBasis.minpolyGen pbR).derivative) := by
+    rw [hgenR]
+    exact ValuationRing.isUnit_aeval_derivative_integralPowerBasisOfPrimitiveResidue_minpolyGen
+      (F := F) (L := L) hSL hnf α hα θ hθ
+      (Algebra.IsSeparable.isSeparable (ResidueField R) α)
+  apply PowerBasis.algHom_ext_of_residue_eq_of_square pbR pbF
+    (hgenF.trans (congrArg (algebraMap S L) hgenR.symm))
+    pbR.aeval_minpolyGen hunit ψ₃ (ψ₂.comp ψ₁) ι₃ (ι₂.comp ι₁)
+  · exact (hred₃ pbR.gen).trans (hredComp pbR.gen).symm
+  · exact hsquare₃ pbR.gen
+  · exact hsquareComp pbR.gen

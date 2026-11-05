@@ -273,31 +273,32 @@ space from Spectral Stone Duality; their valuation applications are developed he
 - **Unique residue and field homomorphism lifts**
   ([lifting](ValuationIntegers/Valuation/ResidueHomFinite.lean),
   [identity and composition](ValuationIntegers/Valuation/ResidueHomFunctorial.lean)).
-  Let `R` be a Henselian valuation domain with fraction field `F`. Let `S` and
-  `T` be commutative local `R`-algebras embedded by their given algebra maps in
-  finite field extensions `L/F` and `E/F`, respectively, with the compatible
-  ambient and residue scalar towers above. Assume `[L : F] = [κS : κR]`,
-  `[E : F] = [κT : κR]`, and explicitly `[Algebra.IsSeparable κR κS]`.
+  Let `R` be a valuation domain with fraction field `F`, and let a commutative
+  local `R`-algebra `S` embed by its given algebra map in a finite extension
+  `L/F`. Assume `[L : F] = [κS : κR]` and explicitly
+  `[Algebra.IsSeparable κR κS]`. Let `T` be a commutative local `R`-algebra
+  with its given compatible residue scalar towers and an ordinary value
+  `hT : HenselianLocalRing T`.
   `ValuationRing.existsUnique_residueAlgHom_lift_of_finrank_eq` gives, for every
   `φ : κS →ₐ[κR] κT`, a unique `ψ : S →ₐ[R] T` satisfying
   `residue T (ψ s) = φ (residue S s)` for every `s : S`.
+  Given a semiring `F`-algebra `E` and the compatible original maps and towers
+  for `T → E` and `R → E`,
   `ValuationRing.existsUnique_fieldAlgHom_lift_of_finrank_eq` also gives a unique
   `ι : L →ₐ[F] E` admitting such a `ψ` with
   `algebraMap T E (ψ s) = ι (algebraMap S L s)` for every `s : S`.
-  The identity and composition laws follow from this characterization. For
-  composition of given compatible witnesses, the intermediate ambient algebra
-  need only be a commutative ring, without intermediate separability or finite-degree
-  assumptions; the source and final target retain the lifting hypotheses.
-  A finite separable source residue extension supplies a primitive generator
-  and its lift. The target degree equality gives module finiteness, integrality
-  of the given `R → T` map, and Henselianity of `T` from that of `R`.
-  No `Module.Finite R T`, target Henselianity, target separability or freeness
-  assumption is required; the domain property of `T` follows from its embedding
-  into `E`, rather than from an additional domain typeclass. The six universes are
-  independent, and the given maps, actions and towers are retained. Both degree
-  equalities and source residue
-  separability are restrictions; this is not a statement for arbitrary finite
-  ambient extensions or a full unramified-extension equivalence.
+  The semiring `E` may be noncommutative or trivial, so no unconditional
+  embedding into it is asserted. No base Henselianity, target integrality,
+  domain, injectivity, finiteness or degree equality is assumed.
+  Identity and composition compare already-given compatible maps using local
+  simple-root uniqueness, without any Henselianity or target size hypothesis;
+  both ambient algebras in composition need only be semirings. A finite
+  separable source residue extension supplies a primitive generator and its
+  lift internally. For integral targets over a Henselian base, Adic Modules
+  supplies the required target Henselianity along the original map. All
+  universes are independent, and the given maps, actions and towers are retained.
+  The source degree equality and residue separability remain restrictions;
+  this is not a full unramified-extension equivalence.
 
 - **Absolute values and rank-at-most-one realizations**
   ([generic layer](docs/AbsoluteValues.md),
@@ -495,9 +496,11 @@ The all-unit application also uses Mathlib's finite-field unit norm surjectivity
 finite-module cardinality and residue-unit APIs. The field norm-group description
 combines the prescribed-lift field basis, scalar-unit factorization and ring-to-field
 norm comparison with that all-unit result and Mathlib's units and subgroup-range APIs.
-The finite-target residue-homomorphism theorem uses Mathlib's primitive-element
-and finite-module integrality APIs and Adic Modules' Henselianity theorem for
-integral ring maps, together with this library's primitive-residue lifting theorem.
+The residue-homomorphism lifting theorems use Mathlib's primitive-element,
+power-basis, local simple-root uniqueness and semiring-algebra-to-ring APIs.
+Integral-target applications use the finite-module integrality API and Adic Modules'
+Henselianity theorem for integral ring maps, together with this library's
+primitive-residue lifting theorem.
 
 ## Credits and license
 

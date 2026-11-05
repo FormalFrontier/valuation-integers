@@ -12,37 +12,38 @@ public import AdicModules.RingTheory.HenselianLocality
 import Mathlib.LinearAlgebra.Dimension.Free
 
 /-!
-# Residue homomorphisms with finite degree-exhausting targets
+# Lifting residue homomorphisms to Henselian local targets
 
-Let `R` be a Henselian valuation domain with fraction field `F`. Let the local
-`R`-algebra `S` embed in a finite extension `L/F` with residue degree equal to
-field degree, and suppose its residue extension is separable. For an independent
-local `R`-algebra `T` embedded in a finite extension `E/F`, also with residue degree
-equal to field degree, a prescribed residue-field algebra homomorphism from
-`S` to `T` lifts uniquely to an `R`-algebra homomorphism commuting with reduction
-on every element of `S`. The compatible ring map extends uniquely to an
-`F`-algebra homomorphism `L →ₐ[F] E`, characterized by the existence of a
-reduction-compatible ring map satisfying the ambient square on every source
-element.
+Let `R` be a valuation domain with fraction field `F`. Let the local `R`-algebra
+`S` embed in a finite extension `L/F` with residue degree equal to field degree,
+and suppose its residue extension is separable. For an independent Henselian
+local `R`-algebra `T`, every prescribed residue-field algebra homomorphism
+`κS → κT` lifts uniquely to an `R`-algebra homomorphism `S → T` commuting with
+reduction on every element of `S`.
+
+Given a semiring `F`-algebra `E` and the compatible original maps `T → E` and
+`R → E`, there is a unique `F`-algebra homomorphism `L → E` admitting such a
+ring lift and satisfying the ambient square on every source element. The
+semiring may be noncommutative or trivial; no embedding into it is asserted.
 
 ## Implementation notes
 
-A lifted residue basis proves module finiteness of the given target algebra.
-Integrality and Henselianity then follow over the original Henselian base.
 A primitive generator of the finite separable source residue extension and a
 lift under the original residue map supply the presenters for
 `ValuationRing.existsUnique_algHom_lift_of_primitiveResidue`. The same lift
 supplies power bases for `S/R` and `L/F`. Their defining-polynomial comparison
-and Mathlib's root equivalence construct the field map; power-basis
-extensionality proves the ambient square and uniqueness.
+and Mathlib's root equivalence construct the field-source map; power-basis
+extensionality proves the ambient square and uniqueness. The given `F`-algebra
+supplies the Ring structure needed by the root equivalence through Mathlib's
+`Algebra.semiringToRing`, preserving the original Semiring operations.
 
-The target degree equality is an explicit restriction: this is not a theorem
-for every finite ambient field extension, nor a deduction of module finiteness
-from etaleness. No target separability, primitive generator, domain structure,
-finite-module provider or Henselianity is an additional hypothesis. The source
+Only the source degree equality is required. There is no base Henselianity or
+target integrality, domain, injectivity, finiteness or degree-equality premise.
+In integral-target applications over a Henselian base, Adic Modules supplies
+target Henselianity along the original integral map. The source
 residue-separability instance is explicit; no identification with a broader
-valued-unramified interface is made here. All given algebra and module actions
-are retained, and Henselianity is used only on the original base.
+valued-unramified interface is made here. All given algebra actions and towers
+are retained, and universes are independent.
 
 ## References
 
@@ -66,11 +67,10 @@ open IsLocalRing
 
 universe uR uS uF uL uT uE
 
-/-- Over the original Henselian valuation base, every prescribed residue-field
-algebra homomorphism from a source with separable residue extension lifts
-uniquely to a local target whose residue degree exhausts its finite ambient
-field degree. The resulting algebra homomorphism commutes with reduction on
-all source elements. -/
+/-- Every prescribed residue-field algebra homomorphism from a source whose
+separable residue degree exhausts its finite field degree lifts uniquely to a
+Henselian local target. The algebra homomorphism commutes with reduction on
+all source elements; no Henselianity of the valuation base is required. -/
 public theorem ValuationRing.existsUnique_residueAlgHom_lift_of_finrank_eq
     {R : Type uR} {S : Type uS} {F : Type uF} {L : Type uL}
     [cR : CommRing R] [dR : IsDomain R] [vR : ValuationRing R]
@@ -87,57 +87,18 @@ public theorem ValuationRing.existsUnique_residueAlgHom_lift_of_finrank_eq
     (hSL : Function.Injective (algebraMap S L))
     (hnf : Module.finrank F L = Module.finrank (ResidueField R) (ResidueField S))
     [sourceResidueSep : Algebra.IsSeparable (ResidueField R) (ResidueField S)]
-    {T : Type uT} {E : Type uE}
-    [cT : CommRing T] [lT : IsLocalRing T] [fE : Field E]
-    [aFE : Algebra F E]
-    [aRT : Algebra R T] [aTE : Algebra T E] [aRE : Algebra R E]
-    [towerRFE : IsScalarTower R F E]
-    [towerRTE : IsScalarTower R T E]
+    {T : Type uT}
+    [cT : CommRing T] [lT : IsLocalRing T]
+    [aRT : Algebra R T]
     [aKT : Algebra (ResidueField R) (@ResidueField T cT lT)]
     [aRKT : Algebra R (@ResidueField T cT lT)]
     [towerRkT : IsScalarTower R (ResidueField R) (@ResidueField T cT lT)]
     [towerRTK : IsScalarTower R T (@ResidueField T cT lT)]
-    [finiteFE : Module.Finite F E]
-    (hTE : Function.Injective (algebraMap T E))
-    (hnfT : Module.finrank F E =
-      Module.finrank (ResidueField R) (@ResidueField T cT lT))
-    (hR : HenselianLocalRing R)
+    (hT : HenselianLocalRing T)
     (φ : (ResidueField S) →ₐ[ResidueField R] (@ResidueField T cT lT)) :
     ∃! ψ : S →ₐ[R] T,
       ∀ s : S, @residue T cT lT (ψ s) = φ (residue S s) := by
   classical
-  -- Lift a basis of the original target residue extension in the given target.
-  let finiteκT :
-      @Module.Finite (IsLocalRing.ResidueField R) (@IsLocalRing.ResidueField T cT lT)
-        _ _ (@Algebra.toModule (IsLocalRing.ResidueField R)
-          (@IsLocalRing.ResidueField T cT lT) _ _ aKT) :=
-    ValuationRing.finite_residueField (R := R) (S := T) (F := F) (L := E) hTE
-  let nT : ℕ :=
-    Module.finrank (IsLocalRing.ResidueField R) (@IsLocalRing.ResidueField T cT lT)
-  let bT :
-      @Module.Basis (Fin nT) (IsLocalRing.ResidueField R)
-        (@IsLocalRing.ResidueField T cT lT) _ _
-        (@Algebra.toModule (IsLocalRing.ResidueField R)
-          (@IsLocalRing.ResidueField T cT lT) _ _ aKT) :=
-    @Module.finBasis (IsLocalRing.ResidueField R) (@IsLocalRing.ResidueField T cT lT)
-      _ _ (@Algebra.toModule (IsLocalRing.ResidueField R)
-        (@IsLocalRing.ResidueField T cT lT) _ _ aKT) _ _ finiteκT
-  let sT : Fin nT → T := fun i =>
-    Classical.choose (IsLocalRing.residue_surjective (R := T) (bT i))
-  let hsT : ∀ i : Fin nT, @IsLocalRing.residue T cT lT (sT i) = bT i :=
-    fun i => Classical.choose_spec (IsLocalRing.residue_surjective (R := T) (bT i))
-  let hdegT : Fintype.card (Fin nT) = Module.finrank F E :=
-    Eq.trans (Fintype.card_fin nT) (Eq.symm hnfT)
-  let finiteRT : Module.Finite R T :=
-    ValuationRing.finite_of_residueBasis
-      (R := R) (S := T) (F := F) (L := E) hTE bT sT hsT hdegT
-  -- Propagate Henselianity along the same original integral algebra map.
-  let hIntAlg : Algebra.IsIntegral R T :=
-    @Algebra.IsIntegral.of_finite R T cR cT.toRing aRT finiteRT
-  let hInt : (algebraMap R T).IsIntegral :=
-    (@algebraMap_isIntegral_iff R T cR cT.toRing aRT).mpr hIntAlg
-  let hT : HenselianLocalRing T :=
-    @HenselianLocalRing.of_isIntegral R T cR cT hR lT (algebraMap R T) hInt
   -- Derive the source presenters from its finite separable residue extension.
   let finiteκS :
       @Module.Finite (ResidueField R) (ResidueField S)
@@ -162,12 +123,13 @@ public theorem ValuationRing.existsUnique_residueAlgHom_lift_of_finrank_eq
 homomorphism `S →ₐ[R] T`. Both the residue and ambient squares commute on every
 element of `S`.
 
-The source residue extension is assumed separable, and both source and target
-residue degrees equal their finite ambient field degrees. Henselianity is
-required only of the original valuation base `R`. The field extension uses the
-same primitive residue lift as the integral power basis, following the
-primitive-residue argument of Fesenko–Vostokov, *Local Fields and Their
-Extensions*, Chapter II, §3, via Mathlib's power-basis universal property. -/
+The source residue extension is separable and its degree equals the finite
+source field degree. Only the local target `T` is required to be Henselian;
+`E` is a semiring algebra over `F`, possibly noncommutative or trivial. The
+field-source homomorphism need not be injective for trivial `E`. The extension
+uses the same primitive residue lift as the integral power basis, following
+Fesenko–Vostokov, *Local Fields and Their Extensions*, Chapter II, §3, via
+Mathlib's power-basis universal property. -/
 public theorem ValuationRing.existsUnique_fieldAlgHom_lift_of_finrank_eq
     {R : Type uR} {S : Type uS} {F : Type uF} {L : Type uL}
     [cR : CommRing R] [dR : IsDomain R] [vR : ValuationRing R]
@@ -185,7 +147,7 @@ public theorem ValuationRing.existsUnique_fieldAlgHom_lift_of_finrank_eq
     (hnf : Module.finrank F L = Module.finrank (ResidueField R) (ResidueField S))
     [sourceResidueSep : Algebra.IsSeparable (ResidueField R) (ResidueField S)]
     {T : Type uT} {E : Type uE}
-    [cT : CommRing T] [lT : IsLocalRing T] [fE : Field E]
+    [cT : CommRing T] [lT : IsLocalRing T] [sE : Semiring E]
     [aFE : Algebra F E]
     [aRT : Algebra R T] [aTE : Algebra T E] [aRE : Algebra R E]
     [towerRFE : IsScalarTower R F E]
@@ -194,11 +156,7 @@ public theorem ValuationRing.existsUnique_fieldAlgHom_lift_of_finrank_eq
     [aRKT : Algebra R (@ResidueField T cT lT)]
     [towerRkT : IsScalarTower R (ResidueField R) (@ResidueField T cT lT)]
     [towerRTK : IsScalarTower R T (@ResidueField T cT lT)]
-    [finiteFE : Module.Finite F E]
-    (hTE : Function.Injective (algebraMap T E))
-    (hnfT : Module.finrank F E =
-      Module.finrank (ResidueField R) (@ResidueField T cT lT))
-    (hR : HenselianLocalRing R)
+    (hT : HenselianLocalRing T)
     (φ : (ResidueField S) →ₐ[ResidueField R] (@ResidueField T cT lT)) :
     ∃! ι : L →ₐ[F] E, ∃ ψ : S →ₐ[R] T,
       (∀ s : S, @residue T cT lT (ψ s) = φ (residue S s)) ∧
@@ -207,7 +165,9 @@ public theorem ValuationRing.existsUnique_fieldAlgHom_lift_of_finrank_eq
   obtain ⟨ψ, hred, hψunique⟩ :=
     ValuationRing.existsUnique_residueAlgHom_lift_of_finrank_eq
       (R := R) (S := S) (F := F) (L := L) hSL hnf
-      (T := T) (E := E) hTE hnfT hR φ
+      (T := T) hT φ
+  -- The given F-algebra supplies negation without changing its Semiring parent.
+  let : Ring E := Algebra.semiringToRing F
   -- Use the source presenters supplied by its finite separable residue extension.
   let finiteκS :
       @Module.Finite (ResidueField R) (ResidueField S)

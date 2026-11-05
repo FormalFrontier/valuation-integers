@@ -45,6 +45,33 @@ open IsLocalRing
 
 universe uR uS uF uL uT
 
+/-- Two algebra homomorphisms from a power-basis algebra into a commutative
+local ring agree if their generator images have the same residue and the
+generator satisfies a polynomial with unit derivative. This is simple-root
+uniqueness in the local target, with no Henselianity assumption. -/
+theorem PowerBasis.algHom_ext_of_residue_eq
+    {A : Type*} {B : Type*} {T : Type*}
+    [CommRing A] [Ring B] [CommRing T] [IsLocalRing T]
+    [Algebra A B] [Algebra A T]
+    (pb : PowerBasis A B) {p : Polynomial A}
+    (hroot : Polynomial.aeval pb.gen p = 0)
+    (hunit : IsUnit (Polynomial.aeval pb.gen p.derivative))
+    (f g : B →ₐ[A] T)
+    (hres : residue T (f pb.gen) = residue T (g pb.gen)) : f = g := by
+  have hf : (p.map (algebraMap A T)).eval (f pb.gen) = 0 := by
+    rw [Polynomial.eval_map_algebraMap, Polynomial.aeval_algHom_apply, hroot, map_zero]
+  have hg : (p.map (algebraMap A T)).eval (g pb.gen) = 0 := by
+    rw [Polynomial.eval_map_algebraMap, Polynomial.aeval_algHom_apply, hroot, map_zero]
+  have hunitf : IsUnit ((p.map (algebraMap A T)).derivative.eval (f pb.gen)) := by
+    rw [Polynomial.derivative_map, Polynomial.eval_map_algebraMap,
+      Polynomial.aeval_algHom_apply]
+    exact hunit.map f.toMonoidHom
+  apply pb.algHom_ext
+  refine IsLocalRing.eq_of_eval_eq_zero_of_not_isUnit_sub hf hg ?_ hunitf
+  intro hu
+  have hu_res := hu.map (residue T)
+  simp [map_sub, hres] at hu_res
+
 namespace ValuationRing
 
 variable {R : Type uR} {S : Type uS} {F : Type uF} {L : Type uL}
@@ -215,29 +242,12 @@ theorem existsUnique_algHom_lift_of_primitiveResidue :
     intro s
     change fκ s = gκ s
     exact DFunLike.congr_fun hκ s
-  -- Residue equality and the unit derivative force uniqueness on the generator.
+  -- The same local simple-root comparison also applies to already-given maps.
   refine ⟨ψ, hψres, ?_⟩
   intro ψ' hψ'res
-  have hresψθ : @residue T cT lT (ψ θ) = φ α := by
-    simpa only [hθ] using hψres θ
-  have hresψ'θ : @residue T cT lT (ψ' θ) = φ α := by
-    simpa only [hθ] using hψ'res θ
-  have hrootψ : ((pR).map (algebraMap R T)).eval (ψ θ) = 0 := by
-    rw [heval, Polynomial.aeval_algHom_apply ψ, hrootS, map_zero]
-  have hrootψ' : ((pR).map (algebraMap R T)).eval (ψ' θ) = 0 := by
-    rw [heval, Polynomial.aeval_algHom_apply ψ', hrootS, map_zero]
-  have hsame : @residue T cT lT (ψ θ) = @residue T cT lT (ψ' θ) :=
-    hresψθ.trans hresψ'θ.symm
-  have hunitψ : IsUnit (((pR).map (algebraMap R T)).derivative.eval (ψ θ)) :=
-    (happrox (ψ θ) hresψθ).2
-  have hgen : ψ θ = ψ' θ := by
-    refine IsLocalRing.eq_of_eval_eq_zero_of_not_isUnit_sub
-      hrootψ hrootψ' ?_ hunitψ
-    intro hu
-    have hu_res := hu.map (@residue T cT lT)
-    simp [map_sub, hsame] at hu_res
-  symm
-  apply PowerBasis.algHom_ext pbR
-  simpa only [integralPowerBasisOfPrimitiveResidue_gen] using hgen
+  apply PowerBasis.algHom_ext_of_residue_eq pbR (p := pR)
+    (by simpa only [integralPowerBasisOfPrimitiveResidue_gen] using hrootS)
+    (by simpa only [integralPowerBasisOfPrimitiveResidue_gen] using hunitS) ψ' ψ
+  simp only [integralPowerBasisOfPrimitiveResidue_gen, hψ'res, hψres]
 
 end ValuationRing

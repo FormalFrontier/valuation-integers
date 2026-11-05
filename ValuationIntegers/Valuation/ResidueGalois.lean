@@ -64,6 +64,15 @@ private theorem ValuationRing.exists_compatible_fieldAlgEquiv_of_finrank_eq
       (∀ s : S, residue S (ψ s) = σ (residue S s)) ∧
       (∀ s : S, algebraMap S L (ψ s) = τ (algebraMap S L s)) := by
   classical
+  -- Residue degree exhaustion makes the original S finite, hence integral over R.
+  let finiteRS : Module.Finite R S :=
+    ValuationRing.finite_of_finrank_eq (F := F) (L := L) hSL hnf
+  let hIntAlg : Algebra.IsIntegral R S :=
+    @Algebra.IsIntegral.of_finite R S cR cS.toRing aRS finiteRS
+  have hInt : (algebraMap R S).IsIntegral :=
+    (@algebraMap_isIntegral_iff R S cR cS.toRing aRS).mpr hIntAlg
+  let hS : HenselianLocalRing S :=
+    @HenselianLocalRing.of_isIntegral R S cR cS hR lS (algebraMap R S) hInt
   obtain ⟨ι, ⟨ψ, hred, hsquare⟩, _⟩ :=
     ValuationRing.existsUnique_fieldAlgHom_lift_of_finrank_eq
       (R := R) (S := S) (F := F) (L := L)
@@ -73,11 +82,11 @@ private theorem ValuationRing.exists_compatible_fieldAlgEquiv_of_finrank_eq
       (towerRFL := towerRFL) (towerRSL := towerRSL)
       (aKK := aKK) (aRK := aRK) (towerRkK := towerRkK) (towerRSK := towerRSK)
       (finiteFL := finiteFL) hSL hnf (sourceResidueSep := residueSep)
-      (T := S) (E := L) (cT := cS) (lT := lS) (fE := fL)
+      (T := S) (E := L) (cT := cS) (lT := lS) (sE := fL.toSemiring)
       (aFE := aFL) (aRT := aRS) (aTE := aSL) (aRE := aRL)
       (towerRFE := towerRFL) (towerRTE := towerRSL)
       (aKT := aKK) (aRKT := aRK) (towerRkT := towerRkK) (towerRTK := towerRSK)
-      (finiteFE := finiteFL) hSL hnf hR σ.toAlgHom
+      hS σ.toAlgHom
   let τ : L ≃ₐ[F] L := AlgEquiv.ofBijective ι ι.bijective
   exact ⟨τ, ψ, hred, hsquare⟩
 
@@ -193,7 +202,7 @@ theorem ValuationRing.isCyclic_algEquiv_of_residue_isGalois_of_finrank_eq
         have hid : (lift 1).toAlgHom = AlgHom.id F L :=
           ValuationRing.fieldAlgHom_eq_id_of_residue_eq_id
             (R := R) (S := S) (F := F) (L := L) hSL hnf
-            (sourceResidueSep := residueSep) hR (ψ 1) (lift 1).toAlgHom
+            (sourceResidueSep := residueSep) (ψ 1) (lift 1).toAlgHom
             (by simpa only [AlgEquiv.one_apply] using hred 1) (hsquare 1)
         ext x
         exact congrArg (fun f : L →ₐ[F] L => f x) hid
@@ -204,7 +213,7 @@ theorem ValuationRing.isCyclic_algEquiv_of_residue_isGalois_of_finrank_eq
           ValuationRing.fieldAlgHom_eq_comp_of_residue_eq_comp
             (R := R) (S := S) (F := F) (L := L) hSL hnf
             (sourceResidueSep := residueSep)
-            (U := S) (K := L) hSL hnf hR (T := S) (E := L)
+            (U := S) (K := L) (T := S) (E := L)
             τ.toAlgHom σ.toAlgHom (ψ τ) (ψ σ)
             (lift τ).toAlgHom (lift σ).toAlgHom
             (ψ (σ * τ)) (lift (σ * τ)).toAlgHom
