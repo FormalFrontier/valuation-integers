@@ -43,3 +43,18 @@ leanOptions = { weak.linter.privateModule = false }
 name = "groupTheory"
 git = "https://github.com/FormalFrontier/group-theory.git"
 rev = "4791da691c8cf6f7bf40caf2606e17e46b432e08"
+
+[[require]]
+name = "norm-forms"
+git = "https://github.com/FormalFrontier/norm-forms.git"
+rev = "81579a768804dc6be501bfcb4fe044159ae45e50"
+
+[[require]]
+name = "coherent-modules"
+git = "https://github.com/FormalFrontier/coherent-modules.git"
+rev = "0bcb335a180c39e599086aefb505efbe84523e2f"
+
+[[require]]
+name = "multivariate-polynomials"
+git = "https://github.com/FormalFrontier/multivariate-polynomials.git"
+rev = "5d58abb977f3281238ee5b4f37303a275b1b2426"

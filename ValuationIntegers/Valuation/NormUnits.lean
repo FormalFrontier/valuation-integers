@@ -8,6 +8,7 @@ public import ValuationIntegers.Valuation.ResidueTraceNorm
 public import Mathlib.RingTheory.Henselian
 public import Mathlib.FieldTheory.Separable
 public import Mathlib.Algebra.Group.Subgroup.Ker
+import NormForms.IdealCongruence
 import Mathlib.RingTheory.Trace.Basic
 import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
 import AdicModules.Polynomial.Hensel
@@ -26,9 +27,10 @@ is the norm of a unit of `S` congruent to one modulo the extended ideal `I S`.
 An arbitrary residue basis and lifts give the ring basis. Surjectivity of the
 separable residue trace gives a lift with unit trace. The determinant of the
 regular multiplication matrix along the line through one has this trace as its
-derivative; Hensel lifting supplies the required norm preimage. At every positive level, the norm on
-units therefore maps the kernel of reduction modulo a power of the maximal ideal
-of `S` onto the corresponding kernel for `R`.
+derivative; Hensel lifting supplies the required norm preimage. The norm on units
+therefore maps the kernel of reduction modulo `I S` onto the kernel of reduction
+modulo `I`. In particular, this holds at every positive power of the respective
+maximal ideals.
 
 ## Generality and limitations
 
@@ -36,9 +38,8 @@ Henselianity replaces completeness or discreteness. No Galois, prime-degree or
 invertible-degree assumption is used, and no valuation-ring structure on `S`
 is required. The lifted residue basis identifies the extension of the maximal
 ideal of `R` with the maximal ideal of `S`, and hence also their powers. The
-positive-level image theorem uses the kernels of the quotient maps on units; it
-does not assert surjectivity on all units at level zero or describe the whole
-field-norm image.
+image theorems use the kernels of the quotient maps on units; they do not assert
+surjectivity on all units at level zero or describe the whole field-norm image.
 
 ## References
 
@@ -46,6 +47,8 @@ field-norm image.
   edition, for unramified norms and principal units. The ideal-congruence
   formulation here applies to Henselian bases without a Galois assumption.
 * This library's lifted-residue-basis and trace-comparison formalizations.
+* Norm Forms' `Algebra.norm_sub_norm_mem_ideal` in `NormForms.IdealCongruence`,
+  for congruence of finite-free algebraic norms and the forward unit-kernel inclusion.
 * Mathlib's regular norm and trace, determinant derivative and polynomial
   evaluation APIs, and Adic Modules' nonmonic Hensel and subideal theorems.
 -/
@@ -193,6 +196,57 @@ theorem exists_isUnit_norm_eq_of_sub_one_mem
     simpa only [add_sub_cancel_left] using
       (I.map (algebraMap R S)).mul_mem_right e hxmap
 
+/-- The norm on units maps the kernel of reduction modulo an extended ideal
+onto the corresponding quotient-unit kernel of a Henselian valuation domain,
+when residue degree exhausts field degree and the residue extension is separable.
+
+The ideal may be any ideal of the base contained in its maximal ideal; no
+finiteness assumption on the base residue field is required. -/
+theorem map_norm_units_ker_quotient
+    (hSL : Function.Injective (algebraMap S L))
+    (hnf : Module.finrank F L =
+      Module.finrank (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField S))
+    (I : Ideal R) (hI : I ≤ IsLocalRing.maximalIdeal R) :
+    ((Units.map
+      (Ideal.Quotient.mk (I.map (algebraMap R S))).toMonoidHom).ker).map
+        (Units.map (Algebra.norm R (S := S))) =
+      (Units.map (Ideal.Quotient.mk I).toMonoidHom).ker := by
+  classical
+  let : Module.Finite R S :=
+    finite_of_finrank_eq (R := R) (S := S) (F := F) (L := L) hSL hnf
+  let : Module.Free R S :=
+    free_of_finrank_eq (R := R) (S := S) (F := F) (L := L) hSL hnf
+  apply le_antisymm
+  · intro u hu
+    obtain ⟨v, hv, rfl⟩ := Subgroup.mem_map.mp hu
+    have hvMem : (v : S) - 1 ∈ I.map (algebraMap R S) := by
+      rw [MonoidHom.mem_ker, ← Units.val_eq_one, Units.coe_map] at hv
+      exact (Ideal.Quotient.mk_eq_one_iff_sub_mem
+        (I := I.map (algebraMap R S)) (v : S)).mp hv
+    have hNormCongr : Algebra.norm R (v : S) - Algebra.norm R (1 : S) ∈ I :=
+      Algebra.norm_sub_norm_mem_ideal (R := R) (S := S) I hvMem
+    rw [MonoidHom.mem_ker, ← Units.val_eq_one, Units.coe_map]
+    apply (Ideal.Quotient.mk_eq_one_iff_sub_mem
+      (I := I) ((Units.map (Algebra.norm R (S := S)) v : Rˣ) : R)).mpr
+    have hNormOne : Algebra.norm R (1 : S) = (1 : R) :=
+      (Algebra.norm R (S := S)).map_one
+    simpa only [Units.coe_map, hNormOne] using hNormCongr
+  · intro u hu
+    have huMem : (u : R) - 1 ∈ I := by
+      rw [MonoidHom.mem_ker, ← Units.val_eq_one, Units.coe_map] at hu
+      exact (Ideal.Quotient.mk_eq_one_iff_sub_mem (I := I) (u : R)).mp hu
+    obtain ⟨z, hzUnit, hzMem, hzNorm⟩ :=
+      exists_isUnit_norm_eq_of_sub_one_mem (R := R) (S := S) (F := F) (L := L)
+        hSL hnf I hI (u : R) huMem
+    refine Subgroup.mem_map.mpr ⟨hzUnit.unit, ?_, ?_⟩
+    · rw [MonoidHom.mem_ker, ← Units.val_eq_one, Units.coe_map]
+      apply (Ideal.Quotient.mk_eq_one_iff_sub_mem
+        (I := I.map (algebraMap R S)) (hzUnit.unit : S)).mpr
+      rw [IsUnit.unit_spec]
+      exact hzMem
+    · apply Units.ext
+      simpa only [Units.coe_map, IsUnit.unit_spec] using hzNorm
+
 /-- The norm on units maps every positive congruence subgroup onto the
 corresponding subgroup of a Henselian valuation domain, when residue degree
 exhausts field degree and the residue extension is separable.
@@ -211,149 +265,17 @@ theorem map_norm_units_ker_quotient_pow_maximalIdeal_of_pos
         (Units.map (Algebra.norm R (S := S))) =
       (Units.map
         (Ideal.Quotient.mk ((IsLocalRing.maximalIdeal R) ^ n)).toMonoidHom).ker := by
-  classical
-  have : Module.Finite (IsLocalRing.ResidueField R)
-      (IsLocalRing.ResidueField S) :=
-    finite_residueField (R := R) (S := S) (F := F) (L := L) hSL
-  let ι := Module.Free.ChooseBasisIndex
-    (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField S)
-  let bκ : Module.Basis ι (IsLocalRing.ResidueField R)
-      (IsLocalRing.ResidueField S) :=
-    Module.Free.chooseBasis (IsLocalRing.ResidueField R)
-      (IsLocalRing.ResidueField S)
-  let s : ι → S := fun i =>
-    Classical.choose (IsLocalRing.residue_surjective (R := S) (bκ i))
-  have hs : ∀ i, IsLocalRing.residue S (s i) = bκ i :=
-    fun i => Classical.choose_spec
-      (IsLocalRing.residue_surjective (R := S) (bκ i))
-  have hdeg : Fintype.card ι = Module.finrank F L :=
-    (Module.finrank_eq_card_basis bκ).symm.trans hnf.symm
-  let b : Module.Basis ι R S :=
-    integralBasisOfResidue (R := R) (S := S) (F := F) (L := L)
-      hSL bκ s hs hdeg
-  -- The same lifted basis identifies the extended maximal ideal and controls
-  -- the entries of multiplication matrices below.
-  have hle : (IsLocalRing.maximalIdeal R).map (algebraMap R S) ≤
-      IsLocalRing.maximalIdeal S := by
-    apply (Ideal.map_le_iff_le_comap).2
-    intro r hr
-    apply (Ideal.mem_comap).2
-    apply (IsLocalRing.residue_eq_zero_iff
-      (R := S) (algebraMap R S r)).1
-    have hr0 : IsLocalRing.residue R r = 0 :=
-      (IsLocalRing.residue_eq_zero_iff (R := R) r).2 hr
-    calc
-      IsLocalRing.residue S (algebraMap R S r) =
-          algebraMap R (IsLocalRing.ResidueField S) r := by
-        rw [← IsLocalRing.ResidueField.algebraMap_eq S]
-        exact (IsScalarTower.algebraMap_apply R S
-          (IsLocalRing.ResidueField S) r).symm
-      _ = algebraMap (IsLocalRing.ResidueField R)
-          (IsLocalRing.ResidueField S) (IsLocalRing.residue R r) := by
-        rw [IsScalarTower.algebraMap_apply R
-          (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField S) r,
-          IsLocalRing.ResidueField.algebraMap_eq R]
-      _ = algebraMap (IsLocalRing.ResidueField R)
-          (IsLocalRing.ResidueField S) 0 :=
-        congrArg (algebraMap (IsLocalRing.ResidueField R)
-          (IsLocalRing.ResidueField S)) hr0
-      _ = 0 := algebraMap.coe_zero
-        (R := IsLocalRing.ResidueField R)
-        (A := IsLocalRing.ResidueField S)
-  have hge : IsLocalRing.maximalIdeal S ≤
-      (IsLocalRing.maximalIdeal R).map (algebraMap R S) := by
-    intro z hz
-    have hcoeff : ∀ i, b.repr z i ∈ IsLocalRing.maximalIdeal R :=
-      (integralBasisOfResidue_mem_maximalIdeal_iff
-        (R := R) (S := S) (F := F) (L := L)
-        hSL bκ s hs hdeg z).1 hz
-    rw [← b.sum_repr z]
-    exact Submodule.sum_mem _ fun i _ => by
-      rw [Algebra.smul_def]
-      exact Ideal.mul_mem_right (b i)
-        ((IsLocalRing.maximalIdeal R).map (algebraMap R S))
-        (Ideal.mem_map_of_mem (algebraMap R S) (hcoeff i))
   have hm : (IsLocalRing.maximalIdeal R).map (algebraMap R S) =
       IsLocalRing.maximalIdeal S :=
-    le_antisymm hle hge
-  let I : Ideal R := IsLocalRing.maximalIdeal R ^ n
-  have hpow : I.map (algebraMap R S) = IsLocalRing.maximalIdeal S ^ n := by
-    dsimp only [I]
+    map_maximalIdeal_eq_of_finrank_eq
+      (R := R) (S := S) (F := F) (L := L) hSL hnf
+  have hpow : ((IsLocalRing.maximalIdeal R) ^ n).map (algebraMap R S) =
+      (IsLocalRing.maximalIdeal S) ^ n := by
     rw [Ideal.map_pow, hm]
-  apply le_antisymm
-  · intro u hu
-    obtain ⟨v, hv, rfl⟩ := Subgroup.mem_map.mp hu
-    have hvMem : (v : S) - 1 ∈ I.map (algebraMap R S) := by
-      rw [hpow]
-      rw [MonoidHom.mem_ker, ← Units.val_eq_one, Units.coe_map] at hv
-      exact (Ideal.Quotient.mk_eq_one_iff_sub_mem
-        (I := IsLocalRing.maximalIdeal S ^ n) (v : S)).mp hv
-    -- Restrict the extended ideal to the original R-module before taking
-    -- coordinates; only the codomain of a coordinate is a base-ring ideal.
-    have hentry (i j : ι) :
-        Algebra.leftMulMatrix b (v : S) i j -
-          Algebra.leftMulMatrix b (1 : S) i j ∈ I := by
-      have hmul : ((v : S) - 1) * b j ∈ I.map (algebraMap R S) :=
-        Ideal.mul_mem_right (b j) (I.map (algebraMap R S)) hvMem
-      have hrestrict : ((v : S) - 1) * b j ∈
-          (I.map (algebraMap R S)).restrictScalars R :=
-        (Submodule.restrictScalars_mem R
-          (I.map (algebraMap R S)) (((v : S) - 1) * b j)).2 hmul
-      have hsmul : ((v : S) - 1) * b j ∈ I • (⊤ : Submodule R S) := by
-        rw [Ideal.smul_top_eq_map (R := R) (S := S) I]
-        exact hrestrict
-      have hcoord : b.coord i (((v : S) - 1) * b j) ∈
-          I • (⊤ : Submodule R R) :=
-        (Submodule.smul_top_le_comap_smul_top I (b.coord i)) hsmul
-      change b.coord i (((v : S) - 1) * b j) ∈ I • (⊤ : Ideal R) at hcoord
-      rw [Ideal.smul_eq_mul, Ideal.mul_top] at hcoord
-      rw [sub_mul, map_sub] at hcoord
-      change b.repr ((v : S) * b j) i - b.repr ((1 : S) * b j) i ∈ I at hcoord
-      simpa only [Algebra.leftMulMatrix_eq_repr_mul] using hcoord
-    let q : R →+* R ⧸ I := Ideal.Quotient.mk I
-    have hmatrix :
-        q.mapMatrix (Algebra.leftMulMatrix b (v : S)) =
-          q.mapMatrix (Algebra.leftMulMatrix b (1 : S)) := by
-      funext i j
-      change Ideal.Quotient.mk I (Algebra.leftMulMatrix b (v : S) i j) =
-        Ideal.Quotient.mk I (Algebra.leftMulMatrix b (1 : S) i j)
-      exact (Ideal.Quotient.eq (I := I)).2 (hentry i j)
-    have hqnorm : q (Algebra.norm R (v : S)) = q (Algebra.norm R (1 : S)) := by
-      rw [Algebra.norm_eq_matrix_det b (v : S), Algebra.norm_eq_matrix_det b (1 : S)]
-      calc
-        q (Matrix.det (Algebra.leftMulMatrix b (v : S))) =
-            Matrix.det (q.mapMatrix (Algebra.leftMulMatrix b (v : S))) :=
-          RingHom.map_det q (Algebra.leftMulMatrix b (v : S))
-        _ = Matrix.det (q.mapMatrix (Algebra.leftMulMatrix b (1 : S))) :=
-          congrArg Matrix.det hmatrix
-        _ = q (Matrix.det (Algebra.leftMulMatrix b (1 : S))) :=
-          (RingHom.map_det q (Algebra.leftMulMatrix b (1 : S))).symm
-    have hNormCongr : Algebra.norm R (v : S) - Algebra.norm R (1 : S) ∈ I :=
-      (Ideal.Quotient.eq (I := I)).1 hqnorm
-    rw [MonoidHom.mem_ker, ← Units.val_eq_one, Units.coe_map]
-    apply (Ideal.Quotient.mk_eq_one_iff_sub_mem
-      (I := IsLocalRing.maximalIdeal R ^ n)
-      ((Units.map (Algebra.norm R (S := S)) v : Rˣ) : R)).mpr
-    have hNormOne : Algebra.norm R (1 : S) = (1 : R) :=
-      (Algebra.norm R (S := S)).map_one
-    simpa only [Units.coe_map, hNormOne] using hNormCongr
-  · intro u hu
-    have huMem : (u : R) - 1 ∈ I := by
-      rw [MonoidHom.mem_ker, ← Units.val_eq_one, Units.coe_map] at hu
-      exact (Ideal.Quotient.mk_eq_one_iff_sub_mem
-        (I := IsLocalRing.maximalIdeal R ^ n) (u : R)).mp hu
-    have hI : I ≤ IsLocalRing.maximalIdeal R :=
-      Ideal.pow_le_self (Nat.ne_of_gt hn)
-    obtain ⟨z, hzUnit, hzMem, hzNorm⟩ :=
-      exists_isUnit_norm_eq_of_sub_one_mem (R := R) (S := S) (F := F) (L := L)
-        hSL hnf I hI (u : R) huMem
-    refine Subgroup.mem_map.mpr ⟨hzUnit.unit, ?_, ?_⟩
-    · rw [MonoidHom.mem_ker, ← Units.val_eq_one, Units.coe_map]
-      apply (Ideal.Quotient.mk_eq_one_iff_sub_mem
-        (I := IsLocalRing.maximalIdeal S ^ n) (hzUnit.unit : S)).mpr
-      rw [IsUnit.unit_spec]
-      exact hpow ▸ hzMem
-    · apply Units.ext
-      simpa only [Units.coe_map, IsUnit.unit_spec] using hzNorm
+  have hI : (IsLocalRing.maximalIdeal R) ^ n ≤ IsLocalRing.maximalIdeal R :=
+    Ideal.pow_le_self (Nat.ne_of_gt hn)
+  rw [← hpow]
+  exact map_norm_units_ker_quotient (R := R) (S := S) (F := F) (L := L)
+    hSL hnf ((IsLocalRing.maximalIdeal R) ^ n) hI
 
 end ValuationRing

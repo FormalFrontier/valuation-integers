@@ -197,9 +197,12 @@ space from Spectral Stone Duality; their valuation applications are developed he
   separable. For every ideal `I ≤ maximalIdeal R` and `u : R` with `u - 1 ∈ I`,
   there is a unit `s : S` with `s - 1 ∈ I.map (algebraMap R S)` and
   `Algebra.norm R s = u`. No primitive element, basis, finite/free module or
-  trace-unit witness is a premise. For every `n > 0`, the norm on units maps
-  the kernel of reduction modulo `maximalIdeal S ^ n` onto the corresponding
-  kernel for `R`. No Galois, prime-degree, invertible-degree, discreteness or
+  trace-unit witness is a premise. For every such ideal `I`,
+  `ValuationRing.map_norm_units_ker_quotient` identifies the image under the unit
+  norm of the kernel of reduction modulo `I.map (algebraMap R S)` with the kernel
+  of reduction modulo `I`. Its positive-power specialization maps the kernel
+  modulo `maximalIdeal S ^ n` onto the corresponding kernel for `R`, for every
+  `n > 0`. No Galois, prime-degree, invertible-degree, discreteness or
   completeness hypothesis is required.
   If the base residue field is finite, every unit of `R` is the norm of a unit
   of the original `S`, and the kernel-image equality holds for every `n`,
