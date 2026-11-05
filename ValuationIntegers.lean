@@ -18,8 +18,11 @@ public import ValuationIntegers.Valuation.ResidueHomFinite
 public import ValuationIntegers.Valuation.ResidueHomFunctorial
 public import ValuationIntegers.Valuation.ResidueGalois
 public import ValuationIntegers.Valuation.ResidueTraceNorm
+public import ValuationIntegers.Valuation.NormMembership
+public import ValuationIntegers.Valuation.NormAction
 public import ValuationIntegers.Valuation.NormUnits
 public import ValuationIntegers.Valuation.UnitNorm
+public import ValuationIntegers.Valuation.UnitCoboundary
 public import ValuationIntegers.Valuation.NormRange
 public import ValuationIntegers.Valuation.NormValuation
 public import ValuationIntegers.Valuation.Equivalence
@@ -125,10 +128,21 @@ characterized by both reduction and the ambient square on every source element.
 These field homomorphisms satisfy identity and composition laws; for given
 compatible intermediate maps, the intermediate ambient algebra need not be a field.
 
+For a local algebra embedded in a finite extension of a valuation domain's fraction field,
+degree exhaustion detects membership in the embedded algebra by the field norm.
+Every ambient field algebra automorphism therefore restricts to the given local algebra,
+compatibly with the embedding, composition, inversion and units.
+These membership and restriction results need neither Henselianity nor separability.
+
 Over a Henselian base, degree exhaustion and residue separability also give unit norm
 preimages in every extended ideal-congruence neighborhood of one.
 If the residue field of the base is finite, degree exhaustion gives norm preimages
 for every unit of the base; residue separability is then a consequence of finiteness.
+Under the same finite-residue hypotheses, the full ambient automorphism group
+has a generator whose coboundary on the original algebra's units has range
+exactly equal to the kernel of its unit norm. The Galois property and cyclicity
+are derived before choosing the generator, and the coboundary witness remains
+in the original unit group.
 It also provides bounded-module finiteness, Henselian power neighborhoods, Bernoulli
 integrality and rational denominator-support results.
 The polynomial Hensel criteria give strong roots with maximal-ideal power precision,

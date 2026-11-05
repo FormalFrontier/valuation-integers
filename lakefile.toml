@@ -58,3 +58,8 @@ rev = "0bcb335a180c39e599086aefb505efbe84523e2f"
 name = "multivariate-polynomials"
 git = "https://github.com/FormalFrontier/multivariate-polynomials.git"
 rev = "5d58abb977f3281238ee5b4f37303a275b1b2426"
+
+[[require]]
+name = "finite-group-tate-cohomology"
+git = "https://github.com/FormalFrontier/finite-group-tate-cohomology.git"
+rev = "c0c9d563d45adfa81bff78821042089f750b1d44"

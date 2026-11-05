@@ -1,7 +1,19 @@
 {"version": "1.2.0",
  "packagesDir": ".lake/packages",
  "packages":
- [{"url": "https://github.com/FormalFrontier/spectral-stone-duality.git",
+ [
+{
+  "url": "https://github.com/FormalFrontier/finite-group-tate-cohomology.git",
+  "type": "git",
+  "subDir": null,
+  "scope": "",
+  "rev": "c0c9d563d45adfa81bff78821042089f750b1d44",
+  "name": "«finite-group-tate-cohomology»",
+  "manifestFile": "lake-manifest.json",
+  "inputRev": "c0c9d563d45adfa81bff78821042089f750b1d44",
+  "inherited": false,
+  "configFile": "lakefile.toml"
+},{"url": "https://github.com/FormalFrontier/spectral-stone-duality.git",
    "type": "git",
    "subDir": null,
    "scope": "",

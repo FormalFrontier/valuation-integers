@@ -214,3 +214,56 @@ theorem exists_isUnit_mul_of_linearIndependent_residue
           (e.linearCombination_repr x)
 
 end Module.Basis
+
+public section
+
+namespace ValuationRing
+
+variable {R : Type uR} {S : Type uS} {F : Type uF} {L : Type uL}
+variable [cR : CommRing R] [dR : IsDomain R] [vR : ValuationRing R]
+variable [cS : CommRing S] [lS : IsLocalRing S]
+variable [fF : Field F] [fL : Field L]
+variable [aRF : Algebra R F] [fracRF : IsFractionRing R F]
+variable [aFL : Algebra F L]
+variable [aRS : Algebra R S] [aSL : Algebra S L] [aRL : Algebra R L]
+variable [towerRFL : IsScalarTower R F L]
+variable [towerRSL : IsScalarTower R S L]
+variable [aKK : Algebra (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField S)]
+variable [aRK : Algebra R (IsLocalRing.ResidueField S)]
+variable [towerRkK : IsScalarTower R (IsLocalRing.ResidueField R)
+  (IsLocalRing.ResidueField S)]
+variable [towerRSK : IsScalarTower R S (IsLocalRing.ResidueField S)]
+
+include R S F L cR dR vR cS lS fF fL
+include aRF fracRF aFL aRS aSL aRL towerRFL towerRSL
+include aKK aRK towerRkK towerRSK
+
+/-- If the residue degree equals the field degree, every element of `L` is a scalar from `F`
+times the image of a unit of `S`. The residue basis and its lifts are chosen internally. -/
+theorem exists_isUnit_mul_of_finrank_eq [finiteFL : Module.Finite F L]
+    (hSL : Function.Injective (algebraMap S L))
+    (hnf : Module.finrank F L =
+      Module.finrank (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField S))
+    (x : L) :
+    ∃ a : F, ∃ z : S, IsUnit z ∧ algebraMap F L a * algebraMap S L z = x := by
+  classical
+  have hpos : 0 < Module.finrank (IsLocalRing.ResidueField R)
+      (IsLocalRing.ResidueField S) := by
+    rw [← hnf]
+    exact Module.finrank_pos
+  let : Module.Finite (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField S) :=
+    Module.finite_of_finrank_pos hpos
+  let b := Module.finBasis (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField S)
+  choose s hs using fun i : Fin (Module.finrank (IsLocalRing.ResidueField R)
+      (IsLocalRing.ResidueField S)) =>
+    IsLocalRing.residue_surjective (R := S) (b i)
+  have hdeg : Fintype.card (Fin (Module.finrank (IsLocalRing.ResidueField R)
+      (IsLocalRing.ResidueField S))) = Module.finrank F L := by
+    simpa using hnf.symm
+  exact Module.Basis.exists_isUnit_mul_of_linearIndependent_residue
+    (R := R) (S := S) (F := F) (L := L)
+    (basisOfResidue (R := R) (S := S) (F := F) (L := L) hSL b s hs hdeg) s
+    (basisOfResidue_apply (R := R) (S := S) (F := F) (L := L) hSL b s hs hdeg)
+    (by simpa only [hs] using b.linearIndependent) x
+
+end ValuationRing
