@@ -8,10 +8,15 @@ selective imports, examples and boundaries.
 
 ## Headline results
 
-- **Galois and cyclic extensions from residue extensions.** Let `R` be a
-  Henselian valuation domain with fraction field `F`, and let a local
+- **Automorphism groups and Galois extensions from residue extensions.** Let `R`
+  be a Henselian valuation domain with fraction field `F`, and let a local
   commutative `R`-algebra `S` embed in a finite extension `L/F`. With compatible
   algebra and residue-field actions, suppose the residue degree equals `[L : F]`.
+  For a separable residue extension, `ValuationRing.residueAutEquivOfFinrankEq`
+  canonically identifies the field and residue algebra-automorphism groups;
+  its forward map is restriction and reduction, and its inverse is characterized
+  by the residue and ambient field squares on every element of `S`. See
+  [`ValuationIntegers.Valuation.ResidueAut`](ValuationIntegers/Valuation/ResidueAut.lean).
   If the residue extension is Galois, then `L/F` is Galois; if its
   algebra-automorphism group is also cyclic, so is that of `L/F`.
   A finite residue field of `R` suffices for both conclusions. See
