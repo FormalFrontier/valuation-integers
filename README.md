@@ -177,6 +177,19 @@ space from Spectral Stone Duality; their valuation applications are developed he
   valuation-ring structure on `S`, or fraction-field structure for `S → L`
   is required.
 
+- **Perfectness of the integral trace pairing**
+  ([module](ValuationIntegers/Valuation/TracePairing.lean)).
+  For a valuation domain `R` with fraction field `F` and a local `R`-algebra
+  `S` embedded by its given algebra map in a field `L` finite over `F`, retain
+  the compatible original ambient and residue algebras and scalar towers.
+  If `[κS : κR] = [L : F]` and the given residue extension is separable,
+  `ValuationRing.bijective_traceForm_of_finrank_eq` makes the canonical map
+  `Algebra.traceForm R S : S →ₗ[R] Module.Dual R S` bijective. Thus every
+  original `R`-linear functional on `S` is uniquely represented by multiplication
+  under the trace. Finite freeness is derived, not a caller premise; no
+  Henselianity, finite residue-field cardinality, or invertibility of the degree
+  is assumed.
+
 - **Ambient membership detected by the trace pairing**
   ([module](ValuationIntegers/Valuation/ResidueTraceNorm.lean)).
   Let `R` be a commutative valuation domain with fraction field `F`, and let

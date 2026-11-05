@@ -63,3 +63,13 @@ rev = "5d58abb977f3281238ee5b4f37303a275b1b2426"
 name = "finite-group-tate-cohomology"
 git = "https://github.com/FormalFrontier/finite-group-tate-cohomology.git"
 rev = "c0c9d563d45adfa81bff78821042089f750b1d44"
+
+[[require]]
+name = "projective-modules"
+git = "https://github.com/FormalFrontier/projective-modules.git"
+rev = "78b30587b1d75b0a288cf8bab50cf220403e1550"
+
+[[require]]
+name = "general-linear-groups"
+git = "https://github.com/FormalFrontier/general-linear-groups.git"
+rev = "ad7c50a0523441116537fb1d6e3c8d2a665af1fc"
